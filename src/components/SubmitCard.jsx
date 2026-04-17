@@ -52,12 +52,19 @@ function SubmitCard({ categories, onSubmit }) {
       <form className="submission-form" onSubmit={handleSubmit}>
         <label>
           <span>Category</span>
-          <select name="category" value={form.category} onChange={handleChange} required>
-            {(categories.length ? categories : [defaultCategory]).map((category) => (
-              <option key={category} value={category}>
-                {formatCategory(category)}
-              </option>
-            ))}
+          <select
+            name="category"
+            value={form.category}
+            onChange={handleChange}
+            required
+          >
+            {(categories.length ? categories : [defaultCategory]).map(
+              (category) => (
+                <option key={category} value={category}>
+                  {formatCategory(category)}
+                </option>
+              ),
+            )}
           </select>
         </label>
         <label>

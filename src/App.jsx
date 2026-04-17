@@ -16,7 +16,9 @@ function App() {
 
       const parsed = JSON.parse(raw);
       return {
-        lines: Array.isArray(parsed.lines) ? parsed.lines : defaultBoardState.lines,
+        lines: Array.isArray(parsed.lines)
+          ? parsed.lines
+          : defaultBoardState.lines,
         votes:
           parsed.votes && typeof parsed.votes === "object"
             ? parsed.votes
@@ -33,15 +35,20 @@ function App() {
     window.localStorage.setItem(storageKey, JSON.stringify(boardState));
   }, [boardState]);
 
-  const categories = [...new Set(boardState.lines.map((line) => line.category))];
+  const categories = [
+    ...new Set(boardState.lines.map((line) => line.category)),
+  ];
   const filteredLines = sortLines(
-    boardState.lines.filter((line) => filter === "all" || line.category === filter),
+    boardState.lines.filter(
+      (line) => filter === "all" || line.category === filter,
+    ),
   );
   const topLine = filteredLines[0] ?? null;
   const stats = {
     total: boardState.lines.length,
     topScore: topLine ? topLine.score : 0,
-    freshCount: boardState.lines.filter((line) => !line.id.startsWith("seed-")).length,
+    freshCount: boardState.lines.filter((line) => !line.id.startsWith("seed-"))
+      .length,
   };
 
   function handleVote(lineId, direction) {
@@ -56,7 +63,9 @@ function App() {
           [lineId]: nextVote,
         },
         lines: currentBoard.lines.map((line) =>
-          line.id === lineId ? { ...line, score: line.score + adjustment } : line,
+          line.id === lineId
+            ? { ...line, score: line.score + adjustment }
+            : line,
         ),
       };
     });

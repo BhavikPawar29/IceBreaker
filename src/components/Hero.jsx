@@ -8,7 +8,9 @@ function Hero({ stats }) {
           <span className="brand-mark">Sketchline</span>
           <span className="brand-sub">crowd-ranked openers</span>
         </a>
-        <div className="nav-note">vite + react / local-first community board</div>
+        <div className="nav-note">
+          vite + react / local-first community board
+        </div>
       </nav>
 
       <section className="hero-grid" id="top">
@@ -20,8 +22,9 @@ function Hero({ stats }) {
             start with the crowd.
           </h1>
           <p className="hero-text">
-            Discover community-submitted opening lines, vote on what actually feels
-            fresh, and surface the strongest conversation starters to the top.
+            Discover community-submitted opening lines, vote on what actually
+            feels fresh, and surface the strongest conversation starters to the
+            top.
           </p>
           <div className="hero-actions">
             <a className="ink-link" href="#leaderboard">

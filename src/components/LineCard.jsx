@@ -9,7 +9,9 @@ function LineCard({ line, rank, voteState, onVote }) {
       </div>
       <p className="line-body">{line.text}</p>
       <div className="line-footer">
-        <div className="line-author">Shared by {line.author || "anonymous sketcher"}</div>
+        <div className="line-author">
+          Shared by {line.author || "anonymous sketcher"}
+        </div>
         <div className="vote-panel">
           <button
             className={`vote-button vote-up ${voteState === 1 ? "is-active" : ""}`}

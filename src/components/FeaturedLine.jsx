@@ -11,13 +11,21 @@ function FeaturedLine({ line }) {
       <article className="featured-line">
         {line ? (
           <>
-            <blockquote>"{line.text}"</blockquote>
+            <blockquote>
+              <span>&ldquo;</span>
+              {line.text}
+              <span>&rdquo;</span>
+            </blockquote>
             <footer>
               <span className="score-chip">
                 score <strong>{line.score}</strong>
               </span>
-              <span className="category-chip">{formatCategory(line.category)}</span>
-              <span className="author-chip">by {line.author || "anonymous sketcher"}</span>
+              <span className="category-chip">
+                {formatCategory(line.category)}
+              </span>
+              <span className="author-chip">
+                by {line.author || "anonymous sketcher"}
+              </span>
             </footer>
           </>
         ) : (

@@ -17,13 +17,22 @@ function SketchIllustration() {
         <path d="M123 511C150 491 171 486 198 501" />
         <path d="M316 517C347 493 376 489 404 511" />
         <circle cx="188" cy="458" r="38" className="accent-node" />
-        <circle cx="376" cy="414" r="26" className="accent-node accent-node--small" />
+        <circle
+          cx="376"
+          cy="414"
+          r="26"
+          className="accent-node accent-node--small"
+        />
         <path d="M94 296L165 286" />
         <path d="M228 254L315 239" />
         <path d="M351 228L427 241" />
       </svg>
-      <div className="floating-note floating-note-a">ranked by people, not AI</div>
-      <div className="floating-note floating-note-b">sketchbook energy / clean signal</div>
+      <div className="floating-note floating-note-a">
+        ranked by people, not AI
+      </div>
+      <div className="floating-note floating-note-b">
+        sketchbook energy / clean signal
+      </div>
     </div>
   );
 }
