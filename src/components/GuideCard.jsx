@@ -8,7 +8,7 @@ function GuideCard() {
       <ul className="guide-list">
         <li>Specific observations beat generic compliments.</li>
         <li>Playful curiosity lands better than rehearsed swagger.</li>
-        <li>Short lines usually perform better than long monologues.</li>
+        <li>At net +50, a line graduates into the approved showcase.</li>
       </ul>
     </div>
   );

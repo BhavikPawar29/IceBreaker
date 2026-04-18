@@ -10,7 +10,9 @@
     "format:check": "prettier --check .",
     "build": "vite build",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "worker:dev": "npx wrangler dev --config workers/promotion/wrangler.jsonc --test-scheduled",
+    "worker:deploy": "npx wrangler deploy --config workers/promotion/wrangler.jsonc"
   },
   "lint-staged": {
     "*.{js,jsx}": [
@@ -22,6 +24,7 @@
     ]
   },
   "dependencies": {
+    "firebase": "^11.10.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

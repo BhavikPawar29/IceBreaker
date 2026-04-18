@@ -1,0 +1,92 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function currentVoteValue(lineId) {
+      return exists(/databases/$(database)/documents/candidate_lines/$(lineId)/votes/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/candidate_lines/$(lineId)/votes/$(request.auth.uid)).data.value
+        : 0;
+    }
+
+    function nextVoteExists(lineId) {
+      return existsAfter(/databases/$(database)/documents/candidate_lines/$(lineId)/votes/$(request.auth.uid));
+    }
+
+    function nextVoteValue(lineId) {
+      return nextVoteExists(lineId)
+        ? getAfter(/databases/$(database)/documents/candidate_lines/$(lineId)/votes/$(request.auth.uid)).data.value
+        : 0;
+    }
+
+    function scoreDelta(lineId) {
+      return nextVoteValue(lineId) - currentVoteValue(lineId);
+    }
+
+    function upvoteDelta(lineId) {
+      return (nextVoteValue(lineId) == 1 ? 1 : 0) - (currentVoteValue(lineId) == 1 ? 1 : 0);
+    }
+
+    function downvoteDelta(lineId) {
+      return (nextVoteValue(lineId) == -1 ? 1 : 0) - (currentVoteValue(lineId) == -1 ? 1 : 0);
+    }
+
+    function totalVoteDelta(lineId) {
+      return (nextVoteValue(lineId) != 0 ? 1 : 0) - (currentVoteValue(lineId) != 0 ? 1 : 0);
+    }
+
+    match /candidate_lines/{lineId} {
+      allow read: if true;
+
+      allow create: if isSignedIn()
+        && request.resource.data.createdByUid == request.auth.uid
+        && request.resource.data.status == "candidate"
+        && request.resource.data.score == 1
+        && request.resource.data.upvoteCount == 1
+        && request.resource.data.downvoteCount == 0
+        && request.resource.data.voteCountTotal == 1
+        && request.resource.data.approvedLineId == null
+        && request.resource.data.promotedAt == null;
+
+      allow update: if isSignedIn()
+        && resource.data.status == "candidate"
+        && request.resource.data.status == "candidate"
+        && request.resource.data.createdByUid == resource.data.createdByUid
+        && request.resource.data.createdByName == resource.data.createdByName
+        && request.resource.data.text == resource.data.text
+        && request.resource.data.normalizedText == resource.data.normalizedText
+        && request.resource.data.fingerprint == resource.data.fingerprint
+        && request.resource.data.category == resource.data.category
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.promotedAt == resource.data.promotedAt
+        && request.resource.data.approvedLineId == resource.data.approvedLineId
+        && request.resource.data.score == resource.data.score + scoreDelta(lineId)
+        && request.resource.data.upvoteCount == resource.data.upvoteCount + upvoteDelta(lineId)
+        && request.resource.data.downvoteCount == resource.data.downvoteCount + downvoteDelta(lineId)
+        && request.resource.data.voteCountTotal == resource.data.voteCountTotal + totalVoteDelta(lineId);
+
+      allow delete: if false;
+
+      match /votes/{uid} {
+        allow read: if isSignedIn() && request.auth.uid == uid;
+
+        allow create, update, delete: if isSignedIn()
+          && request.auth.uid == uid
+          && get(/databases/$(database)/documents/candidate_lines/$(lineId)).data.status == "candidate";
+      }
+    }
+
+    match /approved_lines/{lineId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /line_fingerprints/{fingerprint} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+  }
+}

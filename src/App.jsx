@@ -1,109 +1,89 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Hero from "./components/Hero";
 import StoryStrip from "./components/StoryStrip";
 import BoardSection from "./components/BoardSection";
-import { defaultBoardState, storageKey } from "./data/seedLines";
-import { sortLines } from "./utils/board";
+import ApprovedShowcase from "./components/ApprovedShowcase";
+import { firebaseConfigReady } from "./lib/firebase";
+import useAuth from "./context/useAuth";
+import useCommunityBoard from "./hooks/useCommunityBoard";
 
 function App() {
-  const [boardState, setBoardState] = useState(() => {
-    try {
-      const raw = window.localStorage.getItem(storageKey);
-
-      if (!raw) {
-        return defaultBoardState;
-      }
-
-      const parsed = JSON.parse(raw);
-      return {
-        lines: Array.isArray(parsed.lines)
-          ? parsed.lines
-          : defaultBoardState.lines,
-        votes:
-          parsed.votes && typeof parsed.votes === "object"
-            ? parsed.votes
-            : defaultBoardState.votes,
-      };
-    } catch (error) {
-      console.warn("Failed to restore board state, using defaults.", error);
-      return defaultBoardState;
-    }
-  });
   const [filter, setFilter] = useState("all");
-
-  useEffect(() => {
-    window.localStorage.setItem(storageKey, JSON.stringify(boardState));
-  }, [boardState]);
+  const { authEnabled, isAuthReady, signInWithGoogle, signOutUser, user } =
+    useAuth();
+  const {
+    approvedLines,
+    boardError,
+    candidateLines,
+    isApprovedLoading,
+    isBoardLoading,
+    lookupExistingLine,
+    submitLine,
+    votes,
+    voteOnLine,
+  } = useCommunityBoard(user);
+  const safeCandidateLines = Array.isArray(candidateLines)
+    ? candidateLines
+    : [];
+  const safeApprovedLines = Array.isArray(approvedLines) ? approvedLines : [];
 
   const categories = [
-    ...new Set(boardState.lines.map((line) => line.category)),
+    ...new Set(safeCandidateLines.map((line) => line.category)),
   ];
-  const filteredLines = sortLines(
-    boardState.lines.filter(
-      (line) => filter === "all" || line.category === filter,
-    ),
+  const filteredLines = safeCandidateLines.filter(
+    (line) => filter === "all" || line.category === filter,
   );
   const topLine = filteredLines[0] ?? null;
   const stats = {
-    total: boardState.lines.length,
+    approvedCount: safeApprovedLines.length,
+    total: safeCandidateLines.length + safeApprovedLines.length,
     topScore: topLine ? topLine.score : 0,
-    freshCount: boardState.lines.filter((line) => !line.id.startsWith("seed-"))
-      .length,
+    candidateCount: safeCandidateLines.length,
   };
-
-  function handleVote(lineId, direction) {
-    setBoardState((currentBoard) => {
-      const currentVote = currentBoard.votes[lineId] || 0;
-      const nextVote = currentVote === direction ? 0 : direction;
-      const adjustment = nextVote - currentVote;
-
-      return {
-        votes: {
-          ...currentBoard.votes,
-          [lineId]: nextVote,
-        },
-        lines: currentBoard.lines.map((line) =>
-          line.id === lineId
-            ? { ...line, score: line.score + adjustment }
-            : line,
-        ),
-      };
-    });
-  }
-
-  function handleSubmit(submission) {
-    const newLine = {
-      id: `line-${Date.now()}`,
-      category: submission.category,
-      text: submission.text,
-      author: submission.author || "anonymous sketcher",
-      score: 1,
-      createdAt: new Date().toISOString(),
-    };
-
-    setBoardState((currentBoard) => ({
-      lines: [newLine, ...currentBoard.lines],
-      votes: {
-        ...currentBoard.votes,
-        [newLine.id]: 1,
-      },
-    }));
-  }
 
   return (
     <div className="page-shell">
       <div className="paper-grain" aria-hidden="true"></div>
-      <Hero stats={stats} />
+      <Hero
+        authEnabled={authEnabled}
+        isAuthReady={isAuthReady}
+        onSignIn={signInWithGoogle}
+        onSignOut={signOutUser}
+        stats={stats}
+        user={user}
+      />
       <main>
+        {!firebaseConfigReady ? (
+          <section className="status-banner">
+            Add your Firebase web config to <code>.env</code> to enable Google
+            sign-in and Firestore syncing. The current board is showing local
+            seed data until that is configured.
+          </section>
+        ) : null}
+        {boardError ? (
+          <section className="status-banner status-banner--error">
+            {boardError}
+          </section>
+        ) : null}
         <StoryStrip />
         <BoardSection
+          authEnabled={authEnabled}
+          approvedLines={safeApprovedLines}
           categories={categories}
-          currentVotes={boardState.votes}
+          currentVotes={votes}
           filter={filter}
+          isApprovedLoading={isApprovedLoading}
+          isBoardLoading={isBoardLoading}
           lines={filteredLines}
+          lookupExistingLine={lookupExistingLine}
           onFilterChange={setFilter}
-          onSubmit={handleSubmit}
-          onVote={handleVote}
+          onSubmit={submitLine}
+          onVote={voteOnLine}
+          user={user}
+        />
+        <ApprovedShowcase
+          approvedLines={safeApprovedLines}
+          isApprovedLoading={isApprovedLoading}
         />
       </main>
     </div>

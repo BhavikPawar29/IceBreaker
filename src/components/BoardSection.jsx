@@ -5,13 +5,19 @@ import GuideCard from "./GuideCard";
 import SubmitCard from "./SubmitCard";
 
 function BoardSection({
+  authEnabled,
+  approvedLines,
   categories,
   currentVotes,
   filter,
+  isApprovedLoading,
+  isBoardLoading,
   lines,
+  lookupExistingLine,
   onFilterChange,
   onSubmit,
   onVote,
+  user,
 }) {
   return (
     <>
@@ -24,12 +30,26 @@ function BoardSection({
       <section className="board-layout">
         <div className="leader-column">
           <FeaturedLine line={lines[0] ?? null} />
-          <LineList lines={lines} votes={currentVotes} onVote={onVote} />
+          <LineList
+            canVote={Boolean(user)}
+            hasApprovedLines={approvedLines.length > 0}
+            isApprovedLoading={isApprovedLoading}
+            isBoardLoading={isBoardLoading}
+            lines={lines}
+            votes={currentVotes}
+            onVote={onVote}
+          />
         </div>
 
         <aside className="side-column">
           <GuideCard />
-          <SubmitCard categories={categories} onSubmit={onSubmit} />
+          <SubmitCard
+            authEnabled={authEnabled}
+            categories={categories}
+            lookupExistingLine={lookupExistingLine}
+            onSubmit={onSubmit}
+            user={user}
+          />
         </aside>
       </section>
     </>

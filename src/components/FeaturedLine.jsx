@@ -24,7 +24,7 @@ function FeaturedLine({ line }) {
                 {formatCategory(line.category)}
               </span>
               <span className="author-chip">
-                by {line.author || "anonymous sketcher"}
+                by {line.createdByName || line.author || "anonymous sketcher"}
               </span>
             </footer>
           </>

@@ -1,6 +1,6 @@
 import SketchIllustration from "./SketchIllustration";
 
-function Hero({ stats }) {
+function Hero({ authEnabled, isAuthReady, onSignIn, onSignOut, stats, user }) {
   return (
     <header className="hero">
       <nav className="topbar" aria-label="Primary">
@@ -8,8 +8,38 @@ function Hero({ stats }) {
           <span className="brand-mark">Sketchline</span>
           <span className="brand-sub">crowd-ranked openers</span>
         </a>
-        <div className="nav-note">
-          vite + react / local-first community board
+        <div className="topbar-actions">
+          <div className="nav-note">
+            vite + react / firebase auth + firestore
+          </div>
+          {authEnabled ? (
+            user ? (
+              <div className="auth-chip-group">
+                <span className="auth-chip">
+                  signed in as{" "}
+                  {user.displayName || user.email || "community member"}
+                </span>
+                <button
+                  className="ghost-link auth-button"
+                  type="button"
+                  onClick={onSignOut}
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <button
+                className="ink-link auth-button"
+                type="button"
+                onClick={onSignIn}
+                disabled={!isAuthReady}
+              >
+                {isAuthReady ? "Sign in with Google" : "Checking session..."}
+              </button>
+            )
+          ) : (
+            <span className="auth-chip">Firebase config not connected yet</span>
+          )}
         </div>
       </nav>
 
@@ -41,11 +71,11 @@ function Hero({ stats }) {
             </article>
             <article>
               <strong>{stats.topScore}</strong>
-              <span>top score</span>
+              <span>top candidate score</span>
             </article>
             <article>
-              <strong>{stats.freshCount}</strong>
-              <span>fresh this session</span>
+              <strong>{stats.approvedCount}</strong>
+              <span>approved lines</span>
             </article>
           </div>
         </div>
