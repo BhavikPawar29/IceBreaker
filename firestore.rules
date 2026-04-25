@@ -6,19 +6,102 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/roles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isAllowedCategory(category) {
+      return category in ['playful', 'curious', 'storytime', 'unexpected', 'deeper'];
+    }
+
+    function expectedAuthorName() {
+      return request.auth.token.name is string && request.auth.token.name.size() > 0
+        ? request.auth.token.name
+        : request.auth.token.email is string && request.auth.token.email.size() > 0
+          ? request.auth.token.email
+          : 'community member';
+    }
+
+    function isRecentMillis(value) {
+      return value is int
+        && value > request.time.toMillis() - 300000
+        && value < request.time.toMillis() + 60000;
+    }
+
+    function isBlockedNormalizedText(text) {
+      return text.matches('.*(?:https|www|discord|telegram|whatsapp|snap(?:chat)?|instagram|insta|onlyfans|dm me|message me|text me|call me|email me).*')
+        || text.matches('.*(?:fuck|fucking|bitch|slut|whore|nigg(?:a|er)|fagg?(?:ot)?|porn|nude|sex(?:y)?|horny|dick|cock|pussy).*');
+    }
+
+    function isBlockedRawText(text) {
+      return text.matches('.*[!?\\.]{6,}.*');
+    }
+
+    function hasLineShape(data) {
+      return data.keys().hasOnly([
+        'text',
+        'normalizedText',
+        'fingerprint',
+        'category',
+        'createdByUid',
+        'createdByName',
+        'score',
+        'upvoteCount',
+        'createdAt',
+        'updatedAt',
+        'status',
+        'moderatedAt',
+        'moderatedByUid',
+        'moderationReason',
+        'promoted',
+        'promotedAt',
+        'promotionScore'
+      ])
+      && data.keys().hasAll([
+        'text',
+        'normalizedText',
+        'fingerprint',
+        'category',
+        'createdByUid',
+        'createdByName',
+        'score',
+        'upvoteCount',
+        'createdAt',
+        'updatedAt',
+        'status',
+        'moderatedAt',
+        'moderatedByUid',
+        'moderationReason',
+        'promoted',
+        'promotedAt',
+        'promotionScore'
+      ]);
+    }
+
+    function canReadExistingLine() {
+      return resource.data.status == 'approved'
+        || (isSignedIn()
+          && (
+            resource.data.createdByUid == request.auth.uid
+            || isAdmin()
+          ));
+    }
+
     function currentVoteValue(lineId) {
-      return exists(/databases/$(database)/documents/candidate_lines/$(lineId)/votes/$(request.auth.uid))
-        ? get(/databases/$(database)/documents/candidate_lines/$(lineId)/votes/$(request.auth.uid)).data.value
+      return exists(/databases/$(database)/documents/lines/$(lineId)/votes/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/lines/$(lineId)/votes/$(request.auth.uid)).data.value
         : 0;
     }
 
     function nextVoteExists(lineId) {
-      return existsAfter(/databases/$(database)/documents/candidate_lines/$(lineId)/votes/$(request.auth.uid));
+      return existsAfter(/databases/$(database)/documents/lines/$(lineId)/votes/$(request.auth.uid));
     }
 
     function nextVoteValue(lineId) {
       return nextVoteExists(lineId)
-        ? getAfter(/databases/$(database)/documents/candidate_lines/$(lineId)/votes/$(request.auth.uid)).data.value
+        ? getAfter(/databases/$(database)/documents/lines/$(lineId)/votes/$(request.auth.uid)).data.value
         : 0;
     }
 
@@ -30,63 +113,140 @@ service cloud.firestore {
       return (nextVoteValue(lineId) == 1 ? 1 : 0) - (currentVoteValue(lineId) == 1 ? 1 : 0);
     }
 
-    function downvoteDelta(lineId) {
-      return (nextVoteValue(lineId) == -1 ? 1 : 0) - (currentVoteValue(lineId) == -1 ? 1 : 0);
+    function lineIsVoteableAfter(lineId) {
+      return existsAfter(/databases/$(database)/documents/lines/$(lineId))
+        && getAfter(/databases/$(database)/documents/lines/$(lineId)).data.status == 'approved'
+        && getAfter(/databases/$(database)/documents/lines/$(lineId)).data.promoted == false;
     }
 
-    function totalVoteDelta(lineId) {
-      return (nextVoteValue(lineId) != 0 ? 1 : 0) - (currentVoteValue(lineId) != 0 ? 1 : 0);
-    }
-
-    match /candidate_lines/{lineId} {
-      allow read: if true;
-
-      allow create: if isSignedIn()
-        && request.resource.data.createdByUid == request.auth.uid
-        && request.resource.data.status == "candidate"
-        && request.resource.data.score == 1
-        && request.resource.data.upvoteCount == 1
-        && request.resource.data.downvoteCount == 0
-        && request.resource.data.voteCountTotal == 1
-        && request.resource.data.approvedLineId == null
-        && request.resource.data.promotedAt == null;
-
-      allow update: if isSignedIn()
-        && resource.data.status == "candidate"
-        && request.resource.data.status == "candidate"
+    function isPendingModerationUpdate() {
+      return hasLineShape(request.resource.data)
+        && resource.data.status == 'pending'
         && request.resource.data.createdByUid == resource.data.createdByUid
         && request.resource.data.createdByName == resource.data.createdByName
         && request.resource.data.text == resource.data.text
         && request.resource.data.normalizedText == resource.data.normalizedText
         && request.resource.data.fingerprint == resource.data.fingerprint
         && request.resource.data.category == resource.data.category
+        && request.resource.data.category is string
+        && isAllowedCategory(request.resource.data.category)
+        && request.resource.data.score == resource.data.score
+        && request.resource.data.upvoteCount == resource.data.upvoteCount
         && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.promotedAt == resource.data.promotedAt
-        && request.resource.data.approvedLineId == resource.data.approvedLineId
+        && request.resource.data.updatedAt is int
+        && request.resource.data.updatedAt >= resource.data.updatedAt
+        && isRecentMillis(request.resource.data.updatedAt)
+        && (
+          request.resource.data.status == 'approved'
+          || request.resource.data.status == 'rejected'
+        )
+        && request.resource.data.moderatedAt is int
+        && isRecentMillis(request.resource.data.moderatedAt)
+        && request.resource.data.moderatedByUid == request.auth.uid
+        && (
+          request.resource.data.moderationReason == null
+          || (
+            request.resource.data.moderationReason is string
+            && request.resource.data.moderationReason.size() <= 200
+          )
+        )
+        && request.resource.data.promoted == false
+        && request.resource.data.promotedAt == null
+        && request.resource.data.promotionScore == null;
+    }
+
+    function isVoteAggregateUpdate(lineId) {
+      return hasLineShape(request.resource.data)
+        && resource.data.status == 'approved'
+        && resource.data.promoted == false
+        && request.resource.data.createdByUid == resource.data.createdByUid
+        && request.resource.data.createdByName == resource.data.createdByName
+        && request.resource.data.text == resource.data.text
+        && request.resource.data.normalizedText == resource.data.normalizedText
+        && request.resource.data.fingerprint == resource.data.fingerprint
+        && request.resource.data.category == resource.data.category
+        && request.resource.data.category is string
+        && isAllowedCategory(request.resource.data.category)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt is int
+        && request.resource.data.updatedAt >= resource.data.updatedAt
+        && isRecentMillis(request.resource.data.updatedAt)
+        && request.resource.data.status == 'approved'
+        && request.resource.data.moderatedAt == resource.data.moderatedAt
+        && request.resource.data.moderatedByUid == resource.data.moderatedByUid
+        && request.resource.data.moderationReason == resource.data.moderationReason
         && request.resource.data.score == resource.data.score + scoreDelta(lineId)
         && request.resource.data.upvoteCount == resource.data.upvoteCount + upvoteDelta(lineId)
-        && request.resource.data.downvoteCount == resource.data.downvoteCount + downvoteDelta(lineId)
-        && request.resource.data.voteCountTotal == resource.data.voteCountTotal + totalVoteDelta(lineId);
+        && (
+          request.resource.data.score < 50
+            ? request.resource.data.promoted == false
+              && request.resource.data.promotedAt == null
+              && request.resource.data.promotionScore == null
+            : request.resource.data.promoted == true
+              && request.resource.data.promotedAt is int
+              && request.resource.data.promotionScore == request.resource.data.score
+        );
+    }
+
+    match /roles/{uid} {
+      allow read: if isSignedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    match /lines/{lineId} {
+      allow get: if isSignedIn() || canReadExistingLine();
+      allow list: if canReadExistingLine();
+
+      allow create: if isSignedIn()
+        && hasLineShape(request.resource.data)
+        && lineId == request.resource.data.fingerprint
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 12
+        && request.resource.data.text.size() <= 240
+        && request.resource.data.normalizedText is string
+        && request.resource.data.normalizedText.size() >= 12
+        && request.resource.data.normalizedText.size() <= 240
+        && !isBlockedNormalizedText(request.resource.data.normalizedText)
+        && !isBlockedRawText(request.resource.data.text)
+        && request.resource.data.category is string
+        && isAllowedCategory(request.resource.data.category)
+        && request.resource.data.createdByUid == request.auth.uid
+        && request.resource.data.createdByName == expectedAuthorName()
+        && request.resource.data.createdByName is string
+        && request.resource.data.createdByName.size() >= 1
+        && request.resource.data.createdByName.size() <= 120
+        && request.resource.data.score == 0
+        && request.resource.data.upvoteCount == 0
+        && isRecentMillis(request.resource.data.createdAt)
+        && request.resource.data.updatedAt == request.resource.data.createdAt
+        && request.resource.data.status == 'pending'
+        && request.resource.data.moderatedAt == null
+        && request.resource.data.moderatedByUid == null
+        && request.resource.data.moderationReason == null
+        && request.resource.data.promoted == false
+        && request.resource.data.promotedAt == null
+        && request.resource.data.promotionScore == null;
+
+      allow update: if (isAdmin() && isPendingModerationUpdate())
+        || (isSignedIn() && isVoteAggregateUpdate(lineId));
 
       allow delete: if false;
 
       match /votes/{uid} {
-        allow read: if isSignedIn() && request.auth.uid == uid;
+        allow read: if isSignedIn()
+          && (request.auth.uid == uid || isAdmin());
 
-        allow create, update, delete: if isSignedIn()
+        allow create, update: if isSignedIn()
           && request.auth.uid == uid
-          && get(/databases/$(database)/documents/candidate_lines/$(lineId)).data.status == "candidate";
+          && request.resource.data.keys().hasOnly(['value', 'updatedAt'])
+          && request.resource.data.keys().hasAll(['value', 'updatedAt'])
+          && request.resource.data.value in [0, 1]
+          && isRecentMillis(request.resource.data.updatedAt)
+          && lineIsVoteableAfter(lineId);
+
+        allow delete: if isSignedIn()
+          && request.auth.uid == uid;
       }
-    }
-
-    match /approved_lines/{lineId} {
-      allow read: if true;
-      allow write: if false;
-    }
-
-    match /line_fingerprints/{fingerprint} {
-      allow read: if isSignedIn();
-      allow write: if false;
     }
   }
 }

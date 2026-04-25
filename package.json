@@ -11,8 +11,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "prepare": "husky",
-    "worker:dev": "npx wrangler dev --config workers/promotion/wrangler.jsonc --test-scheduled",
-    "worker:deploy": "npx wrangler deploy --config workers/promotion/wrangler.jsonc"
+    "firebase:deploy": "npx firebase-tools deploy --only hosting,firestore"
   },
   "lint-staged": {
     "*.{js,jsx}": [
@@ -26,7 +25,8 @@
   "dependencies": {
     "firebase": "^11.10.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.8.2"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",

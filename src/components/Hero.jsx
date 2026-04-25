@@ -1,67 +1,36 @@
+import { NavLink } from "react-router-dom";
 import SketchIllustration from "./SketchIllustration";
 
-function Hero({ authEnabled, isAuthReady, onSignIn, onSignOut, stats, user }) {
+function Hero({ authEnabled, stats, user }) {
   return (
     <header className="hero">
-      <nav className="topbar" aria-label="Primary">
+      <div className="topbar">
         <a className="brand" href="#top">
-          <span className="brand-mark">Sketchline</span>
-          <span className="brand-sub">crowd-ranked openers</span>
+          <span className="brand-mark">IceBreaker</span>
         </a>
-        <div className="topbar-actions">
-          <div className="nav-note">
-            vite + react / firebase auth + firestore
-          </div>
-          {authEnabled ? (
-            user ? (
-              <div className="auth-chip-group">
-                <span className="auth-chip">
-                  signed in as{" "}
-                  {user.displayName || user.email || "community member"}
-                </span>
-                <button
-                  className="ghost-link auth-button"
-                  type="button"
-                  onClick={onSignOut}
-                >
-                  Sign out
-                </button>
-              </div>
-            ) : (
-              <button
-                className="ink-link auth-button"
-                type="button"
-                onClick={onSignIn}
-                disabled={!isAuthReady}
-              >
-                {isAuthReady ? "Sign in with Google" : "Checking session..."}
-              </button>
-            )
-          ) : (
-            <span className="auth-chip">Firebase config not connected yet</span>
-          )}
-        </div>
-      </nav>
+        {!authEnabled ? (
+          <span className="auth-chip">Firebase config not connected yet</span>
+        ) : null}
+      </div>
 
       <section className="hero-grid" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">The Avant-Garde Sketch</p>
           <h1>
-            Better
-            <span>icebreakers</span>
-            start with the crowd.
+            Stop blanking
+            <span>when it matters.</span>
+            Ask better things.
           </h1>
           <p className="hero-text">
-            Discover community-submitted opening lines, vote on what actually
-            feels fresh, and surface the strongest conversation starters to the
-            top.
+            Human-backed conversation ideas for shy people who already know
+            someone a little, but need help keeping things going without
+            sounding generic.
           </p>
           <div className="hero-actions">
-            <a className="ink-link" href="#leaderboard">
-              Explore the board
-            </a>
-            <a className="ghost-link" href="#submit">
-              Share your own line
+            <NavLink className="ink-link" to={user ? "/promoted" : "/login"}>
+              {user ? "See what is working" : "Find better things to say"}
+            </NavLink>
+            <a className="ghost-link" href="#how-it-works">
+              See how it works
             </a>
           </div>
           <div className="hero-stats" aria-label="Platform summary">
@@ -71,11 +40,11 @@ function Hero({ authEnabled, isAuthReady, onSignIn, onSignOut, stats, user }) {
             </article>
             <article>
               <strong>{stats.topScore}</strong>
-              <span>top candidate score</span>
+              <span>top live score</span>
             </article>
             <article>
-              <strong>{stats.approvedCount}</strong>
-              <span>approved lines</span>
+              <strong>{stats.promotedCount}</strong>
+              <span>promoted lines</span>
             </article>
           </div>
         </div>

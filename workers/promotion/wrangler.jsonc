@@ -1,8 +1,0 @@
-{
-  "name": "sketchline-promotion-worker",
-  "main": "src/index.js",
-  "compatibility_date": "2025-01-01",
-  "triggers": {
-    "crons": ["* * * * *"],
-  },
-}

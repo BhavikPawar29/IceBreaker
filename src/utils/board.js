@@ -1,3 +1,8 @@
+import {
+  LINE_STATUS_LABELS,
+  LINE_STATUS_PENDING,
+} from "../constants/lineStatuses";
+
 export function formatCategory(category) {
   return category
     .split("-")
@@ -13,4 +18,8 @@ export function sortLines(lines) {
 
     return new Date(right.createdAt) - new Date(left.createdAt);
   });
+}
+
+export function formatLineStatus(status) {
+  return LINE_STATUS_LABELS[status] || LINE_STATUS_LABELS[LINE_STATUS_PENDING];
 }

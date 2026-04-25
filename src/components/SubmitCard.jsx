@@ -1,23 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ALLOWED_CATEGORIES, DEFAULT_CATEGORY } from "../constants/categories";
 import { formatCategory } from "../utils/board";
+import { validateLineSubmission } from "../utils/contentValidation";
+import Snackbar from "./Snackbar";
 
-const defaultCategory = "playful";
+const SUBMIT_COOLDOWN_MS = 30 * 1000;
+const SUBMIT_COOLDOWN_KEY = "icebreaker-last-submit-at";
 
-function SubmitCard({
-  authEnabled,
-  categories,
-  lookupExistingLine,
-  onSubmit,
-  user,
-}) {
+function SubmitCard({ authEnabled, lookupExistingLine, onSubmit, user }) {
   const [form, setForm] = useState({
-    category: categories[0] || defaultCategory,
+    category: DEFAULT_CATEGORY,
     text: "",
-    author: "",
   });
-  const [note, setNote] = useState(
-    "Sign in with Google to publish lines into Firestore and vote with your account.",
-  );
+  const [feedback, setFeedback] = useState({ message: "", tone: "info" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!feedback.message) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setFeedback({ message: "", tone: "info" });
+    }, 4200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [feedback]);
+
+  function showFeedback(message, tone = "info") {
+    setFeedback({ message, tone });
+  }
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -31,54 +43,78 @@ function SubmitCard({
     event.preventDefault();
 
     if (!authEnabled) {
-      setNote("Add your Firebase config first, then sign in to publish lines.");
+      showFeedback(
+        "Connect Firebase first, then you can send ideas in.",
+        "warning",
+      );
       return;
     }
 
     if (!user) {
-      setNote("Sign in with Google before publishing to the board.");
+      showFeedback("Sign in first so we know who sent the idea.", "warning");
       return;
     }
 
-    if (form.text.trim().length < 12) {
-      setNote("Add a little more detail so the line feels testable.");
+    const validationMessage = validateLineSubmission({
+      category: form.category,
+      text: form.text,
+    });
+
+    if (validationMessage) {
+      showFeedback(validationMessage, "warning");
       return;
     }
 
+    const lastSubmitAt = Number(localStorage.getItem(SUBMIT_COOLDOWN_KEY) || 0);
+    const remainingMs = SUBMIT_COOLDOWN_MS - (Date.now() - lastSubmitAt);
+
+    if (remainingMs > 0) {
+      showFeedback(
+        `Give it a moment. You can send another idea in ${Math.ceil(remainingMs / 1000)}s.`,
+        "warning",
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
     const result = await onSubmit({
       category: form.category,
       text: form.text.trim(),
-      author: form.author.trim(),
     });
 
-    const existingLine = await lookupExistingLine(result.existingLineRef);
+    const existingLine = result.existingLineRef
+      ? await lookupExistingLine(result.existingLineRef)
+      : null;
     const duplicateMessage = result.duplicateWarning
       ? existingLine
-        ? `${result.duplicateWarning} Existing record: ${existingLine.collection}/${existingLine.id}.`
+        ? existingLine.status === "approved"
+          ? "That idea is already live on IceBreaker."
+          : "That idea is already waiting for review."
         : result.duplicateWarning
       : "";
     const nextNote = [result.message, duplicateMessage]
       .filter(Boolean)
       .join(" ");
 
-    setNote(nextNote);
+    setIsSubmitting(false);
+    showFeedback(nextNote, result.ok ? "success" : "warning");
 
     if (!result.ok) {
       return;
     }
 
+    localStorage.setItem(SUBMIT_COOLDOWN_KEY, String(Date.now()));
     setForm({
       category: form.category,
       text: "",
-      author: "",
     });
   }
 
   return (
     <div className="section-card submit-card" id="submit">
       <div className="card-heading">
-        <p className="eyebrow">Contribute</p>
-        <h3>Drop a line into the board</h3>
+        <p className="eyebrow">Share one</p>
+        <h3>Add a conversation idea</h3>
       </div>
       <form className="submission-form" onSubmit={handleSubmit}>
         <label>
@@ -89,13 +125,11 @@ function SubmitCard({
             onChange={handleChange}
             required
           >
-            {(categories.length ? categories : [defaultCategory]).map(
-              (category) => (
-                <option key={category} value={category}>
-                  {formatCategory(category)}
-                </option>
-              ),
-            )}
+            {ALLOWED_CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {formatCategory(category)}
+              </option>
+            ))}
           </select>
         </label>
         <label>
@@ -106,32 +140,28 @@ function SubmitCard({
             maxLength="240"
             placeholder="Example: You seem like the kind of person who always finds the hidden best item on a menu."
             required
-            disabled={!user}
+            disabled={!user || isSubmitting}
             value={form.text}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          <span>Name or alias</span>
-          <input
-            name="author"
-            type="text"
-            maxLength="32"
-            placeholder="anonymous sketcher"
-            disabled={!user}
-            value={form.author}
             onChange={handleChange}
           />
         </label>
         <button
           type="submit"
           className="submit-button"
-          disabled={!authEnabled || !user}
+          disabled={!authEnabled || !user || isSubmitting}
         >
-          {user ? "Publish line" : "Sign in to publish"}
+          {isSubmitting
+            ? "Sending..."
+            : user
+              ? "Send for review"
+              : "Sign in to publish"}
         </button>
-        <p className="form-note">{note}</p>
       </form>
+      <Snackbar
+        isVisible={Boolean(feedback.message)}
+        message={feedback.message}
+        tone={feedback.tone}
+      />
     </div>
   );
 }
