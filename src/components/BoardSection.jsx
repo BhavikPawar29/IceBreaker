@@ -1,38 +1,87 @@
-import SectionHeader from "./SectionHeader";
-import FeaturedLine from "./FeaturedLine";
-import LineList from "./LineList";
-import GuideCard from "./GuideCard";
-import SubmitCard from "./SubmitCard";
+import { useEffect, useRef } from "react";
+import LineCard from "./LineCard";
 
 function BoardSection({
-  categories,
-  currentVotes,
-  filter,
+  canVote,
+  emptyMessage,
+  hasMore,
+  isBoardLoading,
+  isFetchingMore,
   lines,
-  onFilterChange,
-  onSubmit,
+  onLoadMore,
   onVote,
+  votes,
 }) {
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    if (!hasMore || isBoardLoading || isFetchingMore) {
+      return undefined;
+    }
+
+    const currentSentinel = sentinelRef.current;
+
+    if (!currentSentinel) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+
+        if (entry?.isIntersecting) {
+          onLoadMore();
+        }
+      },
+      {
+        rootMargin: "300px 0px",
+      },
+    );
+
+    observer.observe(currentSentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasMore, isBoardLoading, isFetchingMore, onLoadMore]);
+
   return (
-    <>
-      <SectionHeader
-        categories={categories}
-        filter={filter}
-        onFilterChange={onFilterChange}
-      />
+    <div className="board-grid" aria-live="polite">
+      {isBoardLoading ? (
+        <article className="section-card board-empty">
+          <p className="empty-state">Finding good ideas for you...</p>
+        </article>
+      ) : null}
 
-      <section className="board-layout">
-        <div className="leader-column">
-          <FeaturedLine line={lines[0] ?? null} />
-          <LineList lines={lines} votes={currentVotes} onVote={onVote} />
+      {!isBoardLoading && !lines.length ? (
+        <article className="section-card board-empty">
+          <p className="empty-state">{emptyMessage}</p>
+        </article>
+      ) : null}
+
+      {lines.map((line, index) => (
+        <LineCard
+          canVote={canVote}
+          key={line.id}
+          line={line}
+          rank={index + 1}
+          voteState={votes[line.id] || 0}
+          onVote={onVote}
+        />
+      ))}
+
+      {!isBoardLoading && lines.length ? (
+        <div className="board-pagination" ref={sentinelRef}>
+          {isFetchingMore ? (
+            <p className="empty-state">Loading more ideas...</p>
+          ) : hasMore ? (
+            <p className="empty-state">Scroll to load more</p>
+          ) : (
+            <p className="empty-state">You reached the end</p>
+          )}
         </div>
-
-        <aside className="side-column">
-          <GuideCard />
-          <SubmitCard categories={categories} onSubmit={onSubmit} />
-        </aside>
-      </section>
-    </>
+      ) : null}
+    </div>
   );
 }
 

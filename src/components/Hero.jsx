@@ -1,37 +1,36 @@
+import { NavLink } from "react-router-dom";
 import SketchIllustration from "./SketchIllustration";
 
-function Hero({ stats }) {
+function Hero({ authEnabled, stats, user }) {
   return (
     <header className="hero">
-      <nav className="topbar" aria-label="Primary">
+      <div className="topbar">
         <a className="brand" href="#top">
-          <span className="brand-mark">Sketchline</span>
-          <span className="brand-sub">crowd-ranked openers</span>
+          <span className="brand-mark">IceBreaker</span>
         </a>
-        <div className="nav-note">
-          vite + react / local-first community board
-        </div>
-      </nav>
+        {!authEnabled ? (
+          <span className="auth-chip">Firebase config not connected yet</span>
+        ) : null}
+      </div>
 
       <section className="hero-grid" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">The Avant-Garde Sketch</p>
           <h1>
-            Better
-            <span>icebreakers</span>
-            start with the crowd.
+            Stop blanking
+            <span>when it matters.</span>
+            Ask better things.
           </h1>
           <p className="hero-text">
-            Discover community-submitted opening lines, vote on what actually
-            feels fresh, and surface the strongest conversation starters to the
-            top.
+            Human-backed conversation ideas for shy people who already know
+            someone a little, but need help keeping things going without
+            sounding generic.
           </p>
           <div className="hero-actions">
-            <a className="ink-link" href="#leaderboard">
-              Explore the board
-            </a>
-            <a className="ghost-link" href="#submit">
-              Share your own line
+            <NavLink className="ink-link" to={user ? "/promoted" : "/login"}>
+              {user ? "See what is working" : "Find better things to say"}
+            </NavLink>
+            <a className="ghost-link" href="#how-it-works">
+              See how it works
             </a>
           </div>
           <div className="hero-stats" aria-label="Platform summary">
@@ -41,11 +40,11 @@ function Hero({ stats }) {
             </article>
             <article>
               <strong>{stats.topScore}</strong>
-              <span>top score</span>
+              <span>top live score</span>
             </article>
             <article>
-              <strong>{stats.freshCount}</strong>
-              <span>fresh this session</span>
+              <strong>{stats.promotedCount}</strong>
+              <span>promoted lines</span>
             </article>
           </div>
         </div>
