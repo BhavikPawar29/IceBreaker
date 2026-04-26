@@ -21,6 +21,7 @@ import { db, firebaseConfigReady } from "../lib/firebase";
 import { createLineFingerprint } from "../utils/textNormalization";
 import { sortLines } from "../utils/board";
 import { validateLineSubmission } from "../utils/contentValidation";
+import { validateDisplayName } from "../utils/profileValidation";
 
 const PROMOTION_THRESHOLD = 50;
 const PAGE_SIZE = 10;
@@ -261,8 +262,18 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
     const { fingerprint, normalizedText } = await createLineFingerprint(text);
     const lineRef = doc(db, "lines", fingerprint);
     const timestamp = Date.now();
-    const authorName =
-      user.displayName?.trim() || user.email || "community member";
+    const authorName = user.displayName?.trim() || "";
+    const displayNameValidation = validateDisplayName(authorName);
+
+    if (displayNameValidation) {
+      return {
+        ok: false,
+        message:
+          "Set a clean display name in your profile before sending ideas.",
+        duplicateWarning: "",
+        existingLineRef: null,
+      };
+    }
 
     try {
       await runTransaction(db, async (transaction) => {
@@ -307,7 +318,9 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         message:
           error.message === "This line already exists on the board."
             ? "Looks like this idea is already on IceBreaker."
-            : "That did not go through. Please try again in a moment.",
+            : error.code === "permission-denied"
+              ? "Your account could not send that idea yet. Please log out, log back in, and try again."
+              : "That did not go through. Please try again in a moment.",
         duplicateWarning:
           error.message === "This line already exists on the board."
             ? "We already have this one."

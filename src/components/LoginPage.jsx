@@ -2,6 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Snackbar from "./Snackbar";
 import useIsMobile from "../hooks/useIsMobile";
+import {
+  DISPLAY_NAME_MAX_LENGTH,
+  DISPLAY_NAME_MIN_LENGTH,
+  validateDisplayName,
+} from "../utils/profileValidation";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_ALLOWED_PATTERN =
@@ -15,6 +20,7 @@ function LoginPage({
   onEmailSignIn,
   onGoogleSignIn,
   onEmailSignUp,
+  onPasswordReset,
 }) {
   const isMobile = useIsMobile();
   const [mode, setMode] = useState("signin");
@@ -64,8 +70,12 @@ function LoginPage({
       return "Use letters, numbers, and common symbols only. Leave spaces and emoji out of the password.";
     }
 
-    if (mode === "signup" && displayName.length < 2) {
-      return "Add a short name so people know what to call you.";
+    if (mode === "signup") {
+      const displayNameValidation = validateDisplayName(displayName);
+
+      if (displayNameValidation) {
+        return displayNameValidation;
+      }
     }
 
     return "";
@@ -102,6 +112,12 @@ function LoginPage({
           tone: "warning",
           note: "",
         };
+      case "app/invalid-display-name":
+        return {
+          message: error.message,
+          tone: "warning",
+          note: "Keep your display name clean and easy for other people to recognize.",
+        };
       case "auth/too-many-requests":
         return {
           message: "Too many attempts just now. Wait a bit, then try again.",
@@ -117,6 +133,39 @@ function LoginPage({
           tone: "warning",
           note: "",
         };
+    }
+  }
+
+  async function handlePasswordReset() {
+    const email = form.email.trim();
+
+    if (!EMAIL_PATTERN.test(email)) {
+      const message =
+        "Add your email first, then we can send you a password reset link.";
+      setNote(message);
+      showNotice(message, "warning");
+      return;
+    }
+
+    setNote("");
+    setSnackbar((current) => ({ ...current, isVisible: false }));
+    setIsSubmitting(true);
+
+    try {
+      await onPasswordReset(email);
+      showNotice(
+        "If that account exists, we sent a password reset link to that email.",
+        "success",
+      );
+    } catch (error) {
+      showNotice(
+        error?.code === "auth/too-many-requests"
+          ? "Too many reset attempts. Wait a bit, then try again."
+          : "We could not start the password reset right now. Please try again in a moment.",
+        "warning",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -236,10 +285,14 @@ function LoginPage({
                   type="text"
                   value={form.displayName}
                   onChange={handleChange}
-                  minLength="2"
-                  maxLength="32"
+                  minLength={DISPLAY_NAME_MIN_LENGTH}
+                  maxLength={DISPLAY_NAME_MAX_LENGTH}
                   placeholder="What should people call you?"
                 />
+                <small className="field-hint">
+                  Use your real first name or a simple nickname people can
+                  trust.
+                </small>
               </label>
             ) : null}
             <label>
@@ -270,6 +323,16 @@ function LoginPage({
                 Letters, numbers, and common symbols work best.
               </small>
             </label>
+            {mode === "signin" ? (
+              <button
+                className="text-action"
+                type="button"
+                onClick={handlePasswordReset}
+                disabled={!authEnabled || !isAuthReady || isSubmitting}
+              >
+                Forgot password?
+              </button>
+            ) : null}
             <button
               className="submit-button login-submit"
               type="submit"

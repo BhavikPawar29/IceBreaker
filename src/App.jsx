@@ -85,10 +85,12 @@ function App() {
     isAdmin,
     isAuthReady,
     isRoleReady,
+    sendEmailPasswordReset,
     signInWithEmail,
     signInWithGoogle,
     signOutUser,
     signUpWithEmail,
+    updateDisplayName,
     user,
   } = useAuth();
   const {
@@ -163,6 +165,10 @@ function App() {
     await signUpWithEmail(email, password, displayName);
   }
 
+  async function handlePasswordReset(email) {
+    await sendEmailPasswordReset(email);
+  }
+
   const isLandingRoute = location.pathname === "/";
   const isLoginRoute = location.pathname === "/login";
   const shouldShowFooter = !isLoginRoute;
@@ -214,6 +220,7 @@ function App() {
                   onEmailSignIn={handleEmailSignIn}
                   onGoogleSignIn={handleSignIn}
                   onEmailSignUp={handleEmailSignUp}
+                  onPasswordReset={handlePasswordReset}
                 />
               )
             }
@@ -290,7 +297,11 @@ function App() {
             element={
               user ? (
                 <section className="main-shell">
-                  <ProfilePage lines={userLines} user={user} />
+                  <ProfilePage
+                    lines={userLines}
+                    onUpdateDisplayName={updateDisplayName}
+                    user={user}
+                  />
                 </section>
               ) : (
                 <Navigate to="/login" replace />

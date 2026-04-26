@@ -1108,11 +1108,66 @@ textarea {
 
 .profile-card--hero {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: end;
+  align-items: center;
+  gap: 24px;
 }
 
 .profile-card--hero-mobile {
   gap: 18px;
+}
+
+.profile-identity {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.profile-identity h3 {
+  margin: 0;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  line-height: 0.96;
+}
+
+.profile-identity-meta,
+.profile-identity-note {
+  margin: 0;
+}
+
+.profile-identity-meta {
+  color: var(--brand-deep);
+  font-size: 0.96rem;
+  font-weight: 600;
+}
+
+.profile-identity-note {
+  max-width: 40ch;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.profile-settings-form {
+  display: grid;
+  gap: 12px;
+  max-width: 420px;
+  margin-top: 8px;
+}
+
+.profile-settings-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.profile-settings-form span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.profile-save-button {
+  width: fit-content;
+}
+
+.profile-note {
+  max-width: 42ch;
 }
 
 .profile-stats {
@@ -1452,6 +1507,22 @@ textarea {
   color: var(--muted);
   font-size: 0.8rem;
   line-height: 1.5;
+}
+
+.text-action {
+  width: fit-content;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--brand-deep);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.text-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .submission-form input,
@@ -1857,6 +1928,10 @@ textarea {
 
   .profile-card--hero {
     grid-template-columns: 1fr;
+  }
+
+  .profile-identity h3 {
+    font-size: clamp(1.9rem, 9vw, 2.6rem);
   }
 
   .profile-stats {

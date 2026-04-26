@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useIsMobile from "../hooks/useIsMobile";
 import { formatCategory, formatLineStatus } from "../utils/board";
@@ -7,9 +8,65 @@ import {
   LINE_STATUS_REJECTED,
 } from "../constants/lineStatuses";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
+import {
+  DISPLAY_NAME_MAX_LENGTH,
+  DISPLAY_NAME_MIN_LENGTH,
+  normalizeDisplayName,
+  validateDisplayName,
+} from "../utils/profileValidation";
+import Snackbar from "./Snackbar";
 
-function ProfilePage({ lines, user }) {
+function ProfilePage({ lines, onUpdateDisplayName, user }) {
   const isMobile = useIsMobile();
+  const [draftName, setDraftName] = useState(user.displayName || "");
+  const [profileNote, setProfileNote] = useState("");
+  const [feedback, setFeedback] = useState({ message: "", tone: "info" });
+  const [isSavingName, setIsSavingName] = useState(false);
+
+  useEffect(() => {
+    setDraftName(user.displayName || "");
+  }, [user.displayName]);
+
+  function showFeedback(message, tone = "info") {
+    setFeedback({ message, tone });
+  }
+
+  async function handleDisplayNameSubmit(event) {
+    event.preventDefault();
+    const normalizedName = normalizeDisplayName(draftName);
+    const validationMessage = validateDisplayName(normalizedName);
+
+    if (validationMessage) {
+      setProfileNote(validationMessage);
+      showFeedback(validationMessage, "warning");
+      return;
+    }
+
+    if (normalizedName === (user.displayName || "")) {
+      const message = "That name is already on your profile.";
+      setProfileNote(message);
+      showFeedback(message, "info");
+      return;
+    }
+
+    setIsSavingName(true);
+    setProfileNote("");
+
+    try {
+      await onUpdateDisplayName(normalizedName);
+      setDraftName(normalizedName);
+      setProfileNote("Name updated across your profile and submitted ideas.");
+      showFeedback("Name updated.", "success");
+    } catch (error) {
+      const message =
+        error?.message ||
+        "We could not update your name right now. Please try again in a moment.";
+      setProfileNote(message);
+      showFeedback(message, "warning");
+    } finally {
+      setIsSavingName(false);
+    }
+  }
 
   return (
     <section className="app-page">
@@ -30,9 +87,47 @@ function ProfilePage({ lines, user }) {
             isMobile ? "profile-card--hero-mobile" : ""
           }`}
         >
-          <span className="auth-chip">
-            {user.displayName || user.email || "community member"}
-          </span>
+          <div className="profile-identity">
+            <p className="eyebrow">Profile owner</p>
+            <h3>{user.displayName || "Community member"}</h3>
+            <p className="profile-identity-meta">
+              {user.email || "Signed in member"}
+            </p>
+            <p className="profile-identity-note">
+              Track what you shared, what is still in review, and which ideas
+              made it through.
+            </p>
+            <form
+              className="profile-settings-form"
+              onSubmit={handleDisplayNameSubmit}
+            >
+              <label>
+                <span>Change display name</span>
+                <input
+                  type="text"
+                  value={draftName}
+                  onChange={(event) => setDraftName(event.target.value)}
+                  minLength={DISPLAY_NAME_MIN_LENGTH}
+                  maxLength={DISPLAY_NAME_MAX_LENGTH}
+                  placeholder="Use a clean public name"
+                />
+                <small className="field-hint">
+                  Use {DISPLAY_NAME_MIN_LENGTH}-{DISPLAY_NAME_MAX_LENGTH} clean
+                  characters. No handles, admin labels, or weird spammy names.
+                </small>
+              </label>
+              <button
+                className="ghost-link profile-save-button"
+                type="submit"
+                disabled={isSavingName}
+              >
+                {isSavingName ? "Saving..." : "Update name"}
+              </button>
+            </form>
+            {profileNote ? (
+              <p className="form-note profile-note">{profileNote}</p>
+            ) : null}
+          </div>
           <div className="profile-stats">
             <div>
               <strong>{lines.length}</strong>
@@ -132,6 +227,11 @@ function ProfilePage({ lines, user }) {
           </div>
         </article>
       </div>
+      <Snackbar
+        isVisible={Boolean(feedback.message)}
+        message={feedback.message}
+        tone={feedback.tone}
+      />
     </section>
   );
 }

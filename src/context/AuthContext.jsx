@@ -3,13 +3,26 @@ import {
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
   updateProfile,
 } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  writeBatch,
+} from "firebase/firestore";
 import { auth, db, firebaseConfigReady, googleProvider } from "../lib/firebase";
+import {
+  normalizeDisplayName,
+  validateDisplayName,
+} from "../utils/profileValidation";
 
 const AuthContext = createContext(null);
 
@@ -122,6 +135,15 @@ function AuthProvider({ children }) {
 
   async function signUpWithEmail(email, password, displayName) {
     ensureConfigured();
+    const normalizedDisplayName = normalizeDisplayName(displayName);
+    const displayNameValidation = validateDisplayName(normalizedDisplayName);
+
+    if (displayNameValidation) {
+      const error = new Error(displayNameValidation);
+      error.code = "app/invalid-display-name";
+      throw error;
+    }
+
     setIsCompletingEmailSignUp(true);
 
     try {
@@ -131,9 +153,9 @@ function AuthProvider({ children }) {
         password,
       );
 
-      if (displayName.trim()) {
+      if (normalizedDisplayName) {
         await updateProfile(credentials.user, {
-          displayName: displayName.trim(),
+          displayName: normalizedDisplayName,
         });
       }
 
@@ -141,6 +163,59 @@ function AuthProvider({ children }) {
     } finally {
       setIsCompletingEmailSignUp(false);
     }
+  }
+
+  async function sendEmailPasswordReset(email) {
+    ensureConfigured();
+    await sendPasswordResetEmail(auth, email.trim());
+  }
+
+  async function updateDisplayName(displayName) {
+    ensureConfigured();
+
+    if (!auth.currentUser || !db) {
+      throw new Error("You need to be signed in to change your name.");
+    }
+
+    const normalizedDisplayName = normalizeDisplayName(displayName);
+    const displayNameValidation = validateDisplayName(normalizedDisplayName);
+
+    if (displayNameValidation) {
+      const error = new Error(displayNameValidation);
+      error.code = "app/invalid-display-name";
+      throw error;
+    }
+
+    await updateProfile(auth.currentUser, {
+      displayName: normalizedDisplayName,
+    });
+    await auth.currentUser.getIdToken(true);
+
+    const submittedLinesSnapshot = await getDocs(
+      query(
+        collection(db, "lines"),
+        where("createdByUid", "==", auth.currentUser.uid),
+      ),
+    );
+
+    if (!submittedLinesSnapshot.empty) {
+      const batch = writeBatch(db);
+      const timestamp = Date.now();
+
+      submittedLinesSnapshot.docs.forEach((lineDoc) => {
+        batch.update(lineDoc.ref, {
+          createdByName: normalizedDisplayName,
+          updatedAt: timestamp,
+        });
+      });
+
+      await batch.commit();
+    }
+
+    setUser({
+      ...auth.currentUser,
+      displayName: normalizedDisplayName,
+    });
   }
 
   async function signOutUser() {
@@ -161,6 +236,8 @@ function AuthProvider({ children }) {
     signInWithGoogle,
     signOutUser,
     signUpWithEmail,
+    sendEmailPasswordReset,
+    updateDisplayName,
     user,
   };
 
