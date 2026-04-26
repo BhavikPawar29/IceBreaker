@@ -1,7 +1,10 @@
 import { NavLink } from "react-router-dom";
+import useIsMobile from "../hooks/useIsMobile";
 import SketchIllustration from "./SketchIllustration";
 
 function Hero({ authEnabled, stats, user }) {
+  const isMobile = useIsMobile();
+
   return (
     <header className="hero">
       <div className="topbar">
@@ -13,7 +16,10 @@ function Hero({ authEnabled, stats, user }) {
         ) : null}
       </div>
 
-      <section className="hero-grid" id="top">
+      <section
+        className={`hero-grid ${isMobile ? "hero-grid--mobile" : ""}`}
+        id="top"
+      >
         <div className="hero-copy">
           <h1>
             Stop blanking
@@ -49,7 +55,9 @@ function Hero({ authEnabled, stats, user }) {
           </div>
         </div>
 
-        <SketchIllustration />
+        <div className={isMobile ? "hero-art-shell" : ""}>
+          <SketchIllustration />
+        </div>
       </section>
     </header>
   );

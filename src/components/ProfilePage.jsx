@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import useIsMobile from "../hooks/useIsMobile";
 import { formatCategory, formatLineStatus } from "../utils/board";
 import {
   LINE_STATUS_APPROVED,
@@ -8,6 +9,8 @@ import {
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
 
 function ProfilePage({ lines, user }) {
+  const isMobile = useIsMobile();
+
   return (
     <section className="app-page">
       <div className="page-head">
@@ -22,7 +25,11 @@ function ProfilePage({ lines, user }) {
       </div>
 
       <div className="profile-grid">
-        <article className="section-card profile-card profile-card--hero">
+        <article
+          className={`section-card profile-card profile-card--hero ${
+            isMobile ? "profile-card--hero-mobile" : ""
+          }`}
+        >
           <span className="auth-chip">
             {user.displayName || user.email || "community member"}
           </span>

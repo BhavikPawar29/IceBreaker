@@ -1,4 +1,5 @@
 import BoardSection from "./BoardSection";
+import useIsMobile from "../hooks/useIsMobile";
 import { formatCategory } from "../utils/board";
 
 function BoardPage({
@@ -15,9 +16,11 @@ function BoardPage({
   user,
   votes,
 }) {
+  const isMobile = useIsMobile();
+
   return (
     <section className="app-page">
-      <div className="page-head">
+      <div className={`page-head ${isMobile ? "page-head--mobile" : ""}`}>
         <div className="page-copy">
           <h2>{activeRoute === "promoted" ? "Top picks" : "Explore ideas"}</h2>
           <p className="page-description">
@@ -26,7 +29,11 @@ function BoardPage({
               : "Browse what people are trying, vote on what feels useful, or open one to share it."}
           </p>
         </div>
-        <div className="page-actions page-actions--board">
+        <div
+          className={`page-actions page-actions--board ${
+            isMobile ? "page-actions--board-mobile" : ""
+          }`}
+        >
           <label className="filter-pill" htmlFor="category-filter">
             <span>Topic</span>
             <select
