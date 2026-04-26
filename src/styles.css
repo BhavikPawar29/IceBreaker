@@ -719,6 +719,10 @@ textarea {
   transform: none;
 }
 
+.google-auth-button--mobile {
+  margin-top: 4px;
+}
+
 .login-divider {
   position: relative;
   margin: 2px 0;
@@ -1551,6 +1555,12 @@ textarea {
     min-height: 280px;
   }
 
+  .heart-doodle,
+  .connector,
+  .spark {
+    display: none;
+  }
+
   .line-card {
     gap: 16px;
     padding: 20px;
@@ -1563,18 +1573,30 @@ textarea {
 
   .line-actions {
     width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 
   .action-link,
   .action-button {
-    flex: 1 1 100%;
+    min-height: 50px;
+    padding-inline: 14px;
+  }
+
+  .action-link--primary {
+    grid-column: 1 / -1;
   }
 
   .line-footer-right {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .mini-stat,
+  .vote-panel,
+  .vote-button {
+    min-width: 0;
   }
 
   .line-body {
@@ -1624,6 +1646,18 @@ textarea {
   .login-tabs .route-tab {
     flex: 1 1 0;
     justify-content: center;
+  }
+
+  .login-copy {
+    margin-top: 10px;
+  }
+
+  .login-form {
+    margin-top: 6px;
+  }
+
+  .login-submit {
+    min-height: 56px;
   }
 
   .profile-card--hero {
