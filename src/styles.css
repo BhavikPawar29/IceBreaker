@@ -770,6 +770,21 @@ textarea {
   border-radius: var(--radius-xl);
 }
 
+.section-card::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  width: 88px;
+  height: 88px;
+  border-radius: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Cpath d='M18 29c7-13 27-13 34 1 8-14 27-12 33 1 4 10-3 18-12 26L52 72 29 54C17 46 13 39 18 29Z' fill='none' stroke='rgba(193,91,118,0.16)' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M23 18c6 4 10 4 16 0' fill='none' stroke='rgba(193,91,118,0.14)' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
 .section-card::after {
   content: "";
   position: absolute;
@@ -998,26 +1013,30 @@ textarea {
 .page-panel::after {
   position: absolute;
   z-index: 0;
-  color: rgba(193, 91, 118, 0.1);
-  font-family: var(--font-display);
   pointer-events: none;
-  line-height: 1;
 }
 
 .page-panel::before {
   content: "\2661";
   top: 18px;
   right: 24px;
+  color: rgba(193, 91, 118, 0.1);
+  font-family: var(--font-display);
   font-size: 2rem;
   transform: rotate(12deg);
+  line-height: 1;
 }
 
 .page-panel::after {
-  content: "\2665";
-  left: 18px;
-  bottom: 20px;
-  font-size: 2.8rem;
-  transform: rotate(-16deg);
+  content: "";
+  right: 18px;
+  bottom: 14px;
+  width: 132px;
+  height: 92px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='132' height='92' viewBox='0 0 132 92'%3E%3Cpath d='M17 65c14-17 33-24 53-24s39 8 50 22' fill='none' stroke='rgba(193,91,118,0.14)' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M36 52c8-10 18-16 30-16s22 6 30 15' fill='none' stroke='rgba(193,91,118,0.16)' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M56 20c4-7 15-7 19 1 5-8 15-7 19 0 2 5-1 9-6 13L75 46 61 34c-7-5-9-9-5-14Z' fill='none' stroke='rgba(193,91,118,0.16)' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.95;
 }
 
 .page-panel > * {
@@ -1064,6 +1083,20 @@ textarea {
   font-family: var(--font-display);
   font-size: 1.5rem;
   transform: rotate(10deg);
+  pointer-events: none;
+}
+
+.line-card::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 18px;
+  width: 68px;
+  height: 42px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='68' height='42' viewBox='0 0 68 42'%3E%3Cpath d='M7 31c10-9 18-13 29-13 10 0 18 3 25 10' fill='none' stroke='rgba(193,91,118,0.12)' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M21 17c3-5 10-5 13 0 4-5 10-5 13 0' fill='none' stroke='rgba(193,91,118,0.12)' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.9;
   pointer-events: none;
 }
 
