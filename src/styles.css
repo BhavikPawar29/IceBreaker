@@ -1,14 +1,14 @@
 :root {
-  --surface: rgba(255, 252, 247, 0.84);
-  --surface-strong: #fffaf3;
+  --surface: rgba(255, 248, 249, 0.88);
+  --surface-strong: #fff7f7;
   --text: #24170f;
-  --muted: #6d5b4e;
+  --muted: #77605f;
   --line: rgba(36, 23, 15, 0.1);
-  --brand: #b14d32;
-  --brand-deep: #7f2e1a;
-  --accent: #f0c95d;
+  --brand: #c15b76;
+  --brand-deep: #8e3553;
+  --accent: #f3bfd1;
   --success: #2d7d52;
-  --shadow: 0 20px 55px rgba(49, 31, 20, 0.08);
+  --shadow: 0 20px 55px rgba(85, 38, 55, 0.1);
   --radius-xl: 32px;
   --radius-pill: 999px;
   --font-display: "Playfair Display", serif;
@@ -31,15 +31,15 @@ body {
   background:
     radial-gradient(
       circle at top left,
-      rgba(240, 201, 93, 0.25),
+      rgba(243, 191, 209, 0.34),
       transparent 28%
     ),
     radial-gradient(
       circle at right 15%,
-      rgba(177, 77, 50, 0.14),
+      rgba(193, 91, 118, 0.18),
       transparent 24%
     ),
-    linear-gradient(180deg, #f7f1e8 0%, #f2ebe1 50%, #efe5d8 100%);
+    linear-gradient(180deg, #fcf3f4 0%, #f9eff0 48%, #f5e6e8 100%);
 }
 
 body::before {
@@ -80,7 +80,11 @@ textarea {
   pointer-events: none;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 45%),
-    radial-gradient(circle at 80% 18%, rgba(177, 77, 50, 0.12), transparent 20%);
+    radial-gradient(
+      circle at 80% 18%,
+      rgba(193, 91, 118, 0.14),
+      transparent 20%
+    );
 }
 
 .hero,
@@ -224,12 +228,12 @@ textarea {
 .ink-link {
   background: linear-gradient(135deg, var(--brand), var(--brand-deep));
   color: #fff9f4;
-  box-shadow: 0 16px 34px rgba(127, 46, 26, 0.2);
+  box-shadow: 0 16px 34px rgba(142, 53, 83, 0.2);
 }
 
 .ghost-link,
 .route-tab {
-  background: rgba(255, 252, 247, 0.68);
+  background: rgba(255, 245, 247, 0.82);
   color: var(--text);
 }
 
@@ -304,7 +308,13 @@ textarea {
 .app-header {
   padding: 14px clamp(20px, 4vw, 56px) 0;
   border-bottom: 1px solid rgba(36, 23, 15, 0.06);
-  background: rgba(247, 241, 232, 0.78);
+  background:
+    radial-gradient(
+      circle at left top,
+      rgba(243, 191, 209, 0.22),
+      transparent 32%
+    ),
+    rgba(255, 246, 247, 0.82);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -615,14 +625,10 @@ textarea {
   background:
     radial-gradient(
       circle at top right,
-      rgba(240, 201, 93, 0.24),
+      rgba(243, 191, 209, 0.28),
       transparent 34%
     ),
-    linear-gradient(
-      180deg,
-      rgba(255, 250, 243, 0.94),
-      rgba(248, 240, 229, 0.88)
-    );
+    linear-gradient(180deg, rgba(255, 248, 249, 0.96), rgba(249, 237, 241, 0.9));
 }
 
 .login-side h1,
@@ -769,13 +775,38 @@ textarea {
   position: absolute;
   inset: 12px;
   border-radius: 24px;
-  border: 1px dashed rgba(109, 91, 78, 0.14);
+  border: 1px dashed rgba(193, 91, 118, 0.18);
   pointer-events: none;
 }
 
 .app-page {
+  position: relative;
   display: grid;
   gap: 18px;
+}
+
+.app-page::before,
+.app-page::after {
+  content: "\2665";
+  position: absolute;
+  z-index: 0;
+  color: rgba(193, 91, 118, 0.12);
+  font-family: var(--font-display);
+  pointer-events: none;
+}
+
+.app-page::before {
+  top: 12px;
+  right: 12px;
+  font-size: 3rem;
+  transform: rotate(10deg);
+}
+
+.app-page::after {
+  left: -10px;
+  bottom: 38px;
+  font-size: 4.5rem;
+  transform: rotate(-14deg);
 }
 
 .create-page {
@@ -943,11 +974,55 @@ textarea {
 }
 
 .page-panel {
+  position: relative;
   border: 1px solid rgba(36, 23, 15, 0.08);
   border-radius: 28px;
-  background: rgba(255, 252, 247, 0.72);
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(243, 191, 209, 0.24),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at left 18%,
+      rgba(255, 219, 231, 0.28),
+      transparent 30%
+    ),
+    rgba(255, 249, 250, 0.86);
   padding: 12px;
   box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.page-panel::before,
+.page-panel::after {
+  position: absolute;
+  z-index: 0;
+  color: rgba(193, 91, 118, 0.1);
+  font-family: var(--font-display);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.page-panel::before {
+  content: "\2661";
+  top: 18px;
+  right: 24px;
+  font-size: 2rem;
+  transform: rotate(12deg);
+}
+
+.page-panel::after {
+  content: "\2665";
+  left: 18px;
+  bottom: 20px;
+  font-size: 2.8rem;
+  transform: rotate(-16deg);
+}
+
+.page-panel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .board-grid {
@@ -967,10 +1042,29 @@ textarea {
 }
 
 .line-card {
+  position: relative;
   display: grid;
   gap: 18px;
   padding: 24px;
-  background: rgba(255, 253, 249, 0.94);
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(243, 191, 209, 0.16),
+      transparent 26%
+    ),
+    rgba(255, 252, 252, 0.95);
+}
+
+.line-card::before {
+  content: "\2661";
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  color: rgba(193, 91, 118, 0.12);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  transform: rotate(10deg);
+  pointer-events: none;
 }
 
 .profile-grid {
@@ -1031,7 +1125,13 @@ textarea {
   gap: 12px;
   padding: 18px;
   border-radius: 22px;
-  background: var(--surface-strong);
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(243, 191, 209, 0.12),
+      transparent 32%
+    ),
+    var(--surface-strong);
   border: 1px solid var(--line);
 }
 
@@ -1082,8 +1182,8 @@ textarea {
   border: 1px solid rgba(36, 23, 15, 0.1);
   background: linear-gradient(
     180deg,
-    rgba(255, 253, 249, 0.96),
-    rgba(245, 235, 223, 0.92)
+    rgba(255, 252, 252, 0.98),
+    rgba(250, 237, 241, 0.94)
   );
   box-shadow: 0 12px 24px rgba(49, 31, 20, 0.08);
   color: var(--text);
@@ -1203,8 +1303,8 @@ textarea {
 }
 
 .status-chip--pending {
-  color: #8c5d12;
-  background: rgba(240, 201, 93, 0.16);
+  color: #9b5f73;
+  background: rgba(243, 191, 209, 0.24);
 }
 
 .status-chip--approved {
@@ -1354,8 +1454,8 @@ textarea {
   justify-self: start;
   border: 0;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--accent), #e3af2e);
-  color: #3a2409;
+  background: linear-gradient(135deg, #f6c7d6, #eaa8be);
+  color: #512231;
   font-weight: 700;
   min-width: 180px;
 }
