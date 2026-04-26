@@ -44,35 +44,37 @@ function LoginPage({
   return (
     <section className="main-shell login-page-shell">
       <div className="login-layout">
-        <aside className="login-side section-card">
-          <p className="eyebrow">For shy people, not smooth talkers</p>
-          <h1>Get past the &ldquo;what do I even say?&rdquo; part.</h1>
-          <p className="login-lead">
-            Find real conversation ideas, vote on the ones that actually help,
-            and save the awkward moment before it turns into silence.
-          </p>
+        {!isMobile ? (
+          <aside className="login-side section-card">
+            <p className="eyebrow">For shy people, not smooth talkers</p>
+            <h1>Get past the &ldquo;what do I even say?&rdquo; part.</h1>
+            <p className="login-lead">
+              Find real conversation ideas, vote on the ones that actually help,
+              and save the awkward moment before it turns into silence.
+            </p>
 
-          <div className="login-points">
-            <article>
-              <strong>Human-written</strong>
-              <span>No AI filler or weird generated lines.</span>
-            </article>
-            <article>
-              <strong>Actually useful</strong>
-              <span>Good ideas rise because people vote on them.</span>
-            </article>
-            <article>
-              <strong>Made for real situations</strong>
-              <span>For people you know a little, not total strangers.</span>
-            </article>
-          </div>
+            <div className="login-points">
+              <article>
+                <strong>Human-written</strong>
+                <span>No AI filler or weird generated lines.</span>
+              </article>
+              <article>
+                <strong>Actually useful</strong>
+                <span>Good ideas rise because people vote on them.</span>
+              </article>
+              <article>
+                <strong>Made for real situations</strong>
+                <span>For people you know a little, not total strangers.</span>
+              </article>
+            </div>
 
-          <div className="login-side-links">
-            <Link className="ghost-link" to="/">
-              Back to home
-            </Link>
-          </div>
-        </aside>
+            <div className="login-side-links">
+              <Link className="ghost-link" to="/">
+                Back to home
+              </Link>
+            </div>
+          </aside>
+        ) : null}
 
         <div className="login-shell section-card">
           <p className="eyebrow">You are one step away</p>
