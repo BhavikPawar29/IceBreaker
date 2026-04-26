@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Snackbar from "./Snackbar";
 import useIsMobile from "../hooks/useIsMobile";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_ALLOWED_PATTERN =
+  /^[A-Za-z0-9!@#$%^&*()_\-+=[\]{};:'",.<>/?\\|`~]+$/;
+const PASSWORD_MIN_LENGTH = 6;
+const PASSWORD_MAX_LENGTH = 64;
 
 function LoginPage({
   authEnabled,
@@ -17,14 +24,115 @@ function LoginPage({
     password: "",
   });
   const [note, setNote] = useState("");
+  const [snackbar, setSnackbar] = useState({
+    isVisible: false,
+    message: "",
+    tone: "info",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
   }
 
+  function showNotice(message, tone = "info") {
+    setSnackbar({
+      isVisible: true,
+      message,
+      tone,
+    });
+  }
+
+  function validateForm() {
+    const email = form.email.trim();
+    const password = form.password;
+    const displayName = form.displayName.trim();
+
+    if (!EMAIL_PATTERN.test(email)) {
+      return "Use a real email address so we can create or find your account.";
+    }
+
+    if (
+      password.length < PASSWORD_MIN_LENGTH ||
+      password.length > PASSWORD_MAX_LENGTH
+    ) {
+      return `Use ${PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} characters for your password.`;
+    }
+
+    if (!PASSWORD_ALLOWED_PATTERN.test(password)) {
+      return "Use letters, numbers, and common symbols only. Leave spaces and emoji out of the password.";
+    }
+
+    if (mode === "signup" && displayName.length < 2) {
+      return "Add a short name so people know what to call you.";
+    }
+
+    return "";
+  }
+
+  function getFriendlyAuthMessage(error) {
+    switch (error?.code) {
+      case "app/account-not-found":
+        setMode("signup");
+        return {
+          message:
+            "You do not have an account yet. We switched you to Sign up so you can create one first.",
+          tone: "warning",
+          note: "New here? Create your account first, then come back and log in with the same email and password.",
+        };
+      case "app/password-mismatch":
+        return {
+          message:
+            "That password does not match this email. Try again or use a different email if you meant to create a new account.",
+          tone: "warning",
+          note: "",
+        };
+      case "auth/email-already-in-use":
+        setMode("signin");
+        return {
+          message:
+            "That email already has an account. Log in instead of signing up again.",
+          tone: "warning",
+          note: "Your account is already set up. Use the Login tab with the same email and password.",
+        };
+      case "auth/weak-password":
+        return {
+          message: `Pick a stronger password with ${PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} characters.`,
+          tone: "warning",
+          note: "",
+        };
+      case "auth/too-many-requests":
+        return {
+          message: "Too many attempts just now. Wait a bit, then try again.",
+          tone: "warning",
+          note: "",
+        };
+      default:
+        return {
+          message:
+            mode === "signin"
+              ? "We could not log you in right now. Check your details and try again."
+              : "We could not create your account right now. Check the form and try again.",
+          tone: "warning",
+          note: "",
+        };
+    }
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
+    setSnackbar((current) => ({ ...current, isVisible: false }));
+    setNote("");
+
+    const validationMessage = validateForm();
+    if (validationMessage) {
+      setNote(validationMessage);
+      showNotice(validationMessage, "warning");
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       if (mode === "signin") {
@@ -35,9 +143,26 @@ function LoginPage({
           form.password,
           form.displayName.trim(),
         );
+
+        setMode("signin");
+        setForm((current) => ({
+          ...current,
+          password: "",
+        }));
+        setNote(
+          "Account created. For safety, log in now with the email and password you just made.",
+        );
+        showNotice(
+          "Account created. Log in with the same email and password to continue.",
+          "success",
+        );
       }
     } catch (error) {
-      setNote(error.message || "Authentication failed.");
+      const friendlyMessage = getFriendlyAuthMessage(error);
+      setNote(friendlyMessage.note);
+      showNotice(friendlyMessage.message, friendlyMessage.tone);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -82,7 +207,7 @@ function LoginPage({
           <p className="login-copy">
             {mode === "signin"
               ? "Jump in, browse what is working, and keep the good ideas flowing."
-              : "Create your profile and start adding, saving, and voting on better conversation ideas."}
+              : "Create your profile first. After that, log in with the same email and password to get in."}
           </p>
 
           <div className="route-tabs login-tabs">
@@ -111,6 +236,8 @@ function LoginPage({
                   type="text"
                   value={form.displayName}
                   onChange={handleChange}
+                  minLength="2"
+                  maxLength="32"
                   placeholder="What should people call you?"
                 />
               </label>
@@ -132,18 +259,29 @@ function LoginPage({
                 name="password"
                 type="password"
                 required
-                minLength="6"
+                minLength={PASSWORD_MIN_LENGTH}
+                maxLength={PASSWORD_MAX_LENGTH}
                 value={form.password}
                 onChange={handleChange}
-                placeholder="At least 6 characters"
+                placeholder={`${PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} characters`}
               />
+              <small className="field-hint">
+                Use {PASSWORD_MIN_LENGTH}-{PASSWORD_MAX_LENGTH} characters.
+                Letters, numbers, and common symbols work best.
+              </small>
             </label>
             <button
               className="submit-button login-submit"
               type="submit"
-              disabled={!authEnabled || !isAuthReady}
+              disabled={!authEnabled || !isAuthReady || isSubmitting}
             >
-              {mode === "signin" ? "Login with email" : "Create account"}
+              {isSubmitting
+                ? mode === "signin"
+                  ? "Checking details..."
+                  : "Creating account..."
+                : mode === "signin"
+                  ? "Login with email"
+                  : "Create account"}
             </button>
           </form>
 
@@ -180,6 +318,11 @@ function LoginPage({
           )}
 
           {note ? <p className="form-note login-note">{note}</p> : null}
+          <Snackbar
+            isVisible={snackbar.isVisible}
+            message={snackbar.message}
+            tone={snackbar.tone}
+          />
         </div>
       </div>
     </section>

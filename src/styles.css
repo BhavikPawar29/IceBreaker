@@ -760,8 +760,9 @@ textarea {
 .login-note {
   padding: 12px 14px;
   border-radius: 16px;
-  background: rgba(177, 77, 50, 0.08);
-  color: #8c2d1b;
+  background: rgba(193, 91, 118, 0.1);
+  color: #7f3650;
+  line-height: 1.6;
 }
 
 .section-card {
@@ -1445,6 +1446,12 @@ textarea {
 .submission-form span {
   color: var(--muted);
   font-size: 0.88rem;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
 }
 
 .submission-form input,

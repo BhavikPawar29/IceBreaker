@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -17,6 +18,7 @@ function AuthProvider({ children }) {
   const [isAuthReady, setIsAuthReady] = useState(!firebaseConfigReady);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isRoleReady, setIsRoleReady] = useState(!firebaseConfigReady);
+  const [isCompletingEmailSignUp, setIsCompletingEmailSignUp] = useState(false);
 
   useEffect(() => {
     if (!auth) {
@@ -88,21 +90,56 @@ function AuthProvider({ children }) {
 
   async function signInWithEmail(email, password) {
     ensureConfigured();
-    await signInWithEmailAndPassword(auth, email, password);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      if (
+        error?.code === "auth/invalid-credential" ||
+        error?.code === "auth/user-not-found" ||
+        error?.code === "auth/wrong-password"
+      ) {
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+
+        if (!methods.length) {
+          const missingAccountError = new Error(
+            "No account exists for this email yet.",
+          );
+          missingAccountError.code = "app/account-not-found";
+          throw missingAccountError;
+        }
+
+        const passwordMismatchError = new Error(
+          "The password does not match this email.",
+        );
+        passwordMismatchError.code = "app/password-mismatch";
+        throw passwordMismatchError;
+      }
+
+      throw error;
+    }
   }
 
   async function signUpWithEmail(email, password, displayName) {
     ensureConfigured();
-    const credentials = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
+    setIsCompletingEmailSignUp(true);
 
-    if (displayName.trim()) {
-      await updateProfile(credentials.user, {
-        displayName: displayName.trim(),
-      });
+    try {
+      const credentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+
+      if (displayName.trim()) {
+        await updateProfile(credentials.user, {
+          displayName: displayName.trim(),
+        });
+      }
+
+      await firebaseSignOut(auth);
+    } finally {
+      setIsCompletingEmailSignUp(false);
     }
   }
 
@@ -116,6 +153,7 @@ function AuthProvider({ children }) {
 
   const value = {
     authEnabled: firebaseConfigReady,
+    isCompletingEmailSignUp,
     isAdmin,
     isAuthReady,
     isRoleReady,

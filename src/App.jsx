@@ -81,6 +81,7 @@ function App() {
             : null;
   const {
     authEnabled,
+    isCompletingEmailSignUp,
     isAdmin,
     isAuthReady,
     isRoleReady,
@@ -111,14 +112,14 @@ function App() {
   } = useCommunityBoard(user, activeBoardView, isAdmin);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || isCompletingEmailSignUp) {
       return;
     }
 
     if (location.pathname === "/" || location.pathname === "/login") {
       navigate("/promoted", { replace: true });
     }
-  }, [location.pathname, navigate, user]);
+  }, [isCompletingEmailSignUp, location.pathname, navigate, user]);
 
   const combinedCategories = useMemo(
     () =>
@@ -160,7 +161,6 @@ function App() {
 
   async function handleEmailSignUp(email, password, displayName) {
     await signUpWithEmail(email, password, displayName);
-    navigate("/promoted");
   }
 
   const isLandingRoute = location.pathname === "/";
@@ -204,7 +204,9 @@ function App() {
             path="/login"
             element={
               user ? (
-                <Navigate to="/promoted" replace />
+                isCompletingEmailSignUp ? null : (
+                  <Navigate to="/promoted" replace />
+                )
               ) : (
                 <LoginPage
                   authEnabled={authEnabled}
