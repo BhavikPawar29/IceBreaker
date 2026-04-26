@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import useIsMobile from "../hooks/useIsMobile";
 
 function LoginPage({
   authEnabled,
@@ -8,6 +9,7 @@ function LoginPage({
   onGoogleSignIn,
   onEmailSignUp,
 }) {
+  const isMobile = useIsMobile();
   const [mode, setMode] = useState("signin");
   const [form, setForm] = useState({
     displayName: "",
@@ -98,19 +100,6 @@ function LoginPage({
             </button>
           </div>
 
-          <button
-            className="google-auth-button"
-            type="button"
-            onClick={onGoogleSignIn}
-            disabled={!authEnabled || !isAuthReady}
-          >
-            Continue with Google
-          </button>
-
-          <div className="divider-text login-divider">
-            <span>or use email</span>
-          </div>
-
           <form className="submission-form login-form" onSubmit={handleSubmit}>
             {mode === "signup" ? (
               <label>
@@ -155,6 +144,38 @@ function LoginPage({
               {mode === "signin" ? "Login with email" : "Create account"}
             </button>
           </form>
+
+          {isMobile ? (
+            <>
+              <div className="divider-text login-divider">
+                <span>or continue with Google</span>
+              </div>
+
+              <button
+                className="google-auth-button google-auth-button--mobile"
+                type="button"
+                onClick={onGoogleSignIn}
+                disabled={!authEnabled || !isAuthReady}
+              >
+                Continue with Google
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="google-auth-button"
+                type="button"
+                onClick={onGoogleSignIn}
+                disabled={!authEnabled || !isAuthReady}
+              >
+                Continue with Google
+              </button>
+
+              <div className="divider-text login-divider">
+                <span>or use email</span>
+              </div>
+            </>
+          )}
 
           {note ? <p className="form-note login-note">{note}</p> : null}
         </div>
