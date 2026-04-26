@@ -55,9 +55,7 @@ function Hero({ authEnabled, stats, user }) {
           </div>
         </div>
 
-        <div className={isMobile ? "hero-art-shell" : ""}>
-          <SketchIllustration />
-        </div>
+        {!isMobile ? <SketchIllustration /> : null}
       </section>
     </header>
   );
