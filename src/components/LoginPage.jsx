@@ -216,11 +216,6 @@ function LoginPage({
               </button>
             ))}
           </div>
-
-          <p className="login-note login-note--soft">
-            Use the same provider again if that email is already tied to one.
-          </p>
-
           <Snackbar
             isVisible={Boolean(feedback.message)}
             message={feedback.message}

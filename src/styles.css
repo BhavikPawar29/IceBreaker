@@ -356,6 +356,7 @@ textarea {
   position: relative;
   min-height: 420px;
   max-height: 540px;
+  margin-top: -100px;
 }
 
 .illustration-panel--credited {
@@ -1747,6 +1748,28 @@ textarea {
 
 .footer-copy {
   color: rgba(248, 239, 229, 0.72);
+}
+
+.footer-authors {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.author-amp {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  opacity: 0.4;
+  font-style: italic;
+}
+
+.footer-authors a h3 {
+  transition: color 220ms ease;
+}
+
+.footer-authors a:hover h3 {
+  color: var(--accent);
 }
 
 .footer-links {
