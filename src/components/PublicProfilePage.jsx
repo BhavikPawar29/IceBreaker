@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
+import { getPublicDisplayName } from "../utils/userIdentity";
 
 function PublicProfilePage({ lines, profileId }) {
-  const displayName = lines[0]?.createdByName || "Community member";
+  const displayName = getPublicDisplayName(lines[0]?.createdByName);
   const sharedCount = lines.length;
 
   async function handleShareProfile() {

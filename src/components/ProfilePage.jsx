@@ -1,72 +1,54 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useIsMobile from "../hooks/useIsMobile";
-import { formatCategory, formatLineStatus } from "../utils/board";
+import { formatLineStatus } from "../utils/board";
 import {
   LINE_STATUS_APPROVED,
   LINE_STATUS_PENDING,
   LINE_STATUS_REJECTED,
 } from "../constants/lineStatuses";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
-import {
-  DISPLAY_NAME_MAX_LENGTH,
-  DISPLAY_NAME_MIN_LENGTH,
-  normalizeDisplayName,
-  validateDisplayName,
-} from "../utils/profileValidation";
-import Snackbar from "./Snackbar";
+import { getPublicDisplayNameFromUser } from "../utils/userIdentity";
 
-function ProfilePage({ lines, onUpdateDisplayName, user }) {
+function ProfilePage({ lines, user }) {
   const isMobile = useIsMobile();
-  const [draftName, setDraftName] = useState(user.displayName || "");
-  const [profileNote, setProfileNote] = useState("");
-  const [feedback, setFeedback] = useState({ message: "", tone: "info" });
-  const [isSavingName, setIsSavingName] = useState(false);
+  const publicName = getPublicDisplayNameFromUser(user);
+  const statusOrder = [
+    LINE_STATUS_PENDING,
+    LINE_STATUS_APPROVED,
+    LINE_STATUS_REJECTED,
+  ];
+  const statusBuckets = lines.reduce((groups, line) => {
+    const key = line.status || LINE_STATUS_PENDING;
 
-  useEffect(() => {
-    setDraftName(user.displayName || "");
-  }, [user.displayName]);
-
-  function showFeedback(message, tone = "info") {
-    setFeedback({ message, tone });
-  }
-
-  async function handleDisplayNameSubmit(event) {
-    event.preventDefault();
-    const normalizedName = normalizeDisplayName(draftName);
-    const validationMessage = validateDisplayName(normalizedName);
-
-    if (validationMessage) {
-      setProfileNote(validationMessage);
-      showFeedback(validationMessage, "warning");
-      return;
+    if (!groups[key]) {
+      groups[key] = [];
     }
 
-    if (normalizedName === (user.displayName || "")) {
-      const message = "That name is already on your profile.";
-      setProfileNote(message);
-      showFeedback(message, "info");
-      return;
-    }
+    groups[key].push(line);
+    return groups;
+  }, {});
+  const statusEntries = statusOrder
+    .map((statusKey) => [statusKey, statusBuckets[statusKey] || []])
+    .filter(([, statusLines]) => statusLines.length > 0);
+  const statusDescriptions = {
+    [LINE_STATUS_PENDING]: "Still private while the review queue catches up.",
+    [LINE_STATUS_APPROVED]: "Live on the board and open for saves and shares.",
+    [LINE_STATUS_REJECTED]:
+      "Kept private to you and admins with review context.",
+  };
+  const statusEyebrows = {
+    [LINE_STATUS_PENDING]: "In review",
+    [LINE_STATUS_APPROVED]: "Approved",
+    [LINE_STATUS_REJECTED]: "Rejected",
+  };
 
-    setIsSavingName(true);
-    setProfileNote("");
-
-    try {
-      await onUpdateDisplayName(normalizedName);
-      setDraftName(normalizedName);
-      setProfileNote("Name updated across your profile and submitted ideas.");
-      showFeedback("Name updated.", "success");
-    } catch (error) {
-      const message =
-        error?.message ||
-        "We could not update your name right now. Please try again in a moment.";
-      setProfileNote(message);
-      showFeedback(message, "warning");
-    } finally {
-      setIsSavingName(false);
-    }
-  }
+  statusEntries.forEach(([, statusLines]) =>
+    statusLines.sort((left, right) => {
+      const leftTime = left.updatedAt || left.createdAt || 0;
+      const rightTime = right.updatedAt || right.createdAt || 0;
+      return rightTime - leftTime;
+    }),
+  );
 
   return (
     <section className="app-page">
@@ -89,7 +71,7 @@ function ProfilePage({ lines, onUpdateDisplayName, user }) {
         >
           <div className="profile-identity">
             <p className="eyebrow">Profile owner</p>
-            <h3>{user.displayName || "Community member"}</h3>
+            <h3>{publicName}</h3>
             <p className="profile-identity-meta">
               {user.email || "Signed in member"}
             </p>
@@ -97,36 +79,6 @@ function ProfilePage({ lines, onUpdateDisplayName, user }) {
               Track what you shared, what is still in review, and which ideas
               made it through.
             </p>
-            <form
-              className="profile-settings-form"
-              onSubmit={handleDisplayNameSubmit}
-            >
-              <label>
-                <span>Change display name</span>
-                <input
-                  type="text"
-                  value={draftName}
-                  onChange={(event) => setDraftName(event.target.value)}
-                  minLength={DISPLAY_NAME_MIN_LENGTH}
-                  maxLength={DISPLAY_NAME_MAX_LENGTH}
-                  placeholder="Use a clean public name"
-                />
-                <small className="field-hint">
-                  Use {DISPLAY_NAME_MIN_LENGTH}-{DISPLAY_NAME_MAX_LENGTH} clean
-                  characters. No handles, admin labels, or weird spammy names.
-                </small>
-              </label>
-              <button
-                className="ghost-link profile-save-button"
-                type="submit"
-                disabled={isSavingName}
-              >
-                {isSavingName ? "Saving..." : "Update name"}
-              </button>
-            </form>
-            {profileNote ? (
-              <p className="form-note profile-note">{profileNote}</p>
-            ) : null}
           </div>
           <div className="profile-stats">
             <div>
@@ -148,7 +100,7 @@ function ProfilePage({ lines, onUpdateDisplayName, user }) {
         <article className="section-card profile-card">
           <div className="card-heading">
             <p className="eyebrow">Your ideas</p>
-            <h3>Everything you added to the board</h3>
+            <h3>Your board history</h3>
           </div>
           <div className="profile-list">
             {!lines.length ? (
@@ -156,82 +108,101 @@ function ProfilePage({ lines, onUpdateDisplayName, user }) {
                 You have not submitted any ideas yet.
               </p>
             ) : null}
-            {lines.map((line) => (
-              <article key={line.id} className="profile-line">
-                <div className="line-badges">
-                  <span className="category-chip">
-                    {formatCategory(line.category)}
-                  </span>
-                  <span
-                    className={`status-chip status-chip--${line.status || LINE_STATUS_PENDING}`}
-                  >
-                    {formatLineStatus(line.status)}
-                  </span>
-                  {line.status === LINE_STATUS_APPROVED ? (
-                    <span className="score-chip">
-                      {line.promoted ? "Top pick" : "Still getting votes"}
-                    </span>
-                  ) : null}
-                </div>
-                <p>{line.text}</p>
-                {line.status === LINE_STATUS_REJECTED &&
-                line.moderationReason ? (
-                  <p className="moderation-note">
-                    Review note: {line.moderationReason}
-                  </p>
-                ) : null}
-                <div className="line-footer line-footer--compact">
-                  {line.status === LINE_STATUS_APPROVED ? (
-                    <div className="line-actions">
-                      <Link
-                        className="action-link action-link--primary"
-                        to={`/line/${line.id}`}
-                      >
-                        Open idea
-                      </Link>
-                      <button
-                        className="action-button"
-                        type="button"
-                        onClick={() =>
-                          shareUrl(
-                            buildAbsoluteUrl(`/line/${line.id}`),
-                            "IceBreaker idea",
-                          )
-                        }
-                      >
-                        Share
-                      </button>
-                    </div>
-                  ) : (
-                    <p className="form-note">
-                      {line.status === LINE_STATUS_PENDING
-                        ? "This idea is still waiting for approval."
-                        : "Rejected ideas stay private to you and admins."}
+            {statusEntries.map(([statusKey, statusLines]) => (
+              <section key={statusKey} className="profile-category-group">
+                <div className="profile-category-header">
+                  <div>
+                    <p className="eyebrow">
+                      {statusEyebrows[statusKey] || "Status"}
                     </p>
-                  )}
-                </div>
-                <div className="line-stats">
-                  <span className="mini-stat">
-                    <strong>{line.upvoteCount || 0}</strong>
-                    saves
+                    <h4>{formatLineStatus(statusKey)}</h4>
+                    <p className="profile-category-description">
+                      {statusDescriptions[statusKey]}
+                    </p>
+                  </div>
+                  <span className="profile-category-count">
+                    {statusLines.length} idea
+                    {statusLines.length === 1 ? "" : "s"}
                   </span>
-                  {line.status === LINE_STATUS_APPROVED && line.promoted ? (
-                    <span className="mini-stat">
-                      <strong>{line.promotionScore || line.score}</strong>
-                      hit the mark
-                    </span>
-                  ) : null}
                 </div>
-              </article>
+                <div className="profile-category-list">
+                  {statusLines.map((line) => (
+                    <article
+                      key={line.id}
+                      className={`profile-line profile-line--${line.status || LINE_STATUS_PENDING}`}
+                    >
+                      <div className="line-badges">
+                        <span
+                          className={`status-chip status-chip--${line.status || LINE_STATUS_PENDING}`}
+                        >
+                          {formatLineStatus(line.status)}
+                        </span>
+                        {line.status === LINE_STATUS_APPROVED ? (
+                          <span className="score-chip">
+                            {line.promoted ? "Top pick" : "Still getting votes"}
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="profile-line-body">{line.text}</p>
+                      {line.status === LINE_STATUS_APPROVED ? (
+                        <div className="line-footer line-footer--compact">
+                          <div className="line-actions">
+                            <Link
+                              className="action-link action-link--primary"
+                              to={`/line/${line.id}`}
+                            >
+                              Open idea
+                            </Link>
+                            <button
+                              className="action-button"
+                              type="button"
+                              onClick={() =>
+                                shareUrl(
+                                  buildAbsoluteUrl(`/line/${line.id}`),
+                                  "IceBreaker idea",
+                                )
+                              }
+                            >
+                              Share
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="profile-status-panel">
+                          <p className="profile-status-copy">
+                            {line.status === LINE_STATUS_PENDING
+                              ? "Still waiting for review."
+                              : "Visible only to you and admins."}
+                          </p>
+                          {line.status === LINE_STATUS_REJECTED &&
+                          line.moderationReason ? (
+                            <p className="moderation-note">
+                              Review note: {line.moderationReason}
+                            </p>
+                          ) : null}
+                        </div>
+                      )}
+                      <div className="line-stats">
+                        <span className="mini-stat">
+                          <strong>{line.upvoteCount || 0}</strong>
+                          saves
+                        </span>
+                        {line.status === LINE_STATUS_APPROVED &&
+                        line.promoted ? (
+                          <span className="mini-stat">
+                            <strong>{line.promotionScore || line.score}</strong>
+                            hit the mark
+                          </span>
+                        ) : null}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         </article>
       </div>
-      <Snackbar
-        isVisible={Boolean(feedback.message)}
-        message={feedback.message}
-        tone={feedback.tone}
-      />
     </section>
   );
 }

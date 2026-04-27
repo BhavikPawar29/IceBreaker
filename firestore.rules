@@ -16,36 +16,16 @@ service cloud.firestore {
       return category in ['playful', 'curious', 'storytime', 'unexpected', 'deeper'];
     }
 
-    function expectedAuthorName() {
-      return request.auth.token.name is string && request.auth.token.name.size() > 0
-        ? request.auth.token.name
-        : request.auth.token.email is string && request.auth.token.email.size() > 0
-          ? request.auth.token.email
-          : 'community member';
-    }
-
     function isAllowedAuthorName(name) {
       return (
         request.auth.token.name is string
         && request.auth.token.name.size() > 0
         && name == request.auth.token.name
       ) || (
-        request.auth.token.email is string
-        && request.auth.token.email.size() > 0
-        && name == request.auth.token.email
-      ) || (
-        !(request.auth.token.name is string)
-        && !(request.auth.token.email is string)
-        && name == 'community member'
+        (!(request.auth.token.name is string)
+        || request.auth.token.name.size() == 0)
+        && name == 'Community member'
       );
-    }
-
-    function isValidDisplayName(name) {
-      return name is string
-        && name.size() >= 2
-        && name.size() <= 32
-        && name.matches("^[A-Za-z0-9](?:[A-Za-z0-9 .'-]*[A-Za-z0-9])?$")
-        && !name.matches(".*(?:https|www|discord|telegram|whatsapp|snap(?:chat)?|instagram|insta|onlyfans|admin|support|moderator|owner|fuck|bitch|slut|whore|nigg(?:a|er)|fagg?(?:ot)?|porn|nude|sex(?:y)?|horny|dick|cock|pussy).*");
     }
 
     function isRecentMillis(value) {
@@ -212,32 +192,6 @@ service cloud.firestore {
         );
     }
 
-    function isOwnerAuthorRenameUpdate() {
-      return hasLineShape(request.resource.data)
-        && isSignedIn()
-        && resource.data.createdByUid == request.auth.uid
-        && request.resource.data.createdByUid == resource.data.createdByUid
-        && request.resource.data.text == resource.data.text
-        && request.resource.data.normalizedText == resource.data.normalizedText
-        && request.resource.data.fingerprint == resource.data.fingerprint
-        && request.resource.data.category == resource.data.category
-        && request.resource.data.score == resource.data.score
-        && request.resource.data.upvoteCount == resource.data.upvoteCount
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.status == resource.data.status
-        && request.resource.data.moderatedAt == resource.data.moderatedAt
-        && request.resource.data.moderatedByUid == resource.data.moderatedByUid
-        && request.resource.data.moderationReason == resource.data.moderationReason
-        && request.resource.data.promoted == resource.data.promoted
-        && request.resource.data.promotedAt == resource.data.promotedAt
-        && request.resource.data.promotionScore == resource.data.promotionScore
-        && request.resource.data.updatedAt is int
-        && request.resource.data.updatedAt >= resource.data.updatedAt
-        && isRecentMillis(request.resource.data.updatedAt)
-        && isAllowedAuthorName(request.resource.data.createdByName)
-        && isValidDisplayName(request.resource.data.createdByName);
-    }
-
     match /roles/{uid} {
       allow read: if isSignedIn() && request.auth.uid == uid;
       allow write: if false;
@@ -262,10 +216,9 @@ service cloud.firestore {
         && isAllowedCategory(request.resource.data.category)
         && request.resource.data.createdByUid == request.auth.uid
         && isAllowedAuthorName(request.resource.data.createdByName)
-        && isValidDisplayName(request.resource.data.createdByName)
         && request.resource.data.createdByName is string
-        && request.resource.data.createdByName.size() >= 1
-        && request.resource.data.createdByName.size() <= 120
+        && request.resource.data.createdByName.size() >= 2
+        && request.resource.data.createdByName.size() <= 64
         && request.resource.data.score == 0
         && request.resource.data.upvoteCount == 0
         && isRecentMillis(request.resource.data.createdAt)
@@ -279,7 +232,6 @@ service cloud.firestore {
         && request.resource.data.promotionScore == null;
 
       allow update: if (isAdmin() && isPendingModerationUpdate())
-        || isOwnerAuthorRenameUpdate()
         || (isSignedIn() && isVoteAggregateUpdate(lineId));
 
       allow delete: if false;
