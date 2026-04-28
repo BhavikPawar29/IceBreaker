@@ -16,12 +16,16 @@ service cloud.firestore {
       return category in ['playful', 'curious', 'storytime', 'unexpected', 'deeper'];
     }
 
-    function expectedAuthorName() {
-      return request.auth.token.name is string && request.auth.token.name.size() > 0
-        ? request.auth.token.name
-        : request.auth.token.email is string && request.auth.token.email.size() > 0
-          ? request.auth.token.email
-          : 'community member';
+    function isAllowedAuthorName(name) {
+      return (
+        request.auth.token.name is string
+        && request.auth.token.name.size() > 0
+        && name == request.auth.token.name
+      ) || (
+        (!(request.auth.token.name is string)
+        || request.auth.token.name.size() == 0)
+        && name == 'Community member'
+      );
     }
 
     function isRecentMillis(value) {
@@ -211,10 +215,10 @@ service cloud.firestore {
         && request.resource.data.category is string
         && isAllowedCategory(request.resource.data.category)
         && request.resource.data.createdByUid == request.auth.uid
-        && request.resource.data.createdByName == expectedAuthorName()
+        && isAllowedAuthorName(request.resource.data.createdByName)
         && request.resource.data.createdByName is string
-        && request.resource.data.createdByName.size() >= 1
-        && request.resource.data.createdByName.size() <= 120
+        && request.resource.data.createdByName.size() >= 2
+        && request.resource.data.createdByName.size() <= 64
         && request.resource.data.score == 0
         && request.resource.data.upvoteCount == 0
         && isRecentMillis(request.resource.data.createdAt)

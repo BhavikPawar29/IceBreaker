@@ -21,6 +21,7 @@ import { db, firebaseConfigReady } from "../lib/firebase";
 import { createLineFingerprint } from "../utils/textNormalization";
 import { sortLines } from "../utils/board";
 import { validateLineSubmission } from "../utils/contentValidation";
+import { getPublicDisplayNameFromUser } from "../utils/userIdentity";
 
 const PROMOTION_THRESHOLD = 50;
 const PAGE_SIZE = 10;
@@ -261,8 +262,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
     const { fingerprint, normalizedText } = await createLineFingerprint(text);
     const lineRef = doc(db, "lines", fingerprint);
     const timestamp = Date.now();
-    const authorName =
-      user.displayName?.trim() || user.email || "community member";
+    const authorName = getPublicDisplayNameFromUser(user);
 
     try {
       await runTransaction(db, async (transaction) => {

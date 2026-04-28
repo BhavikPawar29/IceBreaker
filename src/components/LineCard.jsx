@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
+import { getPublicDisplayName } from "../utils/userIdentity";
 
 function LineCard({ canVote, line, rank, voteState, onVote }) {
   async function handleShare() {
     await shareUrl(buildAbsoluteUrl(`/line/${line.id}`), "IceBreaker idea");
   }
+
+  const authorName = getPublicDisplayName(line.createdByName);
 
   return (
     <article className="section-card line-card">
@@ -23,9 +26,7 @@ function LineCard({ canVote, line, rank, voteState, onVote }) {
       <p className="line-body">{line.text}</p>
       <div className="line-footer">
         <div className="line-footer-left">
-          <div className="line-author">
-            Shared by {line.createdByName || "anonymous sketcher"}
-          </div>
+          <div className="line-author">Shared by {authorName}</div>
           <div className="line-actions">
             <Link
               className="action-link action-link--primary"

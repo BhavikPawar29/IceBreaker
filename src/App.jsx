@@ -23,6 +23,26 @@ import useAuth from "./context/useAuth";
 import useCommunityBoard from "./hooks/useCommunityBoard";
 import { ALLOWED_CATEGORIES } from "./constants/categories";
 
+function LoadingShell({
+  title = "Loading IceBreaker",
+  note = "Bringing your board back into place.",
+}) {
+  return (
+    <section className="main-shell main-shell--loading">
+      <article className="section-card app-loader-card" aria-live="polite">
+        <div className="app-loader-mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <p className="eyebrow">Just a second</p>
+        <h2>{title}</h2>
+        <p className="page-description">{note}</p>
+      </article>
+    </section>
+  );
+}
+
 function PublicLineRoute({ getLineById }) {
   const { id } = useParams();
   const [line, setLine] = useState(undefined);
@@ -84,10 +104,10 @@ function App() {
     isAdmin,
     isAuthReady,
     isRoleReady,
-    signInWithEmail,
+    signInWithApple,
+    signInWithFacebook,
     signInWithGoogle,
     signOutUser,
-    signUpWithEmail,
     user,
   } = useAuth();
   const {
@@ -141,6 +161,7 @@ function App() {
     (line) => filter === "all" || line.category === filter,
   );
   const topLine = filteredCandidates[0] ?? candidateLines[0] ?? null;
+  const isSessionLoading = !isAuthReady || (Boolean(user) && !isRoleReady);
   const stats = {
     total: candidateLines.length + promotedLines.length,
     topScore: topLine?.score ?? 0,
@@ -148,19 +169,16 @@ function App() {
     candidateCount: candidateLines.length,
   };
 
-  async function handleSignIn() {
+  async function handleGoogleSignIn() {
     await signInWithGoogle();
-    navigate("/promoted");
   }
 
-  async function handleEmailSignIn(email, password) {
-    await signInWithEmail(email, password);
-    navigate("/promoted");
+  async function handleFacebookSignIn() {
+    await signInWithFacebook();
   }
 
-  async function handleEmailSignUp(email, password, displayName) {
-    await signUpWithEmail(email, password, displayName);
-    navigate("/promoted");
+  async function handleAppleSignIn() {
+    await signInWithApple();
   }
 
   const isLandingRoute = location.pathname === "/";
@@ -188,7 +206,7 @@ function App() {
       <main>
         {!firebaseConfigReady ? (
           <section className="status-banner">
-            Add your Firebase web config to <code>.env</code> to enable Google
+            Add your Firebase web config to <code>.env</code> to enable social
             sign-in and Firestore syncing.
           </section>
         ) : null}
@@ -203,15 +221,20 @@ function App() {
           <Route
             path="/login"
             element={
-              user ? (
+              isSessionLoading ? (
+                <LoadingShell
+                  title="Opening your account"
+                  note="Checking your sign-in so you land in the right place."
+                />
+              ) : user ? (
                 <Navigate to="/promoted" replace />
               ) : (
                 <LoginPage
                   authEnabled={authEnabled}
                   isAuthReady={isAuthReady}
-                  onEmailSignIn={handleEmailSignIn}
-                  onGoogleSignIn={handleSignIn}
-                  onEmailSignUp={handleEmailSignUp}
+                  onAppleSignIn={handleAppleSignIn}
+                  onFacebookSignIn={handleFacebookSignIn}
+                  onGoogleSignIn={handleGoogleSignIn}
                 />
               )
             }
@@ -219,7 +242,9 @@ function App() {
           <Route
             path="/lines"
             element={
-              user ? (
+              isSessionLoading ? (
+                <LoadingShell note="Pulling the latest ideas onto the board." />
+              ) : user ? (
                 <section className="main-shell">
                   <BoardPage
                     activeRoute="lines"
@@ -244,7 +269,9 @@ function App() {
           <Route
             path="/promoted"
             element={
-              user ? (
+              isSessionLoading ? (
+                <LoadingShell note="Gathering the ideas people loved most." />
+              ) : user ? (
                 <section className="main-shell">
                   <BoardPage
                     activeRoute="promoted"
@@ -269,7 +296,12 @@ function App() {
           <Route
             path="/create"
             element={
-              user ? (
+              isSessionLoading ? (
+                <LoadingShell
+                  title="Opening your submission space"
+                  note="Holding your session steady before we open the form."
+                />
+              ) : user ? (
                 <section className="main-shell">
                   <CreatePage
                     authEnabled={authEnabled}
@@ -286,7 +318,12 @@ function App() {
           <Route
             path="/profile"
             element={
-              user ? (
+              isSessionLoading ? (
+                <LoadingShell
+                  title="Opening your profile"
+                  note="Laying out your ideas, reviews, and saved progress."
+                />
+              ) : user ? (
                 <section className="main-shell">
                   <ProfilePage lines={userLines} user={user} />
                 </section>
@@ -310,14 +347,13 @@ function App() {
           <Route
             path="/admin"
             element={
-              user ? (
-                !isRoleReady ? (
-                  <section className="main-shell">
-                    <article className="section-card">
-                      <p className="empty-state">Checking admin access...</p>
-                    </article>
-                  </section>
-                ) : isAdmin ? (
+              isSessionLoading ? (
+                <LoadingShell
+                  title="Checking review access"
+                  note="Making sure the right moderation controls open for you."
+                />
+              ) : user ? (
+                isAdmin ? (
                   <section className="main-shell">
                     <AdminPage
                       isLoading={isBoardLoading}

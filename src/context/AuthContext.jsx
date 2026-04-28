@@ -1,16 +1,35 @@
 import { createContext, useEffect, useState } from "react";
 import {
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
   signInWithPopup,
   signOut as firebaseSignOut,
-  updateProfile,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db, firebaseConfigReady, googleProvider } from "../lib/firebase";
+import {
+  appleProvider,
+  auth,
+  db,
+  facebookProvider,
+  firebaseConfigReady,
+  googleProvider,
+} from "../lib/firebase";
 
 const AuthContext = createContext(null);
+
+const PROVIDER_LABELS = {
+  "apple.com": "Apple",
+  "facebook.com": "Facebook",
+  "google.com": "Google",
+};
+
+function formatExistingProvider(methods) {
+  const providerLabel = methods
+    .map((method) => PROVIDER_LABELS[method])
+    .find(Boolean);
+
+  return providerLabel || "the provider you used earlier";
+}
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -81,29 +100,60 @@ function AuthProvider({ children }) {
     }
   }
 
-  async function signInWithGoogle() {
+  async function signInWithConfiguredProvider(provider, providerKey) {
     ensureConfigured();
-    await signInWithPopup(auth, googleProvider);
-  }
 
-  async function signInWithEmail(email, password) {
-    ensureConfigured();
-    await signInWithEmailAndPassword(auth, email, password);
-  }
-
-  async function signUpWithEmail(email, password, displayName) {
-    ensureConfigured();
-    const credentials = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
-
-    if (displayName.trim()) {
-      await updateProfile(credentials.user, {
-        displayName: displayName.trim(),
-      });
+    if (!provider) {
+      const unavailableError = new Error(
+        `${PROVIDER_LABELS[providerKey]} sign-in is not configured yet.`,
+      );
+      unavailableError.code = "app/provider-not-configured";
+      unavailableError.providerKey = providerKey;
+      throw unavailableError;
     }
+
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      if (error?.code === "auth/account-exists-with-different-credential") {
+        const email = error.customData?.email || "";
+        const methods = email
+          ? await fetchSignInMethodsForEmail(auth, email)
+          : [];
+        const mismatchError = new Error(
+          `That email is already tied to ${formatExistingProvider(methods)}. Use that button instead.`,
+        );
+        mismatchError.code = "app/provider-mismatch";
+        mismatchError.providerKey = providerKey;
+        throw mismatchError;
+      }
+
+      if (
+        error?.code === "auth/operation-not-allowed" ||
+        error?.code === "auth/unauthorized-domain"
+      ) {
+        const unavailableError = new Error(
+          `${PROVIDER_LABELS[providerKey]} sign-in is not ready yet. Ask the project owner to finish Firebase provider setup.`,
+        );
+        unavailableError.code = "app/provider-not-configured";
+        unavailableError.providerKey = providerKey;
+        throw unavailableError;
+      }
+
+      throw error;
+    }
+  }
+
+  async function signInWithGoogle() {
+    await signInWithConfiguredProvider(googleProvider, "google.com");
+  }
+
+  async function signInWithFacebook() {
+    await signInWithConfiguredProvider(facebookProvider, "facebook.com");
+  }
+
+  async function signInWithApple() {
+    await signInWithConfiguredProvider(appleProvider, "apple.com");
   }
 
   async function signOutUser() {
@@ -119,13 +169,14 @@ function AuthProvider({ children }) {
     isAdmin,
     isAuthReady,
     isRoleReady,
-    signInWithEmail,
+    signInWithApple,
+    signInWithFacebook,
     signInWithGoogle,
     signOutUser,
-    signUpWithEmail,
     user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
 export { AuthContext, AuthProvider };
