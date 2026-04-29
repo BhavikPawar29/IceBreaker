@@ -1,16 +1,14 @@
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
-import { getPublicDisplayName } from "../utils/userIdentity";
 
 function PublicProfilePage({ lines, profileId }) {
-  const displayName = getPublicDisplayName(lines[0]?.createdByName);
   const sharedCount = lines.length;
 
   async function handleShareProfile() {
     await shareUrl(
       buildAbsoluteUrl(`/profile/${profileId}`),
-      `${displayName}'s IceBreaker profile`,
+      "Anonymous IceBreaker profile",
     );
   }
 
@@ -20,10 +18,10 @@ function PublicProfilePage({ lines, profileId }) {
         <article className="section-card public-profile-hero">
           <div className="page-copy">
             <p className="eyebrow">Shared by the community</p>
-            <h2>{displayName}&apos;s ideas</h2>
+            <h2>Anonymous contributor ideas</h2>
             <p className="page-description">
-              A small collection of conversation ideas this person has added to
-              IceBreaker.
+              A small collection of conversation ideas this contributor has
+              added to IceBreaker.
             </p>
           </div>
           <div className="page-actions">

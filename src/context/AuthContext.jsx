@@ -1,34 +1,34 @@
 import { createContext, useEffect, useState } from "react";
 import {
-  fetchSignInMethodsForEmail,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
-  onAuthStateChanged,
+  updateProfile,
 } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import {
-  appleProvider,
-  auth,
-  db,
-  facebookProvider,
-  firebaseConfigReady,
-  googleProvider,
-} from "../lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db, firebaseConfigReady, googleProvider } from "../lib/firebase";
 
 const AuthContext = createContext(null);
 
-const PROVIDER_LABELS = {
-  "apple.com": "Apple",
-  "facebook.com": "Facebook",
-  "google.com": "Google",
-};
+function normalizePrivateName(name) {
+  return typeof name === "string" ? name.replace(/\s+/g, " ").trim() : "";
+}
 
-function formatExistingProvider(methods) {
-  const providerLabel = methods
-    .map((method) => PROVIDER_LABELS[method])
-    .find(Boolean);
+function getSafePrivateName(name) {
+  const normalizedName = normalizePrivateName(name);
 
-  return providerLabel || "the provider you used earlier";
+  if (
+    normalizedName.length < 2 ||
+    normalizedName.length > 40 ||
+    !/^[a-zA-Z0-9 .'-]+$/.test(normalizedName)
+  ) {
+    return "IceBreaker member";
+  }
+
+  return normalizedName;
 }
 
 function AuthProvider({ children }) {
@@ -100,43 +100,54 @@ function AuthProvider({ children }) {
     }
   }
 
-  async function signInWithConfiguredProvider(provider, providerKey) {
+  async function upsertUserProfile(nextUser, nameOverride = "") {
+    if (!db || !nextUser) {
+      return;
+    }
+
+    const displayName = getSafePrivateName(
+      nameOverride || nextUser.displayName,
+    );
+    const timestamp = Date.now();
+
+    try {
+      await setDoc(
+        doc(db, "userProfiles", nextUser.uid),
+        {
+          displayName,
+          email: nextUser.email || "",
+          updatedAt: timestamp,
+        },
+        { merge: true },
+      );
+    } catch (error) {
+      console.error("Failed to save private user profile.", error);
+    }
+  }
+
+  async function signInWithGoogle() {
     ensureConfigured();
 
-    if (!provider) {
+    if (!googleProvider) {
       const unavailableError = new Error(
-        `${PROVIDER_LABELS[providerKey]} sign-in is not configured yet.`,
+        "Google sign-in is not configured yet.",
       );
       unavailableError.code = "app/provider-not-configured";
-      unavailableError.providerKey = providerKey;
       throw unavailableError;
     }
 
     try {
-      await signInWithPopup(auth, provider);
+      const credential = await signInWithPopup(auth, googleProvider);
+      await upsertUserProfile(credential.user);
     } catch (error) {
-      if (error?.code === "auth/account-exists-with-different-credential") {
-        const email = error.customData?.email || "";
-        const methods = email
-          ? await fetchSignInMethodsForEmail(auth, email)
-          : [];
-        const mismatchError = new Error(
-          `That email is already tied to ${formatExistingProvider(methods)}. Use that button instead.`,
-        );
-        mismatchError.code = "app/provider-mismatch";
-        mismatchError.providerKey = providerKey;
-        throw mismatchError;
-      }
-
       if (
         error?.code === "auth/operation-not-allowed" ||
         error?.code === "auth/unauthorized-domain"
       ) {
         const unavailableError = new Error(
-          `${PROVIDER_LABELS[providerKey]} sign-in is not ready yet. Ask the project owner to finish Firebase provider setup.`,
+          "Google sign-in is not ready yet. Ask the project owner to finish Firebase setup.",
         );
         unavailableError.code = "app/provider-not-configured";
-        unavailableError.providerKey = providerKey;
         throw unavailableError;
       }
 
@@ -144,16 +155,31 @@ function AuthProvider({ children }) {
     }
   }
 
-  async function signInWithGoogle() {
-    await signInWithConfiguredProvider(googleProvider, "google.com");
+  async function signInWithEmail(email, password) {
+    ensureConfigured();
+    const credential = await signInWithEmailAndPassword(
+      auth,
+      email.trim(),
+      password,
+    );
+    await upsertUserProfile(credential.user);
   }
 
-  async function signInWithFacebook() {
-    await signInWithConfiguredProvider(facebookProvider, "facebook.com");
+  async function signUpWithEmail(email, password, displayName) {
+    ensureConfigured();
+    const normalizedName = normalizePrivateName(displayName);
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email.trim(),
+      password,
+    );
+    await updateProfile(credential.user, { displayName: normalizedName });
+    await upsertUserProfile(credential.user, normalizedName);
   }
 
-  async function signInWithApple() {
-    await signInWithConfiguredProvider(appleProvider, "apple.com");
+  async function sendEmailPasswordReset(email) {
+    ensureConfigured();
+    await sendPasswordResetEmail(auth, email.trim());
   }
 
   async function signOutUser() {
@@ -169,9 +195,10 @@ function AuthProvider({ children }) {
     isAdmin,
     isAuthReady,
     isRoleReady,
-    signInWithApple,
-    signInWithFacebook,
+    sendEmailPasswordReset,
+    signInWithEmail,
     signInWithGoogle,
+    signUpWithEmail,
     signOutUser,
     user,
   };

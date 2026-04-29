@@ -5,7 +5,6 @@ import {
   LINE_STATUS_PENDING,
 } from "../constants/lineStatuses";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
-import { getPublicDisplayName } from "../utils/userIdentity";
 
 function LineDetailPage({ line }) {
   if (line === undefined) {
@@ -32,8 +31,6 @@ function LineDetailPage({ line }) {
     await shareUrl(buildAbsoluteUrl(`/line/${line.id}`), "IceBreaker idea");
   }
 
-  const authorName = getPublicDisplayName(line.createdByName);
-
   return (
     <section className="main-shell">
       <article className="section-card detail-card detail-card--refined">
@@ -58,9 +55,9 @@ function LineDetailPage({ line }) {
         ) : null}
         <div className="line-footer line-footer--compact">
           <p className="hero-text detail-author">
-            Shared by{" "}
+            Shared anonymously by{" "}
             <Link className="inline-link" to={`/profile/${line.createdByUid}`}>
-              {authorName}
+              this contributor
             </Link>
           </p>
           {line.status === LINE_STATUS_APPROVED ? (

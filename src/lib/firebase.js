@@ -3,12 +3,7 @@ import {
   initializeAppCheck,
   ReCaptchaEnterpriseProvider,
 } from "firebase/app-check";
-import {
-  FacebookAuthProvider,
-  getAuth,
-  GoogleAuthProvider,
-  OAuthProvider,
-} from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -33,15 +28,9 @@ const app = firebaseConfigReady
 export const auth = app ? getAuth(app) : null;
 export const db = app ? getFirestore(app) : null;
 export const googleProvider = auth ? new GoogleAuthProvider() : null;
-export const facebookProvider = auth ? new FacebookAuthProvider() : null;
-export const appleProvider = auth ? new OAuthProvider("apple.com") : null;
 
 googleProvider?.setCustomParameters({
   prompt: "select_account",
-});
-
-facebookProvider?.setCustomParameters({
-  display: "popup",
 });
 
 if (app && appCheckSiteKey && typeof window !== "undefined") {

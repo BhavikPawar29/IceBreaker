@@ -17,15 +17,19 @@ service cloud.firestore {
     }
 
     function isAllowedAuthorName(name) {
-      return (
-        request.auth.token.name is string
-        && request.auth.token.name.size() > 0
-        && name == request.auth.token.name
-      ) || (
-        (!(request.auth.token.name is string)
-        || request.auth.token.name.size() == 0)
-        && name == 'Community member'
-      );
+      return name == 'Anonymous';
+    }
+
+    function isValidPrivateProfile(data) {
+      return data.keys().hasOnly(['displayName', 'email', 'updatedAt'])
+        && data.keys().hasAll(['displayName', 'email', 'updatedAt'])
+        && data.displayName is string
+        && data.displayName.size() >= 2
+        && data.displayName.size() <= 40
+        && data.displayName.matches("[A-Za-z0-9 .'-]+")
+        && data.email is string
+        && data.email == request.auth.token.email
+        && isRecentMillis(data.updatedAt);
     }
 
     function isRecentMillis(value) {
@@ -195,6 +199,14 @@ service cloud.firestore {
     match /roles/{uid} {
       allow read: if isSignedIn() && request.auth.uid == uid;
       allow write: if false;
+    }
+
+    match /userProfiles/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow create, update: if isSignedIn()
+        && request.auth.uid == uid
+        && isValidPrivateProfile(request.resource.data);
+      allow delete: if false;
     }
 
     match /lines/{lineId} {
