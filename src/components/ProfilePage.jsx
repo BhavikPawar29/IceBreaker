@@ -7,11 +7,10 @@ import {
   LINE_STATUS_REJECTED,
 } from "../constants/lineStatuses";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
-import { getPublicDisplayNameFromUser } from "../utils/userIdentity";
 
 function ProfilePage({ lines, user }) {
   const isMobile = useIsMobile();
-  const publicName = getPublicDisplayNameFromUser(user);
+  const accountLabel = user.email || "Signed in member";
   const statusOrder = [
     LINE_STATUS_PENDING,
     LINE_STATUS_APPROVED,
@@ -71,10 +70,8 @@ function ProfilePage({ lines, user }) {
         >
           <div className="profile-identity">
             <p className="eyebrow">Profile owner</p>
-            <h3>{publicName}</h3>
-            <p className="profile-identity-meta">
-              {user.email || "Signed in member"}
-            </p>
+            <h3>Your private account</h3>
+            <p className="profile-identity-meta">{accountLabel}</p>
             <p className="profile-identity-note">
               Track what you shared, what is still in review, and which ideas
               made it through.

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { formatCategory } from "../utils/board";
 
-function AdminPage({ isLoading, lines, onModerate }) {
+function AdminPage({ isLoading, lines, onModerate, userProfiles = {} }) {
   const [reasons, setReasons] = useState({});
   const [message, setMessage] = useState("");
   const [pendingActionId, setPendingActionId] = useState("");
@@ -73,7 +73,8 @@ function AdminPage({ isLoading, lines, onModerate }) {
             </div>
             <p className="line-body">{line.text}</p>
             <p className="line-author">
-              Shared by {line.createdByName || "community member"}
+              Submitted by{" "}
+              {userProfiles[line.createdByUid]?.displayName || "Unknown member"}
             </p>
             <label className="submission-form moderation-form">
               <span>Rejection reason (optional)</span>
