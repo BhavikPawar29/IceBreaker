@@ -7,7 +7,6 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
 import AppHeader from "./components/AppHeader";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
@@ -19,9 +18,10 @@ import LoginPage from "./components/LoginPage";
 import ProfilePage from "./components/ProfilePage";
 import PublicProfilePage from "./components/PublicProfilePage";
 import AdminPage from "./components/AdminPage";
-import { db, firebaseConfigReady } from "./lib/firebase";
+import { firebaseConfigReady } from "./lib/firebase";
 import useAuth from "./context/useAuth";
 import useCommunityBoard from "./hooks/useCommunityBoard";
+import useAdminDashboard from "./hooks/useAdminDashboard";
 import { ALLOWED_CATEGORIES } from "./constants/categories";
 
 function LoadingShell({
@@ -62,7 +62,7 @@ function PublicLineRoute({ getLineById }) {
     };
   }, [getLineById, id]);
 
-  return <LineDetailPage line={line ?? null} />;
+  return <LineDetailPage line={line} />;
 }
 
 function PublicProfileRoute({ getPublicProfileLines }) {
@@ -88,7 +88,6 @@ function PublicProfileRoute({ getPublicProfileLines }) {
 
 function App() {
   const [filter, setFilter] = useState("all");
-  const [reviewUserProfiles, setReviewUserProfiles] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
   const activeBoardView =
@@ -98,9 +97,8 @@ function App() {
         ? "promoted"
         : location.pathname === "/profile"
           ? "profile"
-          : location.pathname === "/admin"
-            ? "admin"
-            : null;
+          : null;
+  const isAdminRoute = location.pathname === "/admin";
   const {
     authEnabled,
     isAdmin,
@@ -124,61 +122,13 @@ function App() {
     isFetchingMore,
     loadMoreLines,
     lookupExistingLine,
-    moderateLine,
-    pendingLines,
     promotedLines,
     submitLine,
     userLines,
     votes,
     voteOnLine,
   } = useCommunityBoard(user, activeBoardView, isAdmin);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadReviewProfiles() {
-      if (
-        !db ||
-        !isAdmin ||
-        activeBoardView !== "admin" ||
-        !pendingLines.length
-      ) {
-        setReviewUserProfiles({});
-        return;
-      }
-
-      const uniqueUids = [
-        ...new Set(pendingLines.map((line) => line.createdByUid)),
-      ];
-      try {
-        const profileEntries = await Promise.all(
-          uniqueUids.map(async (uid) => {
-            const profileSnapshot = await getDoc(doc(db, "userProfiles", uid));
-            return [
-              uid,
-              profileSnapshot.exists() ? profileSnapshot.data() : null,
-            ];
-          }),
-        );
-
-        if (!isCancelled) {
-          setReviewUserProfiles(Object.fromEntries(profileEntries));
-        }
-      } catch (error) {
-        console.error("Failed to load review profile names.", error);
-
-        if (!isCancelled) {
-          setReviewUserProfiles({});
-        }
-      }
-    }
-
-    loadReviewProfiles();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [activeBoardView, isAdmin, pendingLines]);
+  const adminDashboard = useAdminDashboard(user, isAdmin, isAdminRoute);
 
   useEffect(() => {
     if (!user) {
@@ -410,12 +360,7 @@ function App() {
               ) : user ? (
                 isAdmin ? (
                   <section className="main-shell">
-                    <AdminPage
-                      isLoading={isBoardLoading}
-                      lines={pendingLines}
-                      onModerate={moderateLine}
-                      userProfiles={reviewUserProfiles}
-                    />
+                    <AdminPage dashboard={adminDashboard} />
                   </section>
                 ) : (
                   <Navigate to="/promoted" replace />
