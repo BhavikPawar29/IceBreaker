@@ -7,6 +7,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
 import AppHeader from "./components/AppHeader";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
@@ -18,7 +19,7 @@ import LoginPage from "./components/LoginPage";
 import ProfilePage from "./components/ProfilePage";
 import PublicProfilePage from "./components/PublicProfilePage";
 import AdminPage from "./components/AdminPage";
-import { firebaseConfigReady } from "./lib/firebase";
+import { db, firebaseConfigReady } from "./lib/firebase";
 import useAuth from "./context/useAuth";
 import useCommunityBoard from "./hooks/useCommunityBoard";
 import { ALLOWED_CATEGORIES } from "./constants/categories";
@@ -87,6 +88,7 @@ function PublicProfileRoute({ getPublicProfileLines }) {
 
 function App() {
   const [filter, setFilter] = useState("all");
+  const [reviewUserProfiles, setReviewUserProfiles] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
   const activeBoardView =
@@ -104,9 +106,10 @@ function App() {
     isAdmin,
     isAuthReady,
     isRoleReady,
-    signInWithApple,
-    signInWithFacebook,
+    sendEmailPasswordReset,
+    signInWithEmail,
     signInWithGoogle,
+    signUpWithEmail,
     signOutUser,
     user,
   } = useAuth();
@@ -129,6 +132,53 @@ function App() {
     votes,
     voteOnLine,
   } = useCommunityBoard(user, activeBoardView, isAdmin);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadReviewProfiles() {
+      if (
+        !db ||
+        !isAdmin ||
+        activeBoardView !== "admin" ||
+        !pendingLines.length
+      ) {
+        setReviewUserProfiles({});
+        return;
+      }
+
+      const uniqueUids = [
+        ...new Set(pendingLines.map((line) => line.createdByUid)),
+      ];
+      try {
+        const profileEntries = await Promise.all(
+          uniqueUids.map(async (uid) => {
+            const profileSnapshot = await getDoc(doc(db, "userProfiles", uid));
+            return [
+              uid,
+              profileSnapshot.exists() ? profileSnapshot.data() : null,
+            ];
+          }),
+        );
+
+        if (!isCancelled) {
+          setReviewUserProfiles(Object.fromEntries(profileEntries));
+        }
+      } catch (error) {
+        console.error("Failed to load review profile names.", error);
+
+        if (!isCancelled) {
+          setReviewUserProfiles({});
+        }
+      }
+    }
+
+    loadReviewProfiles();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeBoardView, isAdmin, pendingLines]);
 
   useEffect(() => {
     if (!user) {
@@ -173,17 +223,21 @@ function App() {
     await signInWithGoogle();
   }
 
-  async function handleFacebookSignIn() {
-    await signInWithFacebook();
+  async function handleEmailLogin(email, password) {
+    await signInWithEmail(email, password);
   }
 
-  async function handleAppleSignIn() {
-    await signInWithApple();
+  async function handleEmailSignUp(email, password, displayName) {
+    await signUpWithEmail(email, password, displayName);
+  }
+
+  async function handlePasswordReset(email) {
+    await sendEmailPasswordReset(email);
   }
 
   const isLandingRoute = location.pathname === "/";
   const isLoginRoute = location.pathname === "/login";
-  const shouldShowFooter = !isLoginRoute;
+  const shouldShowFooter = !user && !isLoginRoute;
 
   return (
     <div className="page-shell">
@@ -232,8 +286,9 @@ function App() {
                 <LoginPage
                   authEnabled={authEnabled}
                   isAuthReady={isAuthReady}
-                  onAppleSignIn={handleAppleSignIn}
-                  onFacebookSignIn={handleFacebookSignIn}
+                  onEmailLogin={handleEmailLogin}
+                  onEmailSignUp={handleEmailSignUp}
+                  onPasswordReset={handlePasswordReset}
                   onGoogleSignIn={handleGoogleSignIn}
                 />
               )
@@ -359,6 +414,7 @@ function App() {
                       isLoading={isBoardLoading}
                       lines={pendingLines}
                       onModerate={moderateLine}
+                      userProfiles={reviewUserProfiles}
                     />
                   </section>
                 ) : (
