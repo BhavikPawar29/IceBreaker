@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   runTransaction,
+  setDoc,
   startAfter,
   where,
 } from "firebase/firestore";
@@ -297,32 +298,24 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
     const authorName = getPublicDisplayNameFromUser(user);
 
     try {
-      await runTransaction(db, async (transaction) => {
-        const lineSnapshot = await transaction.get(lineRef);
-
-        if (lineSnapshot.exists()) {
-          throw new Error("This line already exists on the board.");
-        }
-
-        transaction.set(lineRef, {
-          text,
-          normalizedText,
-          fingerprint,
-          category: submission.category,
-          createdByUid: user.uid,
-          createdByName: authorName,
-          score: 0,
-          upvoteCount: 0,
-          createdAt: timestamp,
-          updatedAt: timestamp,
-          status: LINE_STATUS_PENDING,
-          moderatedAt: null,
-          moderatedByUid: null,
-          moderationReason: null,
-          promoted: false,
-          promotedAt: null,
-          promotionScore: null,
-        });
+      await setDoc(lineRef, {
+        text,
+        normalizedText,
+        fingerprint,
+        category: submission.category,
+        createdByUid: user.uid,
+        createdByName: authorName,
+        score: 0,
+        upvoteCount: 0,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        status: LINE_STATUS_PENDING,
+        moderatedAt: null,
+        moderatedByUid: null,
+        moderationReason: null,
+        promoted: false,
+        promotedAt: null,
+        promotionScore: null,
       });
 
       return {
@@ -340,13 +333,16 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
           error.message === "This line already exists on the board."
             ? "Looks like this idea is already on IceBreaker."
             : error?.code === "permission-denied"
-              ? "You cannot post new lines from this account right now."
+              ? "That line could not be posted. It may already exist, or posting may be disabled for this account."
               : "That did not go through. Please try again in a moment.",
         duplicateWarning:
           error.message === "This line already exists on the board."
             ? "We already have this one."
             : "",
-        existingLineRef: fingerprint,
+        existingLineRef:
+          error.message === "This line already exists on the board."
+            ? fingerprint
+            : null,
       };
     }
   }
