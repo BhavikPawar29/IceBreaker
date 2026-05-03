@@ -1,10 +1,104 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
 
 function LineCard({ canVote, line, rank, voteState, onVote }) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [optimisticVote, setOptimisticVote] = useState(voteState || 0);
+  const [optimisticUpvoteCount, setOptimisticUpvoteCount] = useState(
+    line.upvoteCount || 0,
+  );
+  const requestInFlightRef = useRef(false);
+  const queuedVoteRef = useRef(null);
+  const committedVoteRef = useRef(voteState || 0);
+  const committedCountRef = useRef(line.upvoteCount || 0);
+
+  useEffect(
+    function syncOptimisticVoteFromServer() {
+      if (isSaving) {
+        return;
+      }
+
+      const nextVote = voteState || 0;
+      committedVoteRef.current = nextVote;
+      setOptimisticVote(nextVote);
+    },
+    [isSaving, voteState],
+  );
+
+  useEffect(
+    function syncOptimisticCountFromServer() {
+      if (isSaving) {
+        return;
+      }
+
+      const nextCount = line.upvoteCount || 0;
+      committedCountRef.current = nextCount;
+      setOptimisticUpvoteCount(nextCount);
+    },
+    [isSaving, line.upvoteCount],
+  );
+
   async function handleShare() {
     await shareUrl(buildAbsoluteUrl(`/line/${line.id}`), "IceBreaker idea");
+  }
+
+  async function flushVoteToTarget(targetVote) {
+    if (targetVote === committedVoteRef.current) {
+      return;
+    }
+
+    requestInFlightRef.current = true;
+    setIsSaving(true);
+
+    const previousCommittedVote = committedVoteRef.current;
+    const previousCommittedCount = committedCountRef.current;
+    const result = await onVote(line.id);
+
+    if (result?.ok) {
+      const nextCommittedVote = previousCommittedVote === 1 ? 0 : 1;
+      const nextCommittedCount = Math.max(
+        0,
+        previousCommittedCount + (nextCommittedVote === 1 ? 1 : -1),
+      );
+      committedVoteRef.current = nextCommittedVote;
+      committedCountRef.current = nextCommittedCount;
+    } else {
+      setOptimisticVote(committedVoteRef.current);
+      setOptimisticUpvoteCount(committedCountRef.current);
+    }
+
+    requestInFlightRef.current = false;
+    setIsSaving(false);
+
+    const queuedVote = queuedVoteRef.current;
+    queuedVoteRef.current = null;
+
+    if (queuedVote !== null && queuedVote !== committedVoteRef.current) {
+      await flushVoteToTarget(queuedVote);
+    }
+  }
+
+  async function handleVote() {
+    if (!canVote) {
+      return;
+    }
+
+    const nextVote = optimisticVote === 1 ? 0 : 1;
+    const nextCount = Math.max(
+      0,
+      optimisticUpvoteCount + (nextVote === 1 ? 1 : -1),
+    );
+    setOptimisticVote(nextVote);
+    setOptimisticUpvoteCount(nextCount);
+
+    if (requestInFlightRef.current) {
+      queuedVoteRef.current = nextVote;
+      return;
+    }
+
+    await flushVoteToTarget(nextVote);
   }
 
   return (
@@ -46,7 +140,7 @@ function LineCard({ canVote, line, rank, voteState, onVote }) {
 
         <div className="line-footer-right">
           <span className="mini-stat">
-            <strong>{line.upvoteCount || 0}</strong>
+            <strong>{optimisticUpvoteCount}</strong>
             saves
           </span>
           {line.promoted ? (
@@ -57,14 +151,15 @@ function LineCard({ canVote, line, rank, voteState, onVote }) {
           ) : (
             <div className="vote-panel">
               <button
-                className={`vote-button ${voteState === 1 ? "is-active" : ""}`}
+                className={`vote-button ${optimisticVote === 1 ? "is-active" : ""}`}
                 type="button"
                 aria-label="Upvote line"
                 disabled={!canVote}
-                onClick={() => onVote(line.id)}
-                title={canVote ? "Save this idea" : "Sign in to vote"}
+                aria-busy={isSaving}
+                onClick={handleVote}
+                title={canVote ? "Upvote this idea" : "Sign in to vote"}
               >
-                &#9650;
+                {optimisticVote === 1 ? "Upvoted" : "Upvote"}
               </button>
             </div>
           )}

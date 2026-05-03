@@ -77,6 +77,11 @@ function ProfileEmptyState() {
         Add one useful line. It stays private until review, then goes live
         anonymously if approved.
       </p>
+      <ol className="profile-empty-steps">
+        <li>Share a prompt from Create</li>
+        <li>Wait for review approval</li>
+        <li>Track saves as people vote</li>
+      </ol>
       <Link className="action-link action-link--primary" to="/create">
         Share one
       </Link>

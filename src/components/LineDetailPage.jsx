@@ -5,21 +5,14 @@ import {
   LINE_STATUS_PENDING,
 } from "../constants/lineStatuses";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
+import RouteShimmer from "./RouteShimmer";
 
 function LineDetailPage({ line }) {
   if (line === undefined) {
     return (
       <section className="main-shell">
         <article className="section-card detail-card detail-card--loading">
-          <div className="detail-shimmer detail-shimmer--chips"></div>
-          <div className="detail-shimmer detail-shimmer--title"></div>
-          <div className="detail-shimmer detail-shimmer--title detail-shimmer--short"></div>
-          <div className="detail-shimmer detail-shimmer--body"></div>
-          <div className="app-loader-mark" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+          <RouteShimmer />
           <p className="empty-state">Opening this idea...</p>
         </article>
       </section>

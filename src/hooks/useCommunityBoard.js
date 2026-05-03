@@ -307,7 +307,9 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         message:
           error.message === "This line already exists on the board."
             ? "Looks like this idea is already on IceBreaker."
-            : "That did not go through. Please try again in a moment.",
+            : error?.code === "permission-denied"
+              ? "You cannot post new lines from this account right now."
+              : "That did not go through. Please try again in a moment.",
         duplicateWarning:
           error.message === "This line already exists on the board."
             ? "We already have this one."
@@ -433,7 +435,9 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         message:
           error.message === "This line is not open for voting."
             ? error.message
-            : "Vote failed. Check your Firebase config and Firestore rules.",
+            : error?.code === "permission-denied"
+              ? "Voting is disabled for this account right now."
+              : "Vote failed. Check your Firebase config and Firestore rules.",
       };
     }
   }

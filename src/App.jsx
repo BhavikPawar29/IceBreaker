@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import {
   Navigate,
   Route,
@@ -7,38 +7,49 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import {
+  collection,
+  getCountFromServer,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import AppHeader from "./components/AppHeader";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
-import BoardPage from "./components/BoardPage";
-import CreatePage from "./components/CreatePage";
-import LandingPage from "./components/LandingPage";
-import LineDetailPage from "./components/LineDetailPage";
-import LoginPage from "./components/LoginPage";
-import ProfilePage from "./components/ProfilePage";
-import PublicProfilePage from "./components/PublicProfilePage";
-import AdminPage from "./components/AdminPage";
-import { firebaseConfigReady } from "./lib/firebase";
+import RouteShimmer from "./components/RouteShimmer";
+import { LINE_STATUS_APPROVED } from "./constants/lineStatuses";
+import { db, firebaseConfigReady } from "./lib/firebase";
 import useAuth from "./context/useAuth";
 import useCommunityBoard from "./hooks/useCommunityBoard";
 import useAdminDashboard from "./hooks/useAdminDashboard";
 import { ALLOWED_CATEGORIES } from "./constants/categories";
 
+const BoardPage = lazy(() => import("./components/BoardPage"));
+const CreatePage = lazy(() => import("./components/CreatePage"));
+const LandingPage = lazy(() => import("./components/LandingPage"));
+const LineDetailPage = lazy(() => import("./components/LineDetailPage"));
+const LoginPage = lazy(() => import("./components/LoginPage"));
+const ProfilePage = lazy(() => import("./components/ProfilePage"));
+const PublicProfilePage = lazy(() => import("./components/PublicProfilePage"));
+const AdminPage = lazy(() => import("./components/AdminPage"));
+
 function LoadingShell({
   title = "Loading IceBreaker",
   note = "Bringing your board back into place.",
 }) {
+  const loadingLabel = `${title}. ${note}`;
+
   return (
     <section className="main-shell main-shell--loading">
-      <article className="section-card app-loader-card" aria-live="polite">
-        <div className="app-loader-mark" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-        <p className="eyebrow">Just a second</p>
-        <h2>{title}</h2>
-        <p className="page-description">{note}</p>
+      <article
+        className="section-card app-loader-card"
+        aria-label={loadingLabel}
+        aria-live="polite"
+      >
+        <RouteShimmer className="route-shimmer--hero" />
       </article>
     </section>
   );
@@ -67,14 +78,14 @@ function PublicLineRoute({ getLineById }) {
 
 function PublicProfileRoute({ getPublicProfileLines }) {
   const { id } = useParams();
-  const [lines, setLines] = useState([]);
+  const [lines, setLines] = useState(undefined);
 
   useEffect(() => {
     let isCancelled = false;
 
     getPublicProfileLines(id).then((nextLines) => {
       if (!isCancelled) {
-        setLines(nextLines);
+        setLines(nextLines || []);
       }
     });
 
@@ -88,6 +99,11 @@ function PublicProfileRoute({ getPublicProfileLines }) {
 
 function App() {
   const [filter, setFilter] = useState("all");
+  const [landingStats, setLandingStats] = useState({
+    total: 0,
+    topScore: 0,
+    promotedCount: 0,
+  });
   const location = useLocation();
   const navigate = useNavigate();
   const activeBoardView =
@@ -101,8 +117,10 @@ function App() {
   const isAdminRoute = location.pathname === "/admin";
   const {
     authEnabled,
+    banInfo,
     isAdmin,
     isAuthReady,
+    isBanReady,
     isRoleReady,
     sendEmailPasswordReset,
     signInWithEmail,
@@ -162,6 +180,8 @@ function App() {
   );
   const topLine = filteredCandidates[0] ?? candidateLines[0] ?? null;
   const isSessionLoading = !isAuthReady || (Boolean(user) && !isRoleReady);
+  const isBanned = Boolean(user && banInfo);
+  const banReason = banInfo?.reason?.trim();
   const stats = {
     total: candidateLines.length + promotedLines.length,
     topScore: topLine?.score ?? 0,
@@ -188,21 +208,84 @@ function App() {
   const isLandingRoute = location.pathname === "/";
   const isLoginRoute = location.pathname === "/login";
   const shouldShowFooter = !user && !isLoginRoute;
+  const isInAppSurface = Boolean(user) && !isLandingRoute && !isLoginRoute;
+  const heroStats = user ? stats : landingStats;
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadLandingStats() {
+      if (!db || !firebaseConfigReady || user || !isLandingRoute) {
+        return;
+      }
+
+      try {
+        const linesCollection = collection(db, "lines");
+        const [approvedCountSnapshot, promotedCountSnapshot, topSnapshot] =
+          await Promise.all([
+            getCountFromServer(
+              query(
+                linesCollection,
+                where("status", "==", LINE_STATUS_APPROVED),
+              ),
+            ),
+            getCountFromServer(
+              query(
+                linesCollection,
+                where("status", "==", LINE_STATUS_APPROVED),
+                where("promoted", "==", true),
+              ),
+            ),
+            getDocs(
+              query(
+                linesCollection,
+                where("status", "==", LINE_STATUS_APPROVED),
+                where("promoted", "==", false),
+                orderBy("score", "desc"),
+                orderBy("createdAt", "desc"),
+                limit(1),
+              ),
+            ),
+          ]);
+
+        if (isCancelled) {
+          return;
+        }
+
+        const topLine = topSnapshot.docs[0]?.data() || null;
+
+        setLandingStats({
+          total: approvedCountSnapshot.data().count || 0,
+          topScore: topLine?.score || 0,
+          promotedCount: promotedCountSnapshot.data().count || 0,
+        });
+      } catch (error) {
+        console.error("Failed to load landing stats.", error);
+      }
+    }
+
+    loadLandingStats();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isLandingRoute, user]);
 
   return (
-    <div className="page-shell">
+    <div className={`page-shell ${isInAppSurface ? "page-shell--app" : ""}`}>
       <div className="paper-grain" aria-hidden="true"></div>
       {isLandingRoute ? (
         <Hero
           authEnabled={authEnabled}
           isAuthReady={isAuthReady}
-          stats={stats}
+          stats={heroStats}
           user={user}
         />
       ) : isLoginRoute ? null : (
         <AppHeader
           authEnabled={authEnabled}
           isAdmin={isAdmin}
+          isBanned={isBanned}
           onSignOut={signOutUser}
           user={user}
         />
@@ -219,158 +302,171 @@ function App() {
             {boardError}
           </section>
         ) : null}
+        {user && isBanReady && isBanned ? (
+          <section className="status-banner status-banner--error">
+            Your account cannot post new lines right now.
+            {banReason ? ` Reason: ${banReason}.` : ""}
+          </section>
+        ) : null}
 
-        <Routes>
-          <Route path="/" element={<LandingPage authEnabled={authEnabled} />} />
-          <Route
-            path="/login"
-            element={
-              isSessionLoading ? (
-                <LoadingShell
-                  title="Opening your account"
-                  note="Checking your sign-in so you land in the right place."
-                />
-              ) : user ? (
-                <Navigate to="/promoted" replace />
-              ) : (
-                <LoginPage
-                  authEnabled={authEnabled}
-                  isAuthReady={isAuthReady}
-                  onEmailLogin={handleEmailLogin}
-                  onEmailSignUp={handleEmailSignUp}
-                  onPasswordReset={handlePasswordReset}
-                  onGoogleSignIn={handleGoogleSignIn}
-                />
-              )
-            }
-          />
-          <Route
-            path="/lines"
-            element={
-              isSessionLoading ? (
-                <LoadingShell note="Pulling the latest ideas onto the board." />
-              ) : user ? (
-                <section className="main-shell">
-                  <BoardPage
-                    activeRoute="lines"
-                    categories={combinedCategories}
-                    filter={filter}
-                    hasMore={hasMoreCandidates}
-                    isBoardLoading={isBoardLoading}
-                    isFetchingMore={isFetchingMore}
-                    lines={filteredCandidates}
-                    onLoadMore={() => loadMoreLines("candidates")}
-                    onFilterChange={setFilter}
-                    onVote={voteOnLine}
-                    user={user}
-                    votes={votes}
+        <Suspense fallback={<LoadingShell />}>
+          <Routes>
+            <Route
+              path="/"
+              element={<LandingPage authEnabled={authEnabled} />}
+            />
+            <Route
+              path="/login"
+              element={
+                isSessionLoading ? (
+                  <LoadingShell
+                    title="Opening your account"
+                    note="Checking your sign-in so you land in the right place."
                   />
-                </section>
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-          <Route
-            path="/promoted"
-            element={
-              isSessionLoading ? (
-                <LoadingShell note="Gathering the ideas people loved most." />
-              ) : user ? (
-                <section className="main-shell">
-                  <BoardPage
-                    activeRoute="promoted"
-                    categories={combinedCategories}
-                    filter={filter}
-                    hasMore={hasMorePromoted}
-                    isBoardLoading={isBoardLoading}
-                    isFetchingMore={isFetchingMore}
-                    lines={filteredPromoted}
-                    onLoadMore={() => loadMoreLines("promoted")}
-                    onFilterChange={setFilter}
-                    onVote={voteOnLine}
-                    user={user}
-                    votes={votes}
-                  />
-                </section>
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-          <Route
-            path="/create"
-            element={
-              isSessionLoading ? (
-                <LoadingShell
-                  title="Opening your submission space"
-                  note="Holding your session steady before we open the form."
-                />
-              ) : user ? (
-                <section className="main-shell">
-                  <CreatePage
+                ) : user ? (
+                  <Navigate to="/promoted" replace />
+                ) : (
+                  <LoginPage
                     authEnabled={authEnabled}
-                    lookupExistingLine={lookupExistingLine}
-                    onSubmit={submitLine}
-                    user={user}
+                    isAuthReady={isAuthReady}
+                    onEmailLogin={handleEmailLogin}
+                    onEmailSignUp={handleEmailSignUp}
+                    onPasswordReset={handlePasswordReset}
+                    onGoogleSignIn={handleGoogleSignIn}
                   />
-                </section>
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              isSessionLoading ? (
-                <LoadingShell
-                  title="Opening your profile"
-                  note="Laying out your ideas, reviews, and saved progress."
-                />
-              ) : user ? (
-                <section className="main-shell">
-                  <ProfilePage lines={userLines} user={user} />
-                </section>
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-          <Route
-            path="/profile/:id"
-            element={
-              <PublicProfileRoute
-                getPublicProfileLines={getPublicProfileLines}
-              />
-            }
-          />
-          <Route
-            path="/line/:id"
-            element={<PublicLineRoute getLineById={getLineById} />}
-          />
-          <Route
-            path="/admin"
-            element={
-              isSessionLoading ? (
-                <LoadingShell
-                  title="Checking review access"
-                  note="Making sure the right moderation controls open for you."
-                />
-              ) : user ? (
-                isAdmin ? (
+                )
+              }
+            />
+            <Route
+              path="/lines"
+              element={
+                isSessionLoading ? (
+                  <LoadingShell note="Pulling the latest ideas onto the board." />
+                ) : user ? (
                   <section className="main-shell">
-                    <AdminPage dashboard={adminDashboard} />
+                    <BoardPage
+                      activeRoute="lines"
+                      categories={combinedCategories}
+                      filter={filter}
+                      hasMore={hasMoreCandidates}
+                      isBoardLoading={isBoardLoading}
+                      isFetchingMore={isFetchingMore}
+                      lines={filteredCandidates}
+                      onLoadMore={() => loadMoreLines("candidates")}
+                      onFilterChange={setFilter}
+                      onVote={voteOnLine}
+                      user={user}
+                      votes={votes}
+                    />
                   </section>
                 ) : (
-                  <Navigate to="/promoted" replace />
+                  <Navigate to="/login" replace />
                 )
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-        </Routes>
+              }
+            />
+            <Route
+              path="/promoted"
+              element={
+                isSessionLoading ? (
+                  <LoadingShell note="Gathering the ideas people loved most." />
+                ) : user ? (
+                  <section className="main-shell">
+                    <BoardPage
+                      activeRoute="promoted"
+                      categories={combinedCategories}
+                      filter={filter}
+                      hasMore={hasMorePromoted}
+                      isBoardLoading={isBoardLoading}
+                      isFetchingMore={isFetchingMore}
+                      lines={filteredPromoted}
+                      onLoadMore={() => loadMoreLines("promoted")}
+                      onFilterChange={setFilter}
+                      onVote={voteOnLine}
+                      user={user}
+                      votes={votes}
+                    />
+                  </section>
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/create"
+              element={
+                isSessionLoading ? (
+                  <LoadingShell
+                    title="Opening your submission space"
+                    note="Holding your session steady before we open the form."
+                  />
+                ) : user ? (
+                  <section className="main-shell">
+                    <CreatePage
+                      authEnabled={authEnabled}
+                      isBanned={isBanned}
+                      banReason={banReason}
+                      lookupExistingLine={lookupExistingLine}
+                      onSubmit={submitLine}
+                      user={user}
+                    />
+                  </section>
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                isSessionLoading ? (
+                  <LoadingShell
+                    title="Opening your profile"
+                    note="Laying out your ideas, reviews, and saved progress."
+                  />
+                ) : user ? (
+                  <section className="main-shell">
+                    <ProfilePage lines={userLines} user={user} />
+                  </section>
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/profile/:id"
+              element={
+                <PublicProfileRoute
+                  getPublicProfileLines={getPublicProfileLines}
+                />
+              }
+            />
+            <Route
+              path="/line/:id"
+              element={<PublicLineRoute getLineById={getLineById} />}
+            />
+            <Route
+              path="/admin"
+              element={
+                isSessionLoading ? (
+                  <LoadingShell
+                    title="Checking review access"
+                    note="Making sure the right moderation controls open for you."
+                  />
+                ) : user ? (
+                  isAdmin ? (
+                    <section className="main-shell">
+                      <AdminPage dashboard={adminDashboard} />
+                    </section>
+                  ) : (
+                    <Navigate to="/promoted" replace />
+                  )
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+          </Routes>
+        </Suspense>
       </main>
       {shouldShowFooter ? <Footer /> : null}
     </div>
