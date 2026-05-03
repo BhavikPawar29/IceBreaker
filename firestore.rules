@@ -257,7 +257,8 @@ service cloud.firestore {
     }
 
     match /bannedUsers/{uid} {
-      allow read: if isAdmin();
+      allow get: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
 
       allow create: if isAdmin()
         && request.resource.data.keys().hasOnly(['reason', 'createdAt', 'createdByUid'])
