@@ -3,7 +3,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="footer-inner">
         <div className="footer-credits">
-          <p className="eyebrow">Built by these stupids</p>
+          <p className="eyebrow">Built by</p>
           <div className="footer-authors">
             <a
               href="https://bhavik-pawar.vercel.app/"

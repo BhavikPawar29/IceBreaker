@@ -7,6 +7,7 @@ import {
   LINE_STATUS_REMOVED,
 } from "../constants/lineStatuses";
 import { formatCategory, formatLineStatus } from "../utils/board";
+import RouteShimmer from "./RouteShimmer";
 
 const ADMIN_TABS = ["Overview", "Review", "Users", "Lines", "Bans"];
 const STATUS_FILTERS = [
@@ -578,65 +579,80 @@ function AdminPage({ dashboard }) {
       ) : null}
 
       {isLoading ? (
-        <article className="section-card">
-          <p className="empty-state">Loading admin data...</p>
+        <article
+          className="section-card route-skeleton-card"
+          aria-live="polite"
+        >
+          <RouteShimmer />
         </article>
       ) : null}
 
       {!isLoading && activeTab === "Overview" ? (
-        <div className="admin-grid">
-          <div className="admin-stat-grid">
-            <AdminStatCard label="Users" value={stats.users} />
-            <AdminStatCard label="Pending" value={stats.pending} />
-            <AdminStatCard label="Approved" value={stats.approved} />
-            <AdminStatCard label="Rejected" value={stats.rejected} />
-            <AdminStatCard label="Banned" value={stats.banned} />
-            <AdminStatCard label="Promoted" value={stats.promoted} />
-            <AdminStatCard label="Saves" value={stats.saves} />
-            <AdminStatCard label="Removed" value={stats.removed} />
+        <div className="admin-overview-grid">
+          <div className="admin-overview-col">
+            <div className="admin-stat-grid">
+              <AdminStatCard label="Users" value={stats.users} />
+              <AdminStatCard label="Pending" value={stats.pending} />
+              <AdminStatCard label="Approved" value={stats.approved} />
+              <AdminStatCard label="Rejected" value={stats.rejected} />
+              <AdminStatCard label="Banned" value={stats.banned} />
+              <AdminStatCard label="Promoted" value={stats.promoted} />
+              <AdminStatCard label="Saves" value={stats.saves} />
+              <AdminStatCard label="Removed" value={stats.removed} />
+            </div>
+
+            <article className="section-card admin-panel">
+              <h3>Newest users</h3>
+              {newestUsers.length ? (
+                <div className="admin-mini-list">
+                  {newestUsers.map((profile) => (
+                    <div key={profile.id} className="admin-mini-row">
+                      <span>{getProfileLabel(profile)}</span>
+                      <small>{getProfileEmail(profile)}</small>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="empty-state">No users yet.</p>
+              )}
+            </article>
+
+            <article className="section-card admin-panel">
+              <h3>Oldest pending</h3>
+              {oldestPending.length ? (
+                <div className="admin-mini-list">
+                  {oldestPending.map((line) => (
+                    <AdminMiniLine
+                      key={line.id}
+                      line={line}
+                      userMap={userMap}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="empty-state">No pending queue.</p>
+              )}
+            </article>
           </div>
 
-          <article className="section-card admin-panel">
-            <h3>Newest users</h3>
-            {newestUsers.length ? (
-              <div className="admin-mini-list">
-                {newestUsers.map((profile) => (
-                  <div key={profile.id} className="admin-mini-row">
-                    <span>{getProfileLabel(profile)}</span>
-                    <small>{getProfileEmail(profile)}</small>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="empty-state">No users yet.</p>
-            )}
-          </article>
-
-          <article className="section-card admin-panel">
-            <h3>Newest submissions</h3>
-            {lines.slice(0, 4).length ? (
-              <div className="admin-mini-list">
-                {lines.slice(0, 4).map((line) => (
-                  <AdminMiniLine key={line.id} line={line} userMap={userMap} />
-                ))}
-              </div>
-            ) : (
-              <p className="empty-state">No submissions yet.</p>
-            )}
-          </article>
-
-          <article className="section-card admin-panel">
-            <h3>Oldest pending</h3>
-            {oldestPending.length ? (
-              <div className="admin-mini-list">
-                {oldestPending.map((line) => (
-                  <AdminMiniLine key={line.id} line={line} userMap={userMap} />
-                ))}
-              </div>
-            ) : (
-              <p className="empty-state">No pending queue.</p>
-            )}
-          </article>
+          <div className="admin-overview-col">
+            <article className="section-card admin-panel">
+              <h3>Newest submissions</h3>
+              {lines.slice(0, 4).length ? (
+                <div className="admin-mini-list">
+                  {lines.slice(0, 4).map((line) => (
+                    <AdminMiniLine
+                      key={line.id}
+                      line={line}
+                      userMap={userMap}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="empty-state">No submissions yet.</p>
+              )}
+            </article>
+          </div>
         </div>
       ) : null}
 

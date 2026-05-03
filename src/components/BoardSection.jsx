@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import LineCard from "./LineCard";
+import RouteShimmer from "./RouteShimmer";
 
 function BoardSection({
   canVote,
+  emptyActions = null,
   emptyMessage,
   hasMore,
   isBoardLoading,
@@ -14,48 +16,57 @@ function BoardSection({
 }) {
   const sentinelRef = useRef(null);
 
-  useEffect(() => {
-    if (!hasMore || isBoardLoading || isFetchingMore) {
-      return undefined;
-    }
+  useEffect(
+    function setupInfiniteScrollObserver() {
+      if (!hasMore || isBoardLoading || isFetchingMore) {
+        return undefined;
+      }
 
-    const currentSentinel = sentinelRef.current;
+      const currentSentinel = sentinelRef.current;
 
-    if (!currentSentinel) {
-      return undefined;
-    }
+      if (!currentSentinel) {
+        return undefined;
+      }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries;
 
-        if (entry?.isIntersecting) {
-          onLoadMore();
-        }
-      },
-      {
-        rootMargin: "300px 0px",
-      },
-    );
+          if (entry?.isIntersecting) {
+            onLoadMore();
+          }
+        },
+        {
+          rootMargin: "300px 0px",
+        },
+      );
 
-    observer.observe(currentSentinel);
+      observer.observe(currentSentinel);
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [hasMore, isBoardLoading, isFetchingMore, onLoadMore]);
+      return () => {
+        observer.disconnect();
+      };
+    },
+    [hasMore, isBoardLoading, isFetchingMore, onLoadMore],
+  );
 
   return (
     <div className="board-grid" aria-live="polite">
       {isBoardLoading ? (
-        <article className="section-card board-empty">
-          <p className="empty-state">Finding good ideas for you...</p>
+        <article
+          className="section-card board-empty route-skeleton-card"
+          aria-live="polite"
+        >
+          <RouteShimmer />
         </article>
       ) : null}
 
       {!isBoardLoading && !lines.length ? (
         <article className="section-card board-empty">
           <p className="empty-state">{emptyMessage}</p>
+          {emptyActions ? (
+            <div className="empty-actions">{emptyActions}</div>
+          ) : null}
         </article>
       ) : null}
 

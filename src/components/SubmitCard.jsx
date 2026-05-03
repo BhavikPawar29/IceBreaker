@@ -7,7 +7,14 @@ import Snackbar from "./Snackbar";
 const SUBMIT_COOLDOWN_MS = 30 * 1000;
 const SUBMIT_COOLDOWN_KEY = "icebreaker-last-submit-at";
 
-function SubmitCard({ authEnabled, lookupExistingLine, onSubmit, user }) {
+function SubmitCard({
+  authEnabled,
+  banReason,
+  isBanned,
+  lookupExistingLine,
+  onSubmit,
+  user,
+}) {
   const [form, setForm] = useState({
     category: DEFAULT_CATEGORY,
     text: "",
@@ -52,6 +59,15 @@ function SubmitCard({ authEnabled, lookupExistingLine, onSubmit, user }) {
 
     if (!user) {
       showFeedback("Sign in first so we know who sent the idea.", "warning");
+      return;
+    }
+    if (isBanned) {
+      showFeedback(
+        banReason
+          ? `Posting is disabled for this account. Reason: ${banReason}.`
+          : "Posting is disabled for this account.",
+        "warning",
+      );
       return;
     }
 
@@ -113,8 +129,7 @@ function SubmitCard({ authEnabled, lookupExistingLine, onSubmit, user }) {
   return (
     <div className="section-card submit-card" id="submit">
       <div className="card-heading">
-        <p className="eyebrow">Share one</p>
-        <h3>Add a conversation idea</h3>
+        <h3>Add a line</h3>
       </div>
       <form className="submission-form" onSubmit={handleSubmit}>
         <label>
@@ -140,7 +155,7 @@ function SubmitCard({ authEnabled, lookupExistingLine, onSubmit, user }) {
             maxLength="240"
             placeholder="Example: You seem like the kind of person who always finds the hidden best item on a menu."
             required
-            disabled={!user || isSubmitting}
+            disabled={!user || isSubmitting || isBanned}
             value={form.text}
             onChange={handleChange}
           />
@@ -148,13 +163,16 @@ function SubmitCard({ authEnabled, lookupExistingLine, onSubmit, user }) {
         <button
           type="submit"
           className="submit-button"
-          disabled={!authEnabled || !user || isSubmitting}
+          disabled={!authEnabled || !user || isSubmitting || isBanned}
+          aria-disabled={!authEnabled || !user || isSubmitting || isBanned}
         >
           {isSubmitting
             ? "Sending..."
-            : user
-              ? "Send for review"
-              : "Sign in to publish"}
+            : isBanned
+              ? "Posting disabled"
+              : user
+                ? "Send for review"
+                : "Sign in to publish"}
         </button>
       </form>
       <Snackbar
