@@ -37,7 +37,7 @@ function BoardSection({
           }
         },
         {
-          rootMargin: "300px 0px",
+          rootMargin: "120px 0px",
         },
       );
 
