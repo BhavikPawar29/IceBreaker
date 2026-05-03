@@ -36,6 +36,8 @@ function AuthProvider({ children }) {
   const [isAuthReady, setIsAuthReady] = useState(!firebaseConfigReady);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isRoleReady, setIsRoleReady] = useState(!firebaseConfigReady);
+  const [banInfo, setBanInfo] = useState(null);
+  const [isBanReady, setIsBanReady] = useState(!firebaseConfigReady);
 
   useEffect(() => {
     if (!auth) {
@@ -86,6 +88,45 @@ function AuthProvider({ children }) {
     }
 
     loadRole();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [user]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadBanInfo() {
+      if (!db || !user) {
+        if (!isCancelled) {
+          setBanInfo(null);
+          setIsBanReady(true);
+        }
+        return;
+      }
+
+      setIsBanReady(false);
+
+      try {
+        const banSnapshot = await getDoc(doc(db, "bannedUsers", user.uid));
+        const nextBanInfo = banSnapshot.exists() ? banSnapshot.data() : null;
+
+        if (!isCancelled) {
+          setBanInfo(nextBanInfo);
+          setIsBanReady(true);
+        }
+      } catch (error) {
+        console.error("Failed to load ban document.", error);
+
+        if (!isCancelled) {
+          setBanInfo(null);
+          setIsBanReady(true);
+        }
+      }
+    }
+
+    loadBanInfo();
 
     return () => {
       isCancelled = true;
@@ -192,8 +233,10 @@ function AuthProvider({ children }) {
 
   const value = {
     authEnabled: firebaseConfigReady,
+    banInfo,
     isAdmin,
     isAuthReady,
+    isBanReady,
     isRoleReady,
     sendEmailPasswordReset,
     signInWithEmail,

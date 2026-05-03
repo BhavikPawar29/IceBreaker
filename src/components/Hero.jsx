@@ -1,6 +1,45 @@
 import { NavLink } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import useIsMobile from "../hooks/useIsMobile";
 import SketchIllustration from "./SketchIllustration";
+
+function CountUp({ value, duration = 750 }) {
+  const [displayValue, setDisplayValue] = useState(0);
+  const frameRef = useRef(0);
+  const startRef = useRef(0);
+  const fromRef = useRef(0);
+
+  useEffect(() => {
+    cancelAnimationFrame(frameRef.current);
+    startRef.current = 0;
+    fromRef.current = displayValue;
+
+    function step(timestamp) {
+      if (!startRef.current) {
+        startRef.current = timestamp;
+      }
+
+      const elapsed = timestamp - startRef.current;
+      const progress = Math.min(1, elapsed / duration);
+      const eased = 1 - (1 - progress) * (1 - progress);
+      const nextValue = Math.round(
+        fromRef.current + (value - fromRef.current) * eased,
+      );
+
+      setDisplayValue(nextValue);
+
+      if (progress < 1) {
+        frameRef.current = requestAnimationFrame(step);
+      }
+    }
+
+    frameRef.current = requestAnimationFrame(step);
+
+    return () => cancelAnimationFrame(frameRef.current);
+  }, [duration, value]);
+
+  return <strong>{displayValue}</strong>;
+}
 
 function Hero({ authEnabled, stats, user }) {
   const isMobile = useIsMobile();
@@ -9,7 +48,7 @@ function Hero({ authEnabled, stats, user }) {
     <header className="hero">
       <div className="topbar">
         <a className="brand" href="#top">
-          <span className="brand-mark">IceBreaker</span>
+          <span className="brand-mark">Breaking Ice</span>
         </a>
         {!authEnabled ? (
           <span className="auth-chip">Firebase config not connected yet</span>
@@ -41,21 +80,25 @@ function Hero({ authEnabled, stats, user }) {
           </div>
           <div className="hero-stats" aria-label="Platform summary">
             <article>
-              <strong>{stats.total}</strong>
+              <CountUp value={stats.total} />
               <span>community lines</span>
             </article>
             <article>
-              <strong>{stats.topScore}</strong>
+              <CountUp value={stats.topScore} />
               <span>top live score</span>
             </article>
             <article>
-              <strong>{stats.promotedCount}</strong>
+              <CountUp value={stats.promotedCount} />
               <span>promoted lines</span>
             </article>
           </div>
         </div>
 
-        {!isMobile ? <SketchIllustration /> : null}
+        {!isMobile ? (
+          <aside className="hero-side">
+            <SketchIllustration />
+          </aside>
+        ) : null}
       </section>
     </header>
   );

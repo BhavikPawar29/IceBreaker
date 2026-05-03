@@ -5,15 +5,8 @@ function LandingPage({ authEnabled }) {
     <section className="landing-shell">
       <section className="landing-section feature-band">
         <div className="section-copy">
-          <p className="eyebrow">For shy people</p>
-          <h2>
-            Not for strangers. For people who already know each other a little.
-          </h2>
-          <p>
-            IceBreaker helps when there is already a small connection, but you
-            still do not know what to ask next. The goal is to make
-            conversations feel easier, warmer, and more natural.
-          </p>
+          <p className="eyebrow">What makes it useful</p>
+          <h2>Quick prompts, filtered by people who use them.</h2>
         </div>
         <div className="feature-list">
           <article className="section-card">
@@ -76,7 +69,7 @@ function LandingPage({ authEnabled }) {
       <section className="landing-section proof-band">
         <div className="section-copy">
           <p className="eyebrow">Why this is different</p>
-          <h2>It is not AI dating advice and it is not generic pickup copy.</h2>
+          <h2>Human judgment over random one-liners.</h2>
         </div>
         <div className="comparison-grid">
           <article className="section-card comparison-card">
@@ -103,13 +96,14 @@ function LandingPage({ authEnabled }) {
       <section className="landing-section cta-band">
         <div className="section-card cta-card">
           <p className="eyebrow">When you are ready</p>
-          <h2>
-            Come steal a few good conversation saves from people who get it.
-          </h2>
+          <h2>Join the board and start with one strong prompt today.</h2>
           <div className="hero-actions">
             <Link className="ink-link" to="/login">
               {authEnabled ? "Get inside the app" : "Firebase config required"}
             </Link>
+            <a className="ghost-link" href="#how-it-works">
+              See the flow
+            </a>
           </div>
         </div>
       </section>

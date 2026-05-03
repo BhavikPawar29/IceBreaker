@@ -20,6 +20,15 @@ service cloud.firestore {
       return name == 'Anonymous';
     }
 
+    function isBanned() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/bannedUsers/$(request.auth.uid));
+    }
+
+    function isSupportedLineStatus(status) {
+      return status in ['pending', 'approved', 'rejected', 'removed'];
+    }
+
     function isValidPrivateProfile(data) {
       return data.keys().hasOnly(['displayName', 'email', 'updatedAt'])
         && data.keys().hasAll(['displayName', 'email', 'updatedAt'])
@@ -163,6 +172,44 @@ service cloud.firestore {
         && request.resource.data.promotionScore == null;
     }
 
+    function isAdminLineStatusUpdate() {
+      return hasLineShape(request.resource.data)
+        && request.resource.data.createdByUid == resource.data.createdByUid
+        && request.resource.data.createdByName == resource.data.createdByName
+        && request.resource.data.text == resource.data.text
+        && request.resource.data.normalizedText == resource.data.normalizedText
+        && request.resource.data.fingerprint == resource.data.fingerprint
+        && request.resource.data.category == resource.data.category
+        && request.resource.data.category is string
+        && isAllowedCategory(request.resource.data.category)
+        && request.resource.data.score == resource.data.score
+        && request.resource.data.upvoteCount == resource.data.upvoteCount
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt is int
+        && request.resource.data.updatedAt >= resource.data.updatedAt
+        && isRecentMillis(request.resource.data.updatedAt)
+        && isSupportedLineStatus(request.resource.data.status)
+        && (
+          request.resource.data.status == 'pending'
+            ? request.resource.data.moderatedAt == null
+              && request.resource.data.moderatedByUid == null
+              && request.resource.data.moderationReason == null
+            : request.resource.data.moderatedAt is int
+              && isRecentMillis(request.resource.data.moderatedAt)
+              && request.resource.data.moderatedByUid == request.auth.uid
+              && (
+                request.resource.data.moderationReason == null
+                || (
+                  request.resource.data.moderationReason is string
+                  && request.resource.data.moderationReason.size() <= 200
+                )
+              )
+        )
+        && request.resource.data.promoted == false
+        && request.resource.data.promotedAt == null
+        && request.resource.data.promotionScore == null;
+    }
+
     function isVoteAggregateUpdate(lineId) {
       return hasLineShape(request.resource.data)
         && resource.data.status == 'approved'
@@ -209,11 +256,37 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /bannedUsers/{uid} {
+      allow get: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['reason', 'createdAt', 'createdByUid'])
+        && request.resource.data.keys().hasAll(['reason', 'createdAt', 'createdByUid'])
+        && request.resource.data.reason is string
+        && request.resource.data.reason.size() >= 1
+        && request.resource.data.reason.size() <= 200
+        && isRecentMillis(request.resource.data.createdAt)
+        && request.resource.data.createdByUid == request.auth.uid;
+
+      allow update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['reason', 'createdAt', 'createdByUid'])
+        && request.resource.data.keys().hasAll(['reason', 'createdAt', 'createdByUid'])
+        && request.resource.data.reason is string
+        && request.resource.data.reason.size() >= 1
+        && request.resource.data.reason.size() <= 200
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.createdByUid == resource.data.createdByUid;
+
+      allow delete: if isAdmin();
+    }
+
     match /lines/{lineId} {
-      allow get: if isSignedIn() || canReadExistingLine();
+      allow get: if canReadExistingLine();
       allow list: if canReadExistingLine();
 
       allow create: if isSignedIn()
+        && !isBanned()
         && hasLineShape(request.resource.data)
         && lineId == request.resource.data.fingerprint
         && request.resource.data.text is string
@@ -243,7 +316,7 @@ service cloud.firestore {
         && request.resource.data.promotedAt == null
         && request.resource.data.promotionScore == null;
 
-      allow update: if (isAdmin() && isPendingModerationUpdate())
+      allow update: if (isAdmin() && (isPendingModerationUpdate() || isAdminLineStatusUpdate()))
         || (isSignedIn() && isVoteAggregateUpdate(lineId));
 
       allow delete: if false;

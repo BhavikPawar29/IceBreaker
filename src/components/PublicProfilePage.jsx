@@ -1,8 +1,22 @@
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
 import { buildAbsoluteUrl, shareUrl } from "../utils/share";
+import RouteShimmer from "./RouteShimmer";
 
 function PublicProfilePage({ lines, profileId }) {
+  if (lines === undefined) {
+    return (
+      <section className="main-shell">
+        <article
+          className="section-card route-skeleton-card"
+          aria-live="polite"
+        >
+          <RouteShimmer />
+        </article>
+      </section>
+    );
+  }
+
   const sharedCount = lines.length;
 
   async function handleShareProfile() {

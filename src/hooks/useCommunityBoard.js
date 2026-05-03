@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   collection,
   doc,
@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   runTransaction,
+  setDoc,
   startAfter,
   where,
 } from "firebase/firestore";
@@ -35,6 +36,8 @@ function mapDocs(snapshot) {
 
 function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
   const boardEnabled = Boolean(activeBoardView);
+  const userUid = user?.uid || "";
+  const fetchedVoteLineIdsRef = useRef(new Set());
   const [candidateLines, setCandidateLines] = useState(
     emptyBoardState.candidateLines,
   );
@@ -52,190 +55,220 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
   const [isBoardLoading, setIsBoardLoading] = useState(firebaseConfigReady);
   const [boardError, setBoardError] = useState("");
 
-  useEffect(() => {
-    if (!db || !boardEnabled) {
-      setCandidateLines(emptyBoardState.candidateLines);
-      setPromotedLines(emptyBoardState.promotedLines);
-      setPendingLines([]);
-      setCandidateCursor(null);
-      setPromotedCursor(null);
-      setHasMoreCandidates(true);
-      setHasMorePromoted(true);
-      setIsFetchingMore(false);
-      setUserLines(emptyBoardState.userLines);
-      setVotes(emptyBoardState.votes);
-      setIsBoardLoading(false);
-      setBoardError("");
-      return undefined;
-    }
+  useEffect(
+    function loadBoardForActiveView() {
+      if (!db || !boardEnabled) {
+        setCandidateLines(emptyBoardState.candidateLines);
+        setPromotedLines(emptyBoardState.promotedLines);
+        setPendingLines([]);
+        setCandidateCursor(null);
+        setPromotedCursor(null);
+        setHasMoreCandidates(true);
+        setHasMorePromoted(true);
+        setIsFetchingMore(false);
+        setUserLines(emptyBoardState.userLines);
+        setVotes(emptyBoardState.votes);
+        setIsBoardLoading(false);
+        setBoardError("");
+        return undefined;
+      }
 
-    let isCancelled = false;
+      let isCancelled = false;
 
-    async function loadInitialBoard() {
-      setIsBoardLoading(true);
-      setBoardError("");
+      async function loadInitialBoard() {
+        setIsBoardLoading(true);
+        setBoardError("");
 
-      try {
-        const shouldLoadCandidates = activeBoardView === "candidates";
-        const shouldLoadPromoted = activeBoardView === "promoted";
-        const shouldLoadProfile = activeBoardView === "profile";
-        const shouldLoadAdmin = activeBoardView === "admin" && isAdmin;
+        try {
+          const shouldLoadCandidates = activeBoardView === "candidates";
+          const shouldLoadPromoted = activeBoardView === "promoted";
+          const shouldLoadProfile = activeBoardView === "profile";
+          const shouldLoadAdmin = activeBoardView === "admin" && isAdmin;
 
-        const candidatePromise = shouldLoadCandidates
-          ? getDocs(
-              query(
-                collection(db, "lines"),
-                where("status", "==", LINE_STATUS_APPROVED),
-                where("promoted", "==", false),
-                orderBy("score", "desc"),
-                orderBy("createdAt", "desc"),
-                limit(PAGE_SIZE),
-              ),
-            )
-          : Promise.resolve(null);
-
-        const promotedPromise = shouldLoadPromoted
-          ? getDocs(
-              query(
-                collection(db, "lines"),
-                where("status", "==", LINE_STATUS_APPROVED),
-                where("promoted", "==", true),
-                orderBy("promotedAt", "desc"),
-                limit(PAGE_SIZE),
-              ),
-            )
-          : Promise.resolve(null);
-
-        const userPromise =
-          shouldLoadProfile && user
+          const candidatePromise = shouldLoadCandidates
             ? getDocs(
                 query(
                   collection(db, "lines"),
-                  where("createdByUid", "==", user.uid),
+                  where("status", "==", LINE_STATUS_APPROVED),
+                  where("promoted", "==", false),
+                  orderBy("score", "desc"),
+                  orderBy("createdAt", "desc"),
+                  limit(PAGE_SIZE),
+                ),
+              )
+            : Promise.resolve(null);
+
+          const promotedPromise = shouldLoadPromoted
+            ? getDocs(
+                query(
+                  collection(db, "lines"),
+                  where("status", "==", LINE_STATUS_APPROVED),
+                  where("promoted", "==", true),
+                  orderBy("promotedAt", "desc"),
+                  limit(PAGE_SIZE),
+                ),
+              )
+            : Promise.resolve(null);
+
+          const userPromise =
+            shouldLoadProfile && userUid
+              ? getDocs(
+                  query(
+                    collection(db, "lines"),
+                    where("createdByUid", "==", userUid),
+                    orderBy("createdAt", "desc"),
+                  ),
+                )
+              : Promise.resolve(null);
+
+          const pendingPromise = shouldLoadAdmin
+            ? getDocs(
+                query(
+                  collection(db, "lines"),
+                  where("status", "==", LINE_STATUS_PENDING),
                   orderBy("createdAt", "desc"),
                 ),
               )
             : Promise.resolve(null);
 
-        const pendingPromise = shouldLoadAdmin
-          ? getDocs(
-              query(
-                collection(db, "lines"),
-                where("status", "==", LINE_STATUS_PENDING),
-                orderBy("createdAt", "desc"),
-              ),
-            )
-          : Promise.resolve(null);
+          const [
+            candidateSnapshot,
+            promotedSnapshot,
+            userSnapshot,
+            pendingSnapshot,
+          ] = await Promise.all([
+            candidatePromise,
+            promotedPromise,
+            userPromise,
+            pendingPromise,
+          ]);
 
-        const [
-          candidateSnapshot,
-          promotedSnapshot,
-          userSnapshot,
-          pendingSnapshot,
-        ] = await Promise.all([
-          candidatePromise,
-          promotedPromise,
-          userPromise,
-          pendingPromise,
-        ]);
+          if (isCancelled) {
+            return;
+          }
 
-        if (isCancelled) {
+          const nextCandidates = candidateSnapshot
+            ? mapDocs(candidateSnapshot)
+            : [];
+          const nextPromoted = promotedSnapshot
+            ? mapDocs(promotedSnapshot)
+            : [];
+
+          setCandidateLines(
+            shouldLoadCandidates ? sortLines(nextCandidates) : [],
+          );
+          setPromotedLines(shouldLoadPromoted ? nextPromoted : []);
+          setPendingLines(
+            shouldLoadAdmin && pendingSnapshot ? mapDocs(pendingSnapshot) : [],
+          );
+          setCandidateCursor(
+            candidateSnapshot?.docs.length
+              ? candidateSnapshot.docs[candidateSnapshot.docs.length - 1]
+              : null,
+          );
+          setPromotedCursor(
+            promotedSnapshot?.docs.length
+              ? promotedSnapshot.docs[promotedSnapshot.docs.length - 1]
+              : null,
+          );
+          setHasMoreCandidates(
+            shouldLoadCandidates && candidateSnapshot
+              ? candidateSnapshot.docs.length === PAGE_SIZE
+              : true,
+          );
+          setHasMorePromoted(
+            shouldLoadPromoted && promotedSnapshot
+              ? promotedSnapshot.docs.length === PAGE_SIZE
+              : true,
+          );
+          setUserLines(
+            shouldLoadProfile && userSnapshot ? mapDocs(userSnapshot) : [],
+          );
+          setIsBoardLoading(false);
+        } catch (error) {
+          console.error("Failed to load board.", error);
+          if (!isCancelled) {
+            setBoardError(
+              "Could not load ideas from Firestore. Check rules, indexes, and admin access.",
+            );
+            setIsBoardLoading(false);
+          }
+        }
+      }
+
+      loadInitialBoard();
+
+      return () => {
+        isCancelled = true;
+      };
+    },
+    [activeBoardView, boardEnabled, isAdmin, userUid],
+  );
+
+  useEffect(
+    function loadMissingVotesForVisibleLines() {
+      let isCancelled = false;
+
+      async function loadVotes() {
+        if (
+          !db ||
+          !userUid ||
+          !boardEnabled ||
+          activeBoardView !== "candidates"
+        ) {
+          setVotes({});
+          fetchedVoteLineIdsRef.current = new Set();
           return;
         }
 
-        const nextCandidates = candidateSnapshot
-          ? mapDocs(candidateSnapshot)
-          : [];
-        const nextPromoted = promotedSnapshot ? mapDocs(promotedSnapshot) : [];
+        const missingLines = candidateLines.filter(
+          (line) => !fetchedVoteLineIdsRef.current.has(line.id),
+        );
 
-        setCandidateLines(
-          shouldLoadCandidates ? sortLines(nextCandidates) : [],
+        if (!missingLines.length) {
+          return;
+        }
+
+        const nextVotes = {};
+
+        await Promise.all(
+          missingLines.map(async (line) => {
+            const voteRef = doc(db, "lines", line.id, "votes", userUid);
+            const voteSnapshot = await getDoc(voteRef);
+
+            if (voteSnapshot.exists()) {
+              nextVotes[line.id] = voteSnapshot.data().value;
+            }
+          }),
         );
-        setPromotedLines(shouldLoadPromoted ? nextPromoted : []);
-        setPendingLines(
-          shouldLoadAdmin && pendingSnapshot ? mapDocs(pendingSnapshot) : [],
-        );
-        setCandidateCursor(
-          candidateSnapshot?.docs.length
-            ? candidateSnapshot.docs[candidateSnapshot.docs.length - 1]
-            : null,
-        );
-        setPromotedCursor(
-          promotedSnapshot?.docs.length
-            ? promotedSnapshot.docs[promotedSnapshot.docs.length - 1]
-            : null,
-        );
-        setHasMoreCandidates(
-          shouldLoadCandidates && candidateSnapshot
-            ? candidateSnapshot.docs.length === PAGE_SIZE
-            : true,
-        );
-        setHasMorePromoted(
-          shouldLoadPromoted && promotedSnapshot
-            ? promotedSnapshot.docs.length === PAGE_SIZE
-            : true,
-        );
-        setUserLines(
-          shouldLoadProfile && userSnapshot ? mapDocs(userSnapshot) : [],
-        );
-        setIsBoardLoading(false);
-      } catch (error) {
-        console.error("Failed to load board.", error);
+
         if (!isCancelled) {
-          setBoardError(
-            "Could not load ideas from Firestore. Check rules, indexes, and admin access.",
-          );
-          setIsBoardLoading(false);
+          fetchedVoteLineIdsRef.current = new Set([
+            ...fetchedVoteLineIdsRef.current,
+            ...missingLines.map((line) => line.id),
+          ]);
+          setVotes((currentVotes) => ({
+            ...currentVotes,
+            ...nextVotes,
+          }));
         }
       }
-    }
 
-    loadInitialBoard();
+      loadVotes().catch((error) => {
+        console.error("Failed to load user votes.", error);
 
-    return () => {
-      isCancelled = true;
-    };
-  }, [activeBoardView, boardEnabled, isAdmin, user]);
+        if (!isCancelled) {
+          setVotes({});
+          fetchedVoteLineIdsRef.current = new Set();
+        }
+      });
 
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadVotes() {
-      if (!db || !user || !boardEnabled || activeBoardView !== "candidates") {
-        setVotes({});
-        return;
-      }
-
-      const nextVotes = {};
-
-      await Promise.all(
-        candidateLines.map(async (line) => {
-          const voteRef = doc(db, "lines", line.id, "votes", user.uid);
-          const voteSnapshot = await getDoc(voteRef);
-
-          if (voteSnapshot.exists()) {
-            nextVotes[line.id] = voteSnapshot.data().value;
-          }
-        }),
-      );
-
-      if (!isCancelled) {
-        setVotes(nextVotes);
-      }
-    }
-
-    loadVotes().catch((error) => {
-      console.error("Failed to load user votes.", error);
-
-      if (!isCancelled) {
-        setVotes({});
-      }
-    });
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [activeBoardView, boardEnabled, candidateLines, user]);
+      return () => {
+        isCancelled = true;
+      };
+    },
+    [activeBoardView, boardEnabled, candidateLines, userUid],
+  );
 
   async function submitLine(submission) {
     if (!db || !user) {
@@ -265,32 +298,24 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
     const authorName = getPublicDisplayNameFromUser(user);
 
     try {
-      await runTransaction(db, async (transaction) => {
-        const lineSnapshot = await transaction.get(lineRef);
-
-        if (lineSnapshot.exists()) {
-          throw new Error("This line already exists on the board.");
-        }
-
-        transaction.set(lineRef, {
-          text,
-          normalizedText,
-          fingerprint,
-          category: submission.category,
-          createdByUid: user.uid,
-          createdByName: authorName,
-          score: 0,
-          upvoteCount: 0,
-          createdAt: timestamp,
-          updatedAt: timestamp,
-          status: LINE_STATUS_PENDING,
-          moderatedAt: null,
-          moderatedByUid: null,
-          moderationReason: null,
-          promoted: false,
-          promotedAt: null,
-          promotionScore: null,
-        });
+      await setDoc(lineRef, {
+        text,
+        normalizedText,
+        fingerprint,
+        category: submission.category,
+        createdByUid: user.uid,
+        createdByName: authorName,
+        score: 0,
+        upvoteCount: 0,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        status: LINE_STATUS_PENDING,
+        moderatedAt: null,
+        moderatedByUid: null,
+        moderationReason: null,
+        promoted: false,
+        promotedAt: null,
+        promotionScore: null,
       });
 
       return {
@@ -307,12 +332,17 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         message:
           error.message === "This line already exists on the board."
             ? "Looks like this idea is already on IceBreaker."
-            : "That did not go through. Please try again in a moment.",
+            : error?.code === "permission-denied"
+              ? "That line could not be posted. It may already exist, or posting may be disabled for this account."
+              : "That did not go through. Please try again in a moment.",
         duplicateWarning:
           error.message === "This line already exists on the board."
             ? "We already have this one."
             : "",
-        existingLineRef: fingerprint,
+        existingLineRef:
+          error.message === "This line already exists on the board."
+            ? fingerprint
+            : null,
       };
     }
   }
@@ -433,7 +463,9 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         message:
           error.message === "This line is not open for voting."
             ? error.message
-            : "Vote failed. Check your Firebase config and Firestore rules.",
+            : error?.code === "permission-denied"
+              ? "Voting is disabled for this account right now."
+              : "Vote failed. Check your Firebase config and Firestore rules.",
       };
     }
   }

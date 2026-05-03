@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import BoardSection from "./BoardSection";
 import useIsMobile from "../hooks/useIsMobile";
 import { formatCategory } from "../utils/board";
@@ -17,6 +18,9 @@ function BoardPage({
   votes,
 }) {
   const isMobile = useIsMobile();
+  const topCategories = categories
+    .filter((category) => category !== "all")
+    .slice(0, 5);
 
   return (
     <section className="app-page">
@@ -34,31 +38,51 @@ function BoardPage({
             isMobile ? "page-actions--board-mobile" : ""
           }`}
         >
-          <label className="filter-pill" htmlFor="category-filter">
-            <span>Topic</span>
-            <select
-              id="category-filter"
-              value={filter}
-              onChange={(event) => onFilterChange(event.target.value)}
+          <div className="category-chip-row" aria-label="Quick categories">
+            <button
+              type="button"
+              className={`category-filter-chip ${filter === "all" ? "is-active" : ""}`}
+              onClick={() => onFilterChange("all")}
             >
-              <option value="all">All categories</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {formatCategory(category)}
-                </option>
-              ))}
-            </select>
-          </label>
+              All
+            </button>
+            {topCategories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                className={`category-filter-chip ${filter === category ? "is-active" : ""}`}
+                onClick={() => onFilterChange(category)}
+              >
+                {formatCategory(category)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="page-panel">
         <BoardSection
           canVote={Boolean(user) && activeRoute === "lines"}
+          emptyActions={
+            activeRoute === "promoted" ? (
+              <>
+                <Link className="action-link action-link--primary" to="/lines">
+                  Explore live queue
+                </Link>
+                <Link className="action-link" to="/create">
+                  Share your first idea
+                </Link>
+              </>
+            ) : (
+              <Link className="action-link action-link--primary" to="/create">
+                Share your first idea
+              </Link>
+            )
+          }
           emptyMessage={
             activeRoute === "promoted"
-              ? "No top picks yet."
-              : "Nothing to explore yet."
+              ? "No top picks yet. Votes from Explore will promote ideas here."
+              : "No ideas in this filter yet. Try another topic or add your own."
           }
           hasMore={hasMore}
           isBoardLoading={isBoardLoading}
