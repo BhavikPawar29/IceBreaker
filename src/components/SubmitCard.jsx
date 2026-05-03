@@ -22,17 +22,20 @@ function SubmitCard({
   const [feedback, setFeedback] = useState({ message: "", tone: "info" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (!feedback.message) {
-      return undefined;
-    }
+  useEffect(
+    function clearFeedbackAfterDelay() {
+      if (!feedback.message) {
+        return undefined;
+      }
 
-    const timeoutId = window.setTimeout(() => {
-      setFeedback({ message: "", tone: "info" });
-    }, 4200);
+      const timeoutId = window.setTimeout(() => {
+        setFeedback({ message: "", tone: "info" });
+      }, 4200);
 
-    return () => window.clearTimeout(timeoutId);
-  }, [feedback]);
+      return () => window.clearTimeout(timeoutId);
+    },
+    [feedback],
+  );
 
   function showFeedback(message, tone = "info") {
     setFeedback({ message, tone });
@@ -98,9 +101,10 @@ function SubmitCard({
       text: form.text.trim(),
     });
 
-    const existingLine = result.existingLineRef
-      ? await lookupExistingLine(result.existingLineRef)
-      : null;
+    const existingLine =
+      result.duplicateWarning && result.existingLineRef
+        ? await lookupExistingLine(result.existingLineRef)
+        : null;
     const duplicateMessage = result.duplicateWarning
       ? existingLine
         ? existingLine.status === "approved"

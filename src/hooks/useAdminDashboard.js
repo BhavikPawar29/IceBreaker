@@ -64,6 +64,7 @@ async function getQueryCount(nextQuery) {
 }
 
 function useAdminDashboard(user, isAdmin, enabled) {
+  const userUid = user?.uid || "";
   const [lines, setLines] = useState([]);
   const [reviewLines, setReviewLines] = useState([]);
   const [users, setUsers] = useState([]);
@@ -98,7 +99,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
   }
 
   function canLoad() {
-    return Boolean(db && user && isAdmin && enabled);
+    return Boolean(db && userUid && isAdmin && enabled);
   }
 
   function buildLinesQuery({
@@ -193,6 +194,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
   async function loadLines({
     append = false,
     category = "all",
+    includeStats = false,
     status = "all",
   } = {}) {
     if (!canLoad()) {
@@ -213,7 +215,10 @@ function useAdminDashboard(user, isAdmin, enabled) {
     );
     setLineCursor(getLastDoc(snapshot));
     setHasMoreLines(snapshot.docs.length === ADMIN_PAGE_SIZE);
-    await refreshStats(append ? mergeById(lines, nextLines) : nextLines);
+
+    if (includeStats) {
+      await refreshStats(append ? mergeById(lines, nextLines) : nextLines);
+    }
   }
 
   async function loadUsers({ append = false } = {}) {
@@ -274,7 +279,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
     try {
       await Promise.all([
         loadReview({ append: false }),
-        loadLines({ append: false, category, status }),
+        loadLines({ append: false, category, includeStats: true, status }),
         loadUsers({ append: false }),
         loadBans({ append: false }),
       ]);
@@ -358,11 +363,14 @@ function useAdminDashboard(user, isAdmin, enabled) {
     }
   }
 
-  useEffect(() => {
-    refresh();
-    // refresh is intentionally not a dependency; enabled/auth changes define reloads.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, isAdmin, user]);
+  useEffect(
+    function loadAdminDashboardWhenEnabled() {
+      refresh();
+      // refresh is intentionally not a dependency; enabled/auth changes define reloads.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [enabled, isAdmin, userUid],
+  );
 
   const allKnownLines = useMemo(
     () => mergeById(lines, reviewLines),

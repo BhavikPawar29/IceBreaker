@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import useIsMobile from "../hooks/useIsMobile";
 
@@ -111,8 +112,33 @@ function ArrowIcon() {
   );
 }
 
+function LogoutIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M10 6H6.8A1.8 1.8 0 0 0 5 7.8v8.4A1.8 1.8 0 0 0 6.8 18H10"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13 8l4 4-4 4M17 12H9"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
   const isMobile = useIsMobile();
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const accountLabel = user?.displayName || user?.email || "community member";
+  const accountInitial = accountLabel.slice(0, 1).toUpperCase();
 
   const appLinks = [
     { icon: <StarIcon />, label: "Top picks", to: "/promoted" },
@@ -142,6 +168,11 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
     </NavLink>
   ));
 
+  async function confirmLogout() {
+    setIsLogoutOpen(false);
+    await onSignOut();
+  }
+
   return (
     <>
       <header className={`app-header ${isMobile ? "app-header--mobile" : ""}`}>
@@ -150,8 +181,10 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
           aria-label="Primary"
         >
           <NavLink className="brand" to={user ? "/promoted" : "/"}>
-            <span className="brand-mark">IceBreaker</span>
-            <span className="brand-sub">human-backed conversation ideas</span>
+            <span className="brand-mark">Breaking Ice</span>
+            {!isMobile ? (
+              <span className="brand-sub">human-backed conversation ideas</span>
+            ) : null}
           </NavLink>
           <div
             className={`topbar-actions ${
@@ -168,8 +201,13 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
                     isMobile ? "auth-chip-group--mobile" : ""
                   }`}
                 >
+                  {isMobile ? (
+                    <span className="mobile-account-avatar" aria-hidden="true">
+                      {accountInitial}
+                    </span>
+                  ) : null}
                   <span className="auth-chip auth-chip--user">
-                    {user.displayName || user.email || "community member"}
+                    {accountLabel}
                   </span>
                   {isBanned ? (
                     <span className="auth-chip auth-chip--warning">
@@ -179,9 +217,11 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
                   <button
                     className="ghost-link auth-button"
                     type="button"
-                    onClick={onSignOut}
+                    onClick={() => setIsLogoutOpen(true)}
+                    aria-label="Logout"
+                    title="Logout"
                   >
-                    Logout
+                    {isMobile ? <LogoutIcon /> : "Logout"}
                   </button>
                 </div>
               ) : null
@@ -199,6 +239,44 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
             {routeLinks}
           </div>
         </nav>
+      ) : null}
+      {isLogoutOpen ? (
+        <div
+          className="confirm-overlay"
+          role="presentation"
+          onMouseDown={() => setIsLogoutOpen(false)}
+        >
+          <section
+            className="confirm-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="logout-confirm-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <p className="eyebrow">Logout</p>
+            <h2 id="logout-confirm-title">Do you really want to log out?</h2>
+            <p>
+              You can sign back in any time, but this will close your current
+              session.
+            </p>
+            <div className="confirm-actions">
+              <button
+                className="action-button"
+                type="button"
+                onClick={() => setIsLogoutOpen(false)}
+              >
+                Stay
+              </button>
+              <button
+                className="action-button action-button--danger"
+                type="button"
+                onClick={confirmLogout}
+              >
+                Log out
+              </button>
+            </div>
+          </section>
+        </div>
       ) : null}
     </>
   );

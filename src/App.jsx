@@ -35,6 +35,7 @@ const LoginPage = lazy(() => import("./components/LoginPage"));
 const ProfilePage = lazy(() => import("./components/ProfilePage"));
 const PublicProfilePage = lazy(() => import("./components/PublicProfilePage"));
 const AdminPage = lazy(() => import("./components/AdminPage"));
+const showCapacityNote = import.meta.env.VITE_SHOW_CAPACITY_NOTE === "true";
 
 function LoadingShell({
   title = "Loading IceBreaker",
@@ -300,6 +301,15 @@ function App() {
         {boardError && activeBoardView ? (
           <section className="status-banner status-banner--error">
             {boardError}
+          </section>
+        ) : null}
+        {showCapacityNote && isInAppSurface ? (
+          <section className="status-banner status-banner--capacity">
+            <strong>Thank you</strong>
+            <span>
+              More people are joining Breaking Ice than expected. If something
+              feels a little slow, we are making room for everyone.
+            </span>
           </section>
         ) : null}
         {user && isBanReady && isBanned ? (
