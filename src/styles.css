@@ -175,6 +175,10 @@ textarea {
   padding-bottom: 10px;
 }
 
+.hero-actions {
+  margin-top: clamp(16px, 2vw, 24px);
+}
+
 .brand {
   display: inline-flex;
   flex-direction: column;
