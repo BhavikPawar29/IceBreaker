@@ -57,21 +57,6 @@ function BoardPage({
               </button>
             ))}
           </div>
-          <label className="filter-pill" htmlFor="category-filter">
-            <span>Topic</span>
-            <select
-              id="category-filter"
-              value={filter}
-              onChange={(event) => onFilterChange(event.target.value)}
-            >
-              <option value="all">All categories</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {formatCategory(category)}
-                </option>
-              ))}
-            </select>
-          </label>
         </div>
       </div>
 
