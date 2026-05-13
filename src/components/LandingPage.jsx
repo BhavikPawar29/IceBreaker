@@ -1,20 +1,32 @@
 import { Link } from "react-router-dom";
 
-function LandingPage({ authEnabled }) {
+function LandingPage({ authEnabled, stats }) {
   return (
     <section className="landing-shell">
+      <section className="landing-stats-strip" aria-label="Platform summary">
+        <article>
+          <strong>{stats?.total ?? 0}</strong>
+          <span>community lines</span>
+        </article>
+        <article>
+          <strong>{stats?.topScore ?? 0}</strong>
+          <span>top live score</span>
+        </article>
+        <article>
+          <strong>{stats?.promotedCount ?? 0}</strong>
+          <span>promoted lines</span>
+        </article>
+      </section>
+
       <section className="landing-section feature-band">
         <div className="section-copy">
           <p className="eyebrow">What makes it useful</p>
-          <h2>Quick prompts, filtered by people who use them.</h2>
+          <h2>Good conversation starters, tested by real people.</h2>
         </div>
         <div className="feature-list">
           <article className="section-card">
-            <h3>Human suggestions only</h3>
-            <p>
-              Every idea comes from people and lived experience, not AI
-              generated filler.
-            </p>
+            <h3>Real suggestions</h3>
+            <p>Every idea comes from lived experience, not random filler.</p>
           </article>
           <article className="section-card">
             <h3>Built for real awkwardness</h3>
@@ -84,7 +96,7 @@ function LandingPage({ authEnabled }) {
           <article className="section-card comparison-card">
             <h3>What you do not get</h3>
             <ul className="comparison-list">
-              <li>AI-generated filler</li>
+              <li>Generic filler lines</li>
               <li>Cold stranger pickup tactics</li>
               <li>Spammy one-liners with no context</li>
               <li>Editable promoted ideas</li>
@@ -96,7 +108,7 @@ function LandingPage({ authEnabled }) {
       <section className="landing-section cta-band">
         <div className="section-card cta-card">
           <p className="eyebrow">When you are ready</p>
-          <h2>Join the board and start with one strong prompt today.</h2>
+          <h2>Join the board and start with one strong line today.</h2>
           <div className="hero-actions">
             <Link className="ink-link" to="/login">
               {authEnabled ? "Get inside the app" : "Firebase config required"}

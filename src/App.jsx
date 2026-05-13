@@ -276,12 +276,7 @@ function App() {
     <div className={`page-shell ${isInAppSurface ? "page-shell--app" : ""}`}>
       <div className="paper-grain" aria-hidden="true"></div>
       {isLandingRoute ? (
-        <Hero
-          authEnabled={authEnabled}
-          isAuthReady={isAuthReady}
-          stats={heroStats}
-          user={user}
-        />
+        <Hero authEnabled={authEnabled} isAuthReady={isAuthReady} user={user} />
       ) : isLoginRoute ? null : (
         <AppHeader
           authEnabled={authEnabled}
@@ -323,7 +318,9 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={<LandingPage authEnabled={authEnabled} />}
+              element={
+                <LandingPage authEnabled={authEnabled} stats={heroStats} />
+              }
             />
             <Route
               path="/login"
