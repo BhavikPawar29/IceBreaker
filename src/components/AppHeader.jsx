@@ -183,7 +183,7 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
           <NavLink className="brand" to={user ? "/promoted" : "/"}>
             <span className="brand-mark">Breaking Ice</span>
             {!isMobile ? (
-              <span className="brand-sub">human-backed conversation ideas</span>
+              <span className="brand-sub">better conversation ideas</span>
             ) : null}
           </NavLink>
           <div

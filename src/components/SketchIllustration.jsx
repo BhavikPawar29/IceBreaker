@@ -98,9 +98,7 @@ function SketchIllustration() {
         <path className="connector" d="M208 347C223 337 239 334 257 336" />
         <path className="connector" d="M287 338C307 335 323 339 339 349" />
       </svg>
-      <div className="floating-note floating-note-a">
-        ranked by people, not AI
-      </div>
+      <div className="floating-note floating-note-a">ranked by people</div>
       <div className="floating-note floating-note-b">
         warm starts / real chemistry
       </div>

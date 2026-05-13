@@ -22,9 +22,9 @@ function Footer() {
             </a>
           </div>
           <p className="footer-copy">
-            IceBreaker helps shy people find better, human-backed things to ask
-            when they already know someone a little but do not know how to keep
-            the conversation moving.
+            IceBreaker helps shy people find better things to ask when they
+            already know someone a little but do not know how to keep the
+            conversation moving.
           </p>
         </div>
         <div className="footer-links">
