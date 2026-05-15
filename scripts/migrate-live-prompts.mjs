@@ -11,7 +11,9 @@ const PROJECT_ID =
 const APPLY = process.argv.includes("--apply");
 const LIMIT = Number(
   process.env.MIGRATION_LIMIT ||
-    process.argv.find((argument) => argument.startsWith("--limit="))?.split("=")[1] ||
+    process.argv
+      .find((argument) => argument.startsWith("--limit="))
+      ?.split("=")[1] ||
     500,
 );
 
@@ -36,7 +38,9 @@ function getServiceAccount() {
 function inferSituation(text) {
   const normalized = text.toLowerCase();
 
-  if (/\b(date|dating|romantic|attractive|green flag|red flag)\b/.test(normalized)) {
+  if (
+    /\b(date|dating|romantic|attractive|green flag|red flag)\b/.test(normalized)
+  ) {
     return "date";
   }
 
@@ -75,9 +79,10 @@ function buildFollowUps(line) {
 
 function buildLivePatch(line) {
   return {
-    followUps: Array.isArray(line.followUps) && line.followUps.length
-      ? line.followUps.slice(0, 2)
-      : buildFollowUps(line),
+    followUps:
+      Array.isArray(line.followUps) && line.followUps.length
+        ? line.followUps.slice(0, 2)
+        : buildFollowUps(line),
     pack: line.pack || CATEGORY_TO_PACK[line.category] || "playful",
     situation: line.situation || inferSituation(line.text || ""),
     updatedAt: Date.now(),
