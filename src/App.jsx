@@ -7,21 +7,11 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import {
-  collection,
-  getCountFromServer,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
 import AppHeader from "./components/AppHeader";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import RouteShimmer from "./components/RouteShimmer";
-import { LINE_STATUS_APPROVED } from "./constants/lineStatuses";
-import { db, firebaseConfigReady } from "./lib/firebase";
+import { firebaseConfigReady } from "./lib/firebase";
 import useAuth from "./context/useAuth";
 import useCommunityBoard from "./hooks/useCommunityBoard";
 import useAdminDashboard from "./hooks/useAdminDashboard";
@@ -32,6 +22,7 @@ const CreatePage = lazy(() => import("./components/CreatePage"));
 const LandingPage = lazy(() => import("./components/LandingPage"));
 const LineDetailPage = lazy(() => import("./components/LineDetailPage"));
 const LoginPage = lazy(() => import("./components/LoginPage"));
+const LivePage = lazy(() => import("./components/LivePage"));
 const ProfilePage = lazy(() => import("./components/ProfilePage"));
 const PublicProfilePage = lazy(() => import("./components/PublicProfilePage"));
 const AdminPage = lazy(() => import("./components/AdminPage"));
@@ -100,11 +91,6 @@ function PublicProfileRoute({ getPublicProfileLines }) {
 
 function App() {
   const [filter, setFilter] = useState("all");
-  const [landingStats, setLandingStats] = useState({
-    total: 0,
-    topScore: 0,
-    promotedCount: 0,
-  });
   const location = useLocation();
   const navigate = useNavigate();
   const activeBoardView =
@@ -154,8 +140,8 @@ function App() {
       return;
     }
 
-    if (location.pathname === "/" || location.pathname === "/login") {
-      navigate("/promoted", { replace: true });
+    if (location.pathname === "/login") {
+      navigate("/live", { replace: true });
     }
   }, [location.pathname, navigate, user]);
 
@@ -179,16 +165,9 @@ function App() {
   const filteredPromoted = promotedLines.filter(
     (line) => filter === "all" || line.category === filter,
   );
-  const topLine = filteredCandidates[0] ?? candidateLines[0] ?? null;
   const isSessionLoading = !isAuthReady || (Boolean(user) && !isRoleReady);
   const isBanned = Boolean(user && banInfo);
   const banReason = banInfo?.reason?.trim();
-  const stats = {
-    total: candidateLines.length + promotedLines.length,
-    topScore: topLine?.score ?? 0,
-    promotedCount: promotedLines.length,
-    candidateCount: candidateLines.length,
-  };
 
   async function handleGoogleSignIn() {
     await signInWithGoogle();
@@ -208,76 +187,15 @@ function App() {
 
   const isLandingRoute = location.pathname === "/";
   const isLoginRoute = location.pathname === "/login";
-  const shouldShowFooter = !user && !isLoginRoute;
+  const isLiveRoute = location.pathname === "/live";
+  const shouldShowFooter = !user && !isLoginRoute && !isLiveRoute;
   const isInAppSurface = Boolean(user) && !isLandingRoute && !isLoginRoute;
-  const heroStats = user ? stats : landingStats;
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadLandingStats() {
-      if (!db || !firebaseConfigReady || user || !isLandingRoute) {
-        return;
-      }
-
-      try {
-        const linesCollection = collection(db, "lines");
-        const [approvedCountSnapshot, promotedCountSnapshot, topSnapshot] =
-          await Promise.all([
-            getCountFromServer(
-              query(
-                linesCollection,
-                where("status", "==", LINE_STATUS_APPROVED),
-              ),
-            ),
-            getCountFromServer(
-              query(
-                linesCollection,
-                where("status", "==", LINE_STATUS_APPROVED),
-                where("promoted", "==", true),
-              ),
-            ),
-            getDocs(
-              query(
-                linesCollection,
-                where("status", "==", LINE_STATUS_APPROVED),
-                where("promoted", "==", false),
-                orderBy("score", "desc"),
-                orderBy("createdAt", "desc"),
-                limit(1),
-              ),
-            ),
-          ]);
-
-        if (isCancelled) {
-          return;
-        }
-
-        const topLine = topSnapshot.docs[0]?.data() || null;
-
-        setLandingStats({
-          total: approvedCountSnapshot.data().count || 0,
-          topScore: topLine?.score || 0,
-          promotedCount: promotedCountSnapshot.data().count || 0,
-        });
-      } catch (error) {
-        console.error("Failed to load landing stats.", error);
-      }
-    }
-
-    loadLandingStats();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [isLandingRoute, user]);
-
   return (
     <div className={`page-shell ${isInAppSurface ? "page-shell--app" : ""}`}>
       <div className="paper-grain" aria-hidden="true"></div>
       {isLandingRoute ? (
         <Hero authEnabled={authEnabled} isAuthReady={isAuthReady} user={user} />
-      ) : isLoginRoute ? null : (
+      ) : isLoginRoute || (isLiveRoute && !user) ? null : (
         <AppHeader
           authEnabled={authEnabled}
           isAdmin={isAdmin}
@@ -318,9 +236,7 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={
-                <LandingPage authEnabled={authEnabled} stats={heroStats} />
-              }
+              element={<LandingPage authEnabled={authEnabled} />}
             />
             <Route
               path="/login"
@@ -341,6 +257,21 @@ function App() {
                     onPasswordReset={handlePasswordReset}
                     onGoogleSignIn={handleGoogleSignIn}
                   />
+                )
+              }
+            />
+            <Route
+              path="/live"
+              element={
+                isSessionLoading ? (
+                  <LoadingShell
+                    title="Opening live mode"
+                    note="Checking your sign-in before showing conversation prompts."
+                  />
+                ) : user ? (
+                  <LivePage user={user} />
+                ) : (
+                  <Navigate to="/login" replace />
                 )
               }
             />

@@ -21,6 +21,7 @@ import {
   LINE_STATUS_REMOVED,
 } from "../constants/lineStatuses";
 import { db } from "../lib/firebase";
+import { reportError } from "../utils/reportError";
 
 const ADMIN_PAGE_SIZE = 25;
 
@@ -284,7 +285,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
         loadBans({ append: false }),
       ]);
     } catch (nextError) {
-      console.error("Failed to load admin dashboard.", nextError);
+      reportError("Failed to load admin dashboard.", nextError);
       setError("Could not load admin data. Check rules and indexes.");
     } finally {
       setIsLoading(false);
@@ -302,7 +303,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
     try {
       await loadReview({ append: true });
     } catch (nextError) {
-      console.error("Failed to load more review lines.", nextError);
+      reportError("Failed to load more review lines.", nextError);
       setError("Could not load more pending lines.");
     } finally {
       setLoadingMore("");
@@ -320,7 +321,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
     try {
       await loadLines({ append: true, category, status });
     } catch (nextError) {
-      console.error("Failed to load more lines.", nextError);
+      reportError("Failed to load more lines.", nextError);
       setError("Could not load more lines.");
     } finally {
       setLoadingMore("");
@@ -338,7 +339,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
     try {
       await loadUsers({ append: true });
     } catch (nextError) {
-      console.error("Failed to load more users.", nextError);
+      reportError("Failed to load more users.", nextError);
       setError("Could not load more users.");
     } finally {
       setLoadingMore("");
@@ -356,7 +357,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
     try {
       await loadBans({ append: true });
     } catch (nextError) {
-      console.error("Failed to load more bans.", nextError);
+      reportError("Failed to load more bans.", nextError);
       setError("Could not load more bans.");
     } finally {
       setLoadingMore("");
@@ -367,8 +368,8 @@ function useAdminDashboard(user, isAdmin, enabled) {
     function loadAdminDashboardWhenEnabled() {
       refresh();
       // refresh is intentionally not a dependency; enabled/auth changes define reloads.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [enabled, isAdmin, userUid],
   );
 
@@ -501,7 +502,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
 
       return { ok: true, message: "Line updated." };
     } catch (nextError) {
-      console.error("Failed to update line status.", nextError);
+      reportError("Failed to update line status.", nextError);
       return { ok: false, message: "Line update failed. Check admin rules." };
     }
   }
@@ -530,7 +531,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
       }));
       return { ok: true, message: "User banned." };
     } catch (nextError) {
-      console.error("Failed to ban user.", nextError);
+      reportError("Failed to ban user.", nextError);
       return { ok: false, message: "Ban failed. Check admin rules." };
     }
   }
@@ -549,7 +550,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
       }));
       return { ok: true, message: "User unbanned." };
     } catch (nextError) {
-      console.error("Failed to unban user.", nextError);
+      reportError("Failed to unban user.", nextError);
       return { ok: false, message: "Unban failed. Check admin rules." };
     }
   }
@@ -572,8 +573,40 @@ function useAdminDashboard(user, isAdmin, enabled) {
       );
       return { ok: true, message: "Ban updated." };
     } catch (nextError) {
-      console.error("Failed to update ban.", nextError);
+      reportError("Failed to update ban.", nextError);
       return { ok: false, message: "Ban update failed. Check admin rules." };
+    }
+  }
+
+  async function updateLineLiveMetadata(lineId, { pack, situation }) {
+    if (!db || !user || !isAdmin || !lineId) {
+      return { ok: false, message: "Admin access is required." };
+    }
+
+    const update = {
+      pack,
+      situation,
+      updatedAt: Date.now(),
+    };
+
+    try {
+      await updateDoc(doc(db, "lines", lineId), update);
+
+      const applyUpdate = (currentLines) =>
+        currentLines.map((line) =>
+          line.id === lineId ? { ...line, ...update } : line,
+        );
+
+      setLines(applyUpdate);
+      setReviewLines(applyUpdate);
+
+      return { ok: true, message: "Live filters updated." };
+    } catch (nextError) {
+      reportError("Failed to update line live filters.", nextError);
+      return {
+        ok: false,
+        message: "Live filter update failed. Check admin rules.",
+      };
     }
   }
 
@@ -603,6 +636,7 @@ function useAdminDashboard(user, isAdmin, enabled) {
     stats,
     unbanUser,
     updateBanReason,
+    updateLineLiveMetadata,
     userMap,
     users,
   };

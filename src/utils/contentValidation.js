@@ -1,4 +1,5 @@
 import { ALLOWED_CATEGORIES } from "../constants/categories";
+import { QUESTION_PACKS, SITUATIONS } from "../data/conversationFilters";
 import { normalizeLineText } from "./textNormalization";
 
 const BANNED_PATTERNS = [
@@ -28,7 +29,10 @@ function findBlockedContent(text) {
   );
 }
 
-function validateLineSubmission({ category, text }) {
+const ALLOWED_PACKS = QUESTION_PACKS.map((pack) => pack.id);
+const ALLOWED_SITUATIONS = SITUATIONS.map((situation) => situation.id);
+
+function validateLineSubmission({ category, pack, situation, text }) {
   const trimmedText = text.trim();
 
   if (trimmedText.length < 12 || trimmedText.length > 240) {
@@ -37,6 +41,14 @@ function validateLineSubmission({ category, text }) {
 
   if (!ALLOWED_CATEGORIES.includes(category)) {
     return "Pick one of the supported categories.";
+  }
+
+  if (!ALLOWED_SITUATIONS.includes(situation)) {
+    return "Pick one of the supported situations.";
+  }
+
+  if (!ALLOWED_PACKS.includes(pack)) {
+    return "Pick one of the supported question packs.";
   }
 
   const blockedMatch = findBlockedContent(trimmedText);

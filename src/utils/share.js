@@ -1,3 +1,5 @@
+import { reportError } from "./reportError";
+
 export async function shareUrl(url, title) {
   if (typeof window === "undefined") {
     return false;
@@ -14,7 +16,29 @@ export async function shareUrl(url, title) {
       return true;
     }
   } catch (error) {
-    console.error("Failed to share url.", error);
+    reportError("Failed to share url.", error);
+  }
+
+  return false;
+}
+
+export async function shareText(text, title = "Breaking Ice") {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  try {
+    if (navigator.share) {
+      await navigator.share({ text, title });
+      return true;
+    }
+
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (error) {
+    reportError("Failed to share text.", error);
   }
 
   return false;

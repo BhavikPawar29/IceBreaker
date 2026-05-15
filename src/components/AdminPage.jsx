@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { ALLOWED_CATEGORIES } from "../constants/categories";
+import { QUESTION_PACKS, SITUATIONS } from "../data/conversationFilters";
 import {
   LINE_STATUS_APPROVED,
   LINE_STATUS_PENDING,
@@ -7,6 +8,7 @@ import {
   LINE_STATUS_REMOVED,
 } from "../constants/lineStatuses";
 import { formatCategory, formatLineStatus } from "../utils/board";
+import { reportError } from "../utils/reportError";
 import RouteShimmer from "./RouteShimmer";
 
 const ADMIN_TABS = ["Overview", "Review", "Users", "Lines", "Bans"];
@@ -17,6 +19,15 @@ const STATUS_FILTERS = [
   LINE_STATUS_REJECTED,
   LINE_STATUS_REMOVED,
 ];
+const ADMIN_SITUATIONS = [{ id: "any", label: "Any situation" }, ...SITUATIONS];
+
+const CATEGORY_TO_PACK = {
+  curious: "deep",
+  deeper: "deep",
+  playful: "playful",
+  storytime: "deep",
+  unexpected: "playful",
+};
 
 function formatDate(value) {
   if (!value) {
@@ -128,6 +139,7 @@ function AdminLineCard({
   actionId,
   line,
   onCopyUid,
+  onLiveMetadataChange,
   onStatusChange,
   reason,
   setReason,
@@ -136,6 +148,8 @@ function AdminLineCard({
   const profile = userMap[line.createdByUid];
   const isBusy = actionId === line.id;
   const status = getLineStatus(line);
+  const liveSituation = line.situation || "any";
+  const livePack = line.pack || CATEGORY_TO_PACK[line.category] || "playful";
   const canApprove = status !== LINE_STATUS_APPROVED;
   const canReject = status !== LINE_STATUS_REJECTED;
   const canRemove = status !== LINE_STATUS_REMOVED;
@@ -150,6 +164,47 @@ function AdminLineCard({
       </div>
 
       <p className="line-body">{line.text}</p>
+
+      <div className="admin-live-fields">
+        <label>
+          <span>Live situation</span>
+          <select
+            value={liveSituation}
+            disabled={isBusy}
+            onChange={(event) =>
+              onLiveMetadataChange(line.id, {
+                pack: livePack,
+                situation: event.target.value,
+              })
+            }
+          >
+            {ADMIN_SITUATIONS.map((situation) => (
+              <option key={situation.id} value={situation.id}>
+                {situation.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>Question pack</span>
+          <select
+            value={livePack}
+            disabled={isBusy}
+            onChange={(event) =>
+              onLiveMetadataChange(line.id, {
+                pack: event.target.value,
+                situation: liveSituation,
+              })
+            }
+          >
+            {QUESTION_PACKS.map((pack) => (
+              <option key={pack.id} value={pack.id}>
+                {pack.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
       <div className="admin-meta-grid">
         <span>
@@ -382,6 +437,7 @@ function AdminPage({ dashboard }) {
     reviewLines,
     stats,
     unbanUser,
+    updateLineLiveMetadata,
     userMap,
     users,
   } = dashboard;
@@ -479,6 +535,16 @@ function AdminPage({ dashboard }) {
     }
   }
 
+  async function handleLiveMetadataChange(lineId, metadata) {
+    setActionId(lineId);
+    setMessage("");
+
+    const result = await updateLineLiveMetadata(lineId, metadata);
+
+    setActionId("");
+    setMessage(result.message);
+  }
+
   async function handleBan(uid) {
     setActionId(uid);
     setMessage("");
@@ -513,7 +579,7 @@ function AdminPage({ dashboard }) {
         status: nextStatus,
       });
     } catch (nextError) {
-      console.error("Failed to reload admin lines.", nextError);
+      reportError("Failed to reload admin lines.", nextError);
       setMessage("Could not refresh lines for that filter.");
     }
   }
@@ -528,7 +594,7 @@ function AdminPage({ dashboard }) {
         status: lineStatusFilter,
       });
     } catch (nextError) {
-      console.error("Failed to reload admin lines.", nextError);
+      reportError("Failed to reload admin lines.", nextError);
       setMessage("Could not refresh lines for that filter.");
     }
   }
@@ -674,6 +740,7 @@ function AdminPage({ dashboard }) {
                 actionId={actionId}
                 line={line}
                 onCopyUid={copyUid}
+                onLiveMetadataChange={handleLiveMetadataChange}
                 onStatusChange={handleStatusChange}
                 reason={reasons[line.id]}
                 setReason={updateReason}
@@ -810,6 +877,7 @@ function AdminPage({ dashboard }) {
                 actionId={actionId}
                 line={line}
                 onCopyUid={copyUid}
+                onLiveMetadataChange={handleLiveMetadataChange}
                 onStatusChange={handleStatusChange}
                 reason={reasons[line.id]}
                 setReason={updateReason}
