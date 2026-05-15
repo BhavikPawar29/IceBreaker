@@ -8,6 +8,7 @@ import {
   useParams,
 } from "react-router-dom";
 import AppHeader from "./components/AppHeader";
+import InstallAppPrompt from "./components/InstallAppPrompt";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import RouteShimmer from "./components/RouteShimmer";
@@ -406,6 +407,7 @@ function App() {
           </Routes>
         </Suspense>
       </main>
+      <InstallAppPrompt user={user} />
       {shouldShowFooter ? <Footer /> : null}
     </div>
   );
