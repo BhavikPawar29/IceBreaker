@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["icon.svg", "apple-touch-icon.png"],
+      includeAssets: ["icon.svg"],
       manifest: {
         name: "Breaking Ice",
         short_name: "Breaking Ice",
@@ -20,19 +20,14 @@ export default defineConfig({
         scope: "/",
         icons: [
           {
-            src: "/pwa-192.png",
-            sizes: "192x192",
-            type: "image/png",
+            src: "/icon.svg",
+            sizes: "512x512",
+            type: "image/svg+xml",
           },
           {
-            src: "/pwa-512.png",
+            src: "/icon.svg",
             sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "/pwa-maskable-512.png",
-            sizes: "512x512",
-            type: "image/png",
+            type: "image/svg+xml",
             purpose: "maskable",
           },
         ],
