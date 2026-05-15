@@ -7,12 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: [
-        "icon.svg",
-        "app-icon-192.png",
-        "app-icon-512.png",
-        "app-icon-maskable-512.png",
-      ],
+      includeAssets: ["icon.png"],
       manifest: {
         name: "Breaking Ice",
         short_name: "Breaking Ice",
@@ -26,17 +21,17 @@ export default defineConfig({
         scope: "/",
         icons: [
           {
-            src: "/app-icon-192.png",
+            src: "/icon.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "/app-icon-512.png",
+            src: "/icon.png",
             sizes: "512x512",
             type: "image/png",
           },
           {
-            src: "/app-icon-maskable-512.png",
+            src: "/icon.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
