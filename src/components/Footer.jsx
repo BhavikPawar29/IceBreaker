@@ -22,9 +22,8 @@ function Footer() {
             </a>
           </div>
           <p className="footer-copy">
-            IceBreaker helps shy people find better things to ask when they
-            already know someone a little but do not know how to keep the
-            conversation moving.
+            Breaking Ice gives you one useful thing to say when a real
+            conversation starts going quiet.
           </p>
         </div>
         <div className="footer-links">

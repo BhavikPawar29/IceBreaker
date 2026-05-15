@@ -12,7 +12,7 @@ import {
   startAfter,
   where,
 } from "firebase/firestore";
-import { emptyBoardState } from "../data/seedLines";
+import { emptyBoardState } from "../data/boardState";
 import {
   LINE_STATUS_APPROVED,
   LINE_STATUS_PENDING,
@@ -22,6 +22,7 @@ import { db, firebaseConfigReady } from "../lib/firebase";
 import { createLineFingerprint } from "../utils/textNormalization";
 import { sortLines } from "../utils/board";
 import { validateLineSubmission } from "../utils/contentValidation";
+import { reportError } from "../utils/reportError";
 import { getPublicDisplayNameFromUser } from "../utils/userIdentity";
 
 const PROMOTION_THRESHOLD = 50;
@@ -186,7 +187,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
           );
           setIsBoardLoading(false);
         } catch (error) {
-          console.error("Failed to load board.", error);
+          reportError("Failed to load board.", error);
           if (!isCancelled) {
             setBoardError(
               "Could not load ideas from Firestore. Check rules, indexes, and admin access.",
@@ -255,7 +256,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
       }
 
       loadVotes().catch((error) => {
-        console.error("Failed to load user votes.", error);
+        reportError("Failed to load user votes.", error);
 
         if (!isCancelled) {
           setVotes({});
@@ -303,6 +304,8 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         normalizedText,
         fingerprint,
         category: submission.category,
+        pack: submission.pack,
+        situation: submission.situation,
         createdByUid: user.uid,
         createdByName: authorName,
         score: 0,
@@ -325,7 +328,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         existingLineRef: null,
       };
     } catch (error) {
-      console.error("Failed to submit line.", error);
+      reportError("Failed to submit line.", error);
 
       return {
         ok: false,
@@ -456,7 +459,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
 
       return { ok: true, message: "" };
     } catch (error) {
-      console.error("Failed to vote on line.", error);
+      reportError("Failed to vote on line.", error);
 
       return {
         ok: false,
@@ -530,7 +533,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
             : "Idea rejected.",
       };
     } catch (error) {
-      console.error("Failed to moderate line.", error);
+      reportError("Failed to moderate line.", error);
 
       return {
         ok: false,
@@ -562,7 +565,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         status: lineSnapshot.data().status || LINE_STATUS_PENDING,
       };
     } catch (error) {
-      console.error("Failed to look up existing line.", error);
+      reportError("Failed to look up existing line.", error);
       return null;
     }
   }
@@ -585,7 +588,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         ...lineSnapshot.data(),
       };
     } catch (error) {
-      console.error("Failed to load line.", error);
+      reportError("Failed to load line.", error);
       return null;
     }
   }
@@ -606,7 +609,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
 
       return mapDocs(snapshot);
     } catch (error) {
-      console.error("Failed to load public profile lines.", error);
+      reportError("Failed to load public profile lines.", error);
       return [];
     }
   }
@@ -668,7 +671,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         setHasMorePromoted(snapshot.docs.length === PAGE_SIZE);
       }
     } catch (error) {
-      console.error("Failed to load more lines.", error);
+      reportError("Failed to load more lines.", error);
       setBoardError("Could not load more ideas from Firestore.");
     } finally {
       setIsFetchingMore(false);

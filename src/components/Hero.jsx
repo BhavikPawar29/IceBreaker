@@ -22,27 +22,32 @@ function Hero({ authEnabled, user }) {
       >
         <div className="hero-copy">
           <h1>
-            Questions are
-            <span>more romantic than compliments.</span>
-            Ask better things.
+            Your
+            <span>conversation cheat code</span>
+            for awkward silence.
           </h1>
           <p className="hero-text">
-            Questions can be more romantic than compliments. For shy people who
-            already know someone a little, but need help keeping things going
-            without sounding generic.
+            Open Breaking Ice, tap once, and get one natural thing to say for
+            dates, crushes, new friends, or a dead group chat.
           </p>
           <div className="hero-proof-row" aria-label="Product principles">
-            <span>Real community lines</span>
-            <span>Voted by usage</span>
-            <span>Promote what works</span>
+            <span>Instant lines</span>
+            <span>Real situations</span>
+            <span>No endless scrolling</span>
           </div>
           <div className="hero-actions">
-            <NavLink className="ink-link" to={user ? "/promoted" : "/login"}>
-              {user ? "See what is working" : "Find better things to say"}
+            <NavLink className="ink-link" to={user ? "/live" : "/login"}>
+              {user ? "Open live mode" : "Start onboarding"}
             </NavLink>
-            <a className="ghost-link" href="#how-it-works">
-              See how it works
-            </a>
+            {user ? (
+              <NavLink className="ghost-link" to="/promoted">
+                Browse top picks
+              </NavLink>
+            ) : (
+              <a className="ghost-link" href="#how-it-works">
+                See how it works
+              </a>
+            )}
           </div>
         </div>
 

@@ -3,6 +3,7 @@ import LoginAuthCard from "./LoginAuthCard";
 import LoginDesktopView from "./LoginDesktopView";
 import LoginMobileView from "./LoginMobileView";
 import useIsMobile from "../hooks/useIsMobile";
+import { reportError } from "../utils/reportError";
 
 function getFriendlyAuthMessage(error, mode) {
   if (error?.code === "auth/email-already-in-use") {
@@ -34,11 +35,40 @@ function getFriendlyAuthMessage(error, mode) {
     return "This sign-in option is not ready yet. Ask the project owner to enable it.";
   }
 
+  if (error?.code === "auth/unauthorized-domain") {
+    return "This domain is not allowed for Firebase sign-in. Add it in Firebase Auth authorized domains.";
+  }
+
+  if (
+    error?.code === "appCheck/fetch-status-error" ||
+    error?.code === "appCheck/recaptcha-error"
+  ) {
+    return "App Check is blocking sign-in. Check the Firebase Web App ID, App Check key, or disable App Check locally.";
+  }
+
+  if (error?.code === "auth/network-request-failed") {
+    return "Firebase could not be reached. Check the network, App Check, or blocked browser extensions.";
+  }
+
+  if (error?.code === "auth/internal-error") {
+    return "Firebase Auth is blocked by App Check. Disable Auth App Check enforcement locally or register a valid debug token.";
+  }
+
+  if (error?.code === "auth/popup-blocked") {
+    return "The Google sign-in popup was blocked. Allow popups for this site and try again.";
+  }
+
+  if (error?.code === "auth/cancelled-popup-request") {
+    return "Another Google sign-in popup is already open. Close it and try again.";
+  }
+
   if (error?.code === "auth/popup-closed-by-user") {
     return "";
   }
 
-  return "That did not go through. Please try again in a moment.";
+  return error?.code
+    ? `Sign-in failed: ${error.code}.`
+    : "That did not go through. Please try again in a moment.";
 }
 
 function validatePassword(password) {
@@ -145,6 +175,7 @@ function LoginPage({
         await onEmailLogin(email, password);
       }
     } catch (error) {
+      reportError("Email auth failed.", error);
       const message = getFriendlyAuthMessage(error, mode);
       if (message) {
         showFeedback(message, "warning");
@@ -161,6 +192,7 @@ function LoginPage({
     try {
       await onGoogleSignIn();
     } catch (error) {
+      reportError("Google auth failed.", error);
       const message = getFriendlyAuthMessage(error, "google");
       if (message) {
         showFeedback(message, "warning");
@@ -190,6 +222,7 @@ function LoginPage({
         "success",
       );
     } catch (error) {
+      reportError("Password reset failed.", error);
       const message = getFriendlyAuthMessage(error, "reset");
       if (message) {
         showFeedback(message, "warning");

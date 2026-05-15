@@ -16,6 +16,58 @@ service cloud.firestore {
       return category in ['playful', 'curious', 'storytime', 'unexpected', 'deeper'];
     }
 
+    function isAllowedSituation(situation) {
+      return situation in ['any', 'date', 'crush', 'new-friends', 'group-chat'];
+    }
+
+    function isAllowedPack(pack) {
+      return pack in ['playful', 'deep', 'flirty'];
+    }
+
+    function isValidFollowUp(followUp) {
+      return followUp is map
+        && followUp.keys().hasOnly(['label', 'text'])
+        && followUp.keys().hasAll(['label', 'text'])
+        && followUp.label is string
+        && followUp.label.size() >= 1
+        && followUp.label.size() <= 40
+        && followUp.text is string
+        && followUp.text.size() >= 1
+        && followUp.text.size() <= 160;
+    }
+
+    function hasValidLiveFields(data) {
+      return (!('situation' in data) || (data.situation is string && isAllowedSituation(data.situation)))
+        && (!('pack' in data) || (data.pack is string && isAllowedPack(data.pack)))
+        && (!('followUps' in data)
+          || (
+            data.followUps is list
+            && data.followUps.size() <= 2
+            && (data.followUps.size() < 1 || isValidFollowUp(data.followUps[0]))
+            && (data.followUps.size() < 2 || isValidFollowUp(data.followUps[1]))
+          ));
+    }
+
+    function liveFieldsUnchanged() {
+      return request.resource.data.get('situation', null) == resource.data.get('situation', null)
+        && request.resource.data.get('pack', null) == resource.data.get('pack', null)
+        && request.resource.data.get('followUps', null) == resource.data.get('followUps', null);
+    }
+
+    function isAdminLiveMetadataUpdate() {
+      return hasLineShape(request.resource.data)
+        && hasValidLiveFields(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'situation',
+          'pack',
+          'followUps',
+          'updatedAt'
+        ])
+        && request.resource.data.updatedAt is int
+        && request.resource.data.updatedAt >= resource.data.updatedAt
+        && isRecentMillis(request.resource.data.updatedAt);
+    }
+
     function isAllowedAuthorName(name) {
       return name == 'Anonymous';
     }
@@ -74,7 +126,10 @@ service cloud.firestore {
         'moderationReason',
         'promoted',
         'promotedAt',
-        'promotionScore'
+        'promotionScore',
+        'situation',
+        'pack',
+        'followUps'
       ])
       && data.keys().hasAll([
         'text',
@@ -94,7 +149,8 @@ service cloud.firestore {
         'promoted',
         'promotedAt',
         'promotionScore'
-      ]);
+      ])
+      && hasValidLiveFields(data);
     }
 
     function canReadExistingLine() {
@@ -169,7 +225,8 @@ service cloud.firestore {
         )
         && request.resource.data.promoted == false
         && request.resource.data.promotedAt == null
-        && request.resource.data.promotionScore == null;
+        && request.resource.data.promotionScore == null
+        && liveFieldsUnchanged();
     }
 
     function isAdminLineStatusUpdate() {
@@ -207,7 +264,8 @@ service cloud.firestore {
         )
         && request.resource.data.promoted == false
         && request.resource.data.promotedAt == null
-        && request.resource.data.promotionScore == null;
+        && request.resource.data.promotionScore == null
+        && liveFieldsUnchanged();
     }
 
     function isVoteAggregateUpdate(lineId) {
@@ -230,6 +288,7 @@ service cloud.firestore {
         && request.resource.data.moderatedAt == resource.data.moderatedAt
         && request.resource.data.moderatedByUid == resource.data.moderatedByUid
         && request.resource.data.moderationReason == resource.data.moderationReason
+        && liveFieldsUnchanged()
         && request.resource.data.score == resource.data.score + scoreDelta(lineId)
         && request.resource.data.upvoteCount == resource.data.upvoteCount + upvoteDelta(lineId)
         && (
@@ -314,9 +373,14 @@ service cloud.firestore {
         && request.resource.data.moderationReason == null
         && request.resource.data.promoted == false
         && request.resource.data.promotedAt == null
-        && request.resource.data.promotionScore == null;
+        && request.resource.data.promotionScore == null
+        && request.resource.data.situation is string
+        && isAllowedSituation(request.resource.data.situation)
+        && request.resource.data.pack is string
+        && isAllowedPack(request.resource.data.pack)
+        && !('followUps' in request.resource.data);
 
-      allow update: if (isAdmin() && (isPendingModerationUpdate() || isAdminLineStatusUpdate()))
+      allow update: if (isAdmin() && (isPendingModerationUpdate() || isAdminLineStatusUpdate() || isAdminLiveMetadataUpdate()))
         || (isSignedIn() && isVoteAggregateUpdate(lineId));
 
       allow delete: if false;

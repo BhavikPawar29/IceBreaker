@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db, firebaseConfigReady, googleProvider } from "../lib/firebase";
+import { reportError } from "../utils/reportError";
 
 const AuthContext = createContext(null);
 
@@ -78,7 +79,7 @@ function AuthProvider({ children }) {
           setIsRoleReady(true);
         }
       } catch (error) {
-        console.error("Failed to load role document.", error);
+        reportError("Failed to load role document.", error);
 
         if (!isCancelled) {
           setIsAdmin(false);
@@ -117,7 +118,7 @@ function AuthProvider({ children }) {
           setIsBanReady(true);
         }
       } catch (error) {
-        console.error("Failed to load ban document.", error);
+        reportError("Failed to load ban document.", error);
 
         if (!isCancelled) {
           setBanInfo(null);
@@ -162,7 +163,7 @@ function AuthProvider({ children }) {
         { merge: true },
       );
     } catch (error) {
-      console.error("Failed to save private user profile.", error);
+      reportError("Failed to save private user profile.", error);
     }
   }
 

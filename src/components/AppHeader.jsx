@@ -98,6 +98,14 @@ function HomeIcon() {
   );
 }
 
+function BoltIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M13 3 5.8 13h5.4L10 21l8.2-11h-5.6Z" fill="currentColor" />
+    </svg>
+  );
+}
+
 function ArrowIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -141,6 +149,7 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
   const accountInitial = accountLabel.slice(0, 1).toUpperCase();
 
   const appLinks = [
+    { icon: <BoltIcon />, label: "Live", to: "/live" },
     { icon: <StarIcon />, label: "Top picks", to: "/promoted" },
     { icon: <CompassIcon />, label: "Explore", to: "/lines" },
     ...(isBanned
@@ -183,7 +192,7 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
           <NavLink className="brand" to={user ? "/promoted" : "/"}>
             <span className="brand-mark">Breaking Ice</span>
             {!isMobile ? (
-              <span className="brand-sub">better conversation ideas</span>
+              <span className="brand-sub">instant conversation cheat code</span>
             ) : null}
           </NavLink>
           <div
