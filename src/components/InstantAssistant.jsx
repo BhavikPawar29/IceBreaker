@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { QUESTION_PACKS, SITUATIONS } from "../data/conversationFilters";
-import { shareText } from "../utils/share";
+import { shareText } from "../utils/shareHelpers";
 
 const SHARE_MESSAGE = "This saved me from an awkward moment \uD83D\uDC80";
 
