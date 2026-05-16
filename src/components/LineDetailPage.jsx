@@ -4,7 +4,7 @@ import {
   LINE_STATUS_APPROVED,
   LINE_STATUS_PENDING,
 } from "../constants/lineStatuses";
-import { buildAbsoluteUrl, shareUrl } from "../utils/share";
+import { buildAbsoluteUrl, shareUrl } from "../utils/shareHelpers";
 import RouteShimmer from "./RouteShimmer";
 
 function LineDetailPage({ line }) {

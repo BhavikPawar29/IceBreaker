@@ -18,7 +18,9 @@ const firebaseConfig = {
 export const firebaseConfigReady = Object.values(firebaseConfig).every(Boolean);
 export const appCheckSiteKey =
   import.meta.env.VITE_FIREBASE_APP_CHECK_SITE_KEY || "";
-const appCheckDebugToken = import.meta.env.VITE_APP_CHECK_DEBUG_TOKEN || "";
+const appCheckDebugToken = import.meta.env.DEV
+  ? import.meta.env.VITE_APP_CHECK_DEBUG_TOKEN || ""
+  : "";
 const hasFirebaseWebAppId = /^1:\d+:web:[a-zA-Z0-9]+/.test(
   firebaseConfig.appId || "",
 );

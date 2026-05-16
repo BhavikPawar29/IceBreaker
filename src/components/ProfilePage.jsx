@@ -6,7 +6,7 @@ import {
   LINE_STATUS_REJECTED,
   LINE_STATUS_REMOVED,
 } from "../constants/lineStatuses";
-import { buildAbsoluteUrl, shareUrl } from "../utils/share";
+import { buildAbsoluteUrl, shareUrl } from "../utils/shareHelpers";
 
 const STATUS_ORDER = [
   LINE_STATUS_PENDING,

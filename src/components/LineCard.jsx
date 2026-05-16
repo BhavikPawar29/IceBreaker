@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
-import { buildAbsoluteUrl, shareUrl } from "../utils/share";
+import { buildAbsoluteUrl, shareUrl } from "../utils/shareHelpers";
 
 function LineCard({ canVote, line, rank, voteState, onVote }) {
   const [isSaving, setIsSaving] = useState(false);

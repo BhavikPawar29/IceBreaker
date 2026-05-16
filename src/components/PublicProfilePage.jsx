@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
-import { buildAbsoluteUrl, shareUrl } from "../utils/share";
+import { buildAbsoluteUrl, shareUrl } from "../utils/shareHelpers";
 import RouteShimmer from "./RouteShimmer";
 
 function PublicProfilePage({ lines, profileId }) {
