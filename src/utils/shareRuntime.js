@@ -1,5 +1,13 @@
 import { reportError } from "./reportError";
 
+export function buildAbsoluteUrl(path) {
+  if (typeof window === "undefined") {
+    return path;
+  }
+
+  return new URL(path, window.location.origin).toString();
+}
+
 export async function shareUrl(url, title) {
   if (typeof window === "undefined") {
     return false;
@@ -44,10 +52,10 @@ export async function shareText(text, title = "Breaking Ice") {
   return false;
 }
 
-export function buildAbsoluteUrl(path) {
-  if (typeof window === "undefined") {
-    return path;
-  }
-
-  return new URL(path, window.location.origin).toString();
+export function installShareRuntime() {
+  globalThis.__ICEBREAKER_SHARE__ = {
+    buildAbsoluteUrl,
+    shareText,
+    shareUrl,
+  };
 }

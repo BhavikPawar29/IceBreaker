@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
-import { buildAbsoluteUrl, shareUrl } from "../utils/shareHelpers";
+
+function getShareRuntime() {
+  return globalThis.__ICEBREAKER_SHARE__;
+}
 
 function LineCard({ canVote, line, rank, voteState, onVote }) {
   const [isSaving, setIsSaving] = useState(false);
@@ -41,7 +44,11 @@ function LineCard({ canVote, line, rank, voteState, onVote }) {
   );
 
   async function handleShare() {
-    await shareUrl(buildAbsoluteUrl(`/line/${line.id}`), "IceBreaker idea");
+    const shareRuntime = getShareRuntime();
+    await shareRuntime?.shareUrl(
+      shareRuntime.buildAbsoluteUrl(`/line/${line.id}`),
+      "IceBreaker idea",
+    );
   }
 
   async function flushVoteToTarget(targetVote) {
