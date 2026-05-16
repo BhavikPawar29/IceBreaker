@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
-import { buildAbsoluteUrl, shareUrl } from "../utils/shareHelpers";
 import RouteShimmer from "./RouteShimmer";
+
+function getShareRuntime() {
+  return globalThis.__ICEBREAKER_SHARE__;
+}
 
 function PublicProfilePage({ lines, profileId }) {
   if (lines === undefined) {
@@ -20,8 +23,9 @@ function PublicProfilePage({ lines, profileId }) {
   const sharedCount = lines.length;
 
   async function handleShareProfile() {
-    await shareUrl(
-      buildAbsoluteUrl(`/profile/${profileId}`),
+    const shareRuntime = getShareRuntime();
+    await shareRuntime?.shareUrl(
+      shareRuntime.buildAbsoluteUrl(`/profile/${profileId}`),
       "Anonymous IceBreaker profile",
     );
   }
@@ -80,12 +84,13 @@ function PublicProfilePage({ lines, profileId }) {
                 <button
                   className="action-button"
                   type="button"
-                  onClick={() =>
-                    shareUrl(
-                      buildAbsoluteUrl(`/line/${line.id}`),
+                  onClick={() => {
+                    const shareRuntime = getShareRuntime();
+                    return shareRuntime?.shareUrl(
+                      shareRuntime.buildAbsoluteUrl(`/line/${line.id}`),
                       "IceBreaker idea",
-                    )
-                  }
+                    );
+                  }}
                 >
                   Share
                 </button>

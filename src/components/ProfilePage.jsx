@@ -6,7 +6,10 @@ import {
   LINE_STATUS_REJECTED,
   LINE_STATUS_REMOVED,
 } from "../constants/lineStatuses";
-import { buildAbsoluteUrl, shareUrl } from "../utils/shareHelpers";
+
+function getShareRuntime() {
+  return globalThis.__ICEBREAKER_SHARE__;
+}
 
 const STATUS_ORDER = [
   LINE_STATUS_PENDING,
@@ -124,9 +127,13 @@ function ProfileLine({ line }) {
           <button
             className="action-button"
             type="button"
-            onClick={() =>
-              shareUrl(buildAbsoluteUrl(`/line/${line.id}`), "IceBreaker idea")
-            }
+            onClick={() => {
+              const shareRuntime = getShareRuntime();
+              return shareRuntime?.shareUrl(
+                shareRuntime.buildAbsoluteUrl(`/line/${line.id}`),
+                "IceBreaker idea",
+              );
+            }}
           >
             Share
           </button>

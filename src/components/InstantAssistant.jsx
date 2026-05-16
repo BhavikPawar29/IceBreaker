@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { QUESTION_PACKS, SITUATIONS } from "../data/conversationFilters";
-import { shareText } from "../utils/shareHelpers";
 
 const SHARE_MESSAGE = "This saved me from an awkward moment \uD83D\uDC80";
+
+function getShareRuntime() {
+  return globalThis.__ICEBREAKER_SHARE__;
+}
 
 function InstantAssistant({
   error = "",
@@ -27,7 +30,7 @@ function InstantAssistant({
       return;
     }
 
-    await shareText(`${SHARE_MESSAGE}\n\n"${prompt.text}"`);
+    await getShareRuntime()?.shareText(`${SHARE_MESSAGE}\n\n"${prompt.text}"`);
   }
 
   return (

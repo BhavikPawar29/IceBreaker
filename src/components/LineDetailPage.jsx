@@ -4,8 +4,11 @@ import {
   LINE_STATUS_APPROVED,
   LINE_STATUS_PENDING,
 } from "../constants/lineStatuses";
-import { buildAbsoluteUrl, shareUrl } from "../utils/shareHelpers";
 import RouteShimmer from "./RouteShimmer";
+
+function getShareRuntime() {
+  return globalThis.__ICEBREAKER_SHARE__;
+}
 
 function LineDetailPage({ line }) {
   if (line === undefined) {
@@ -30,7 +33,11 @@ function LineDetailPage({ line }) {
   }
 
   async function handleShare() {
-    await shareUrl(buildAbsoluteUrl(`/line/${line.id}`), "IceBreaker idea");
+    const shareRuntime = getShareRuntime();
+    await shareRuntime?.shareUrl(
+      shareRuntime.buildAbsoluteUrl(`/line/${line.id}`),
+      "IceBreaker idea",
+    );
   }
 
   return (
