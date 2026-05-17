@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ALLOWED_CATEGORIES, DEFAULT_CATEGORY } from "../constants/categories";
+import { QUESTION_PACKS, SITUATIONS } from "../data/conversationFilters";
 import { formatCategory } from "../utils/board";
 import { validateLineSubmission } from "../utils/contentValidation";
 import Snackbar from "./Snackbar";
@@ -17,6 +18,8 @@ function SubmitCard({
 }) {
   const [form, setForm] = useState({
     category: DEFAULT_CATEGORY,
+    pack: QUESTION_PACKS[0].id,
+    situation: SITUATIONS[0].id,
     text: "",
   });
   const [feedback, setFeedback] = useState({ message: "", tone: "info" });
@@ -76,6 +79,8 @@ function SubmitCard({
 
     const validationMessage = validateLineSubmission({
       category: form.category,
+      pack: form.pack,
+      situation: form.situation,
       text: form.text,
     });
 
@@ -98,6 +103,8 @@ function SubmitCard({
     setIsSubmitting(true);
     const result = await onSubmit({
       category: form.category,
+      pack: form.pack,
+      situation: form.situation,
       text: form.text.trim(),
     });
 
@@ -126,6 +133,8 @@ function SubmitCard({
     localStorage.setItem(SUBMIT_COOLDOWN_KEY, String(Date.now()));
     setForm({
       category: form.category,
+      pack: form.pack,
+      situation: form.situation,
       text: "",
     });
   }
@@ -136,6 +145,36 @@ function SubmitCard({
         <h3>Add a line</h3>
       </div>
       <form className="submission-form" onSubmit={handleSubmit}>
+        <label>
+          <span>Situation</span>
+          <select
+            name="situation"
+            value={form.situation}
+            onChange={handleChange}
+            required
+          >
+            {SITUATIONS.map((situation) => (
+              <option key={situation.id} value={situation.id}>
+                {situation.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>Question pack</span>
+          <select
+            name="pack"
+            value={form.pack}
+            onChange={handleChange}
+            required
+          >
+            {QUESTION_PACKS.map((pack) => (
+              <option key={pack.id} value={pack.id}>
+                {pack.label}
+              </option>
+            ))}
+          </select>
+        </label>
         <label>
           <span>Category</span>
           <select

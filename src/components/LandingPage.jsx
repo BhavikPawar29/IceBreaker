@@ -5,29 +5,29 @@ function LandingPage({ authEnabled }) {
     <section className="landing-shell">
       <section className="landing-section feature-band">
         <div className="section-copy">
-          <p className="eyebrow">What makes it useful</p>
-          <h2>Quick prompts, filtered by people who use them.</h2>
+          <p className="eyebrow">Made for real moments</p>
+          <h2>Open it when your mind goes blank.</h2>
         </div>
         <div className="feature-list">
           <article className="section-card">
-            <h3>Human suggestions only</h3>
+            <h3>Something to say now</h3>
             <p>
-              Every idea comes from people and lived experience, not AI
-              generated filler.
+              Pick the situation and get one natural line you can actually use
+              in the conversation.
             </p>
           </article>
           <article className="section-card">
-            <h3>Built for real awkwardness</h3>
+            <h3>Fits the room</h3>
             <p>
-              These ideas are for shy moments, half-familiar people, and early
-              conversations that need a gentle push.
+              Date getting quiet, crush replying dry, new people around you, or
+              a group chat going dead. Each mode keeps the line relevant.
             </p>
           </article>
           <article className="section-card">
-            <h3>Community filtered</h3>
+            <h3>No content maze</h3>
             <p>
-              Weak ideas stay in the queue. Good ones earn votes and move into
-              the promoted section.
+              Breaking Ice is not built for browsing forever. It gets you to one
+              good line fast.
             </p>
           </article>
         </div>
@@ -36,31 +36,31 @@ function LandingPage({ authEnabled }) {
       <section className="landing-section timeline-band" id="how-it-works">
         <div className="section-copy">
           <p className="eyebrow">How it works</p>
-          <h2>A simple loop that keeps generic conversation ideas out.</h2>
+          <h2>Three taps before the silence wins.</h2>
         </div>
         <div className="timeline-grid">
           <article className="section-card timeline-card">
             <span className="timeline-step">01</span>
-            <h3>Sign in and enter the lines board</h3>
+            <h3>Start Live Mode</h3>
             <p>
-              The landing page is only for understanding the product. The actual
-              lines experience starts after login.
+              Use the fast screen when you need a line during an actual
+              conversation.
             </p>
           </article>
           <article className="section-card timeline-card">
             <span className="timeline-step">02</span>
-            <h3>Browse, vote, or add your own idea</h3>
+            <h3>Choose the situation</h3>
             <p>
-              Users can vote ideas up and add their own while they are still
-              being tested by the community.
+              Pick date, crush, new friends, or group chat so the suggestion
+              feels natural.
             </p>
           </article>
           <article className="section-card timeline-card">
             <span className="timeline-step">03</span>
-            <h3>Promote only what feels useful</h3>
+            <h3>Say it or refresh</h3>
             <p>
-              Once an idea reaches +50 net score, it becomes promoted and turns
-              read-only for everyone else.
+              If the first line is not the one, refresh once and keep the
+              conversation moving.
             </p>
           </article>
         </div>
@@ -68,26 +68,26 @@ function LandingPage({ authEnabled }) {
 
       <section className="landing-section proof-band">
         <div className="section-copy">
-          <p className="eyebrow">Why this is different</p>
-          <h2>Human judgment over random one-liners.</h2>
+          <p className="eyebrow">The board helps it improve</p>
+          <h2>Good lines can come from the people using them.</h2>
         </div>
         <div className="comparison-grid">
           <article className="section-card comparison-card">
             <h3>What you get</h3>
             <ul className="comparison-list">
-              <li>Human-written things to ask</li>
-              <li>Conversation ideas shaped by actual experience</li>
-              <li>Community voting on what feels usable</li>
-              <li>A profile view of your own submitted ideas</li>
+              <li>A fast live assistant for awkward moments</li>
+              <li>Simple modes for dates, crushes, friends, and group chats</li>
+              <li>Playful, deep, and flirty packs without extra setup</li>
+              <li>A board where useful community lines can rise</li>
             </ul>
           </article>
           <article className="section-card comparison-card">
-            <h3>What you do not get</h3>
+            <h3>What it avoids</h3>
             <ul className="comparison-list">
-              <li>AI-generated filler</li>
-              <li>Cold stranger pickup tactics</li>
-              <li>Spammy one-liners with no context</li>
-              <li>Editable promoted ideas</li>
+              <li>Endless lists before you find something useful</li>
+              <li>Cringe pickup scripts for strangers</li>
+              <li>Overthinking the exact perfect message</li>
+              <li>Complicated filters when you need speed</li>
             </ul>
           </article>
         </div>
@@ -95,14 +95,14 @@ function LandingPage({ authEnabled }) {
 
       <section className="landing-section cta-band">
         <div className="section-card cta-card">
-          <p className="eyebrow">When you are ready</p>
-          <h2>Join the board and start with one strong prompt today.</h2>
+          <p className="eyebrow">Ready when it gets quiet</p>
+          <h2>Get one good line before the moment passes.</h2>
           <div className="hero-actions">
             <Link className="ink-link" to="/login">
-              {authEnabled ? "Get inside the app" : "Firebase config required"}
+              {authEnabled ? "Start onboarding" : "Sign-in is not ready yet"}
             </Link>
             <a className="ghost-link" href="#how-it-works">
-              See the flow
+              See how it works
             </a>
           </div>
         </div>

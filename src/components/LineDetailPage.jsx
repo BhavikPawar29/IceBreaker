@@ -4,8 +4,12 @@ import {
   LINE_STATUS_APPROVED,
   LINE_STATUS_PENDING,
 } from "../constants/lineStatuses";
-import { buildAbsoluteUrl, shareUrl } from "../utils/share";
 import RouteShimmer from "./RouteShimmer";
+import StatePanel from "./StatePanel";
+
+function getShareRuntime() {
+  return globalThis.__ICEBREAKER_SHARE__;
+}
 
 function LineDetailPage({ line }) {
   if (line === undefined) {
@@ -22,15 +26,23 @@ function LineDetailPage({ line }) {
   if (!line) {
     return (
       <section className="main-shell">
-        <article className="section-card">
-          <p className="empty-state">This idea does not exist.</p>
-        </article>
+        <StatePanel
+          className="section-card"
+          eyebrow="No result"
+          message="This link may be old, or the idea may have been removed."
+          title="This idea does not exist."
+          variant="empty"
+        />
       </section>
     );
   }
 
   async function handleShare() {
-    await shareUrl(buildAbsoluteUrl(`/line/${line.id}`), "IceBreaker idea");
+    const shareRuntime = getShareRuntime();
+    await shareRuntime?.shareUrl(
+      shareRuntime.buildAbsoluteUrl(`/line/${line.id}`),
+      "IceBreaker idea",
+    );
   }
 
   return (

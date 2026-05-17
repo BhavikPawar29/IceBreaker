@@ -18,6 +18,17 @@ const firebaseConfig = {
 export const firebaseConfigReady = Object.values(firebaseConfig).every(Boolean);
 export const appCheckSiteKey =
   import.meta.env.VITE_FIREBASE_APP_CHECK_SITE_KEY || "";
+const appCheckDebugToken = import.meta.env.DEV
+  ? import.meta.env.VITE_APP_CHECK_DEBUG_TOKEN || ""
+  : "";
+const hasFirebaseWebAppId = /^1:\d+:web:[a-zA-Z0-9]+/.test(
+  firebaseConfig.appId || "",
+);
+const shouldEnableAppCheck =
+  import.meta.env.VITE_ENABLE_APP_CHECK === "true" &&
+  Boolean(appCheckSiteKey) &&
+  hasFirebaseWebAppId;
+let appCheckInitialized = false;
 
 const app = firebaseConfigReady
   ? getApps().length
@@ -33,9 +44,30 @@ googleProvider?.setCustomParameters({
   prompt: "select_account",
 });
 
-if (app && appCheckSiteKey && typeof window !== "undefined") {
+if (
+  app &&
+  shouldEnableAppCheck &&
+  typeof window !== "undefined" &&
+  !appCheckInitialized
+) {
+  if (appCheckDebugToken) {
+    window.FIREBASE_APPCHECK_DEBUG_TOKEN =
+      appCheckDebugToken === "true" ? true : appCheckDebugToken;
+  }
+
   initializeAppCheck(app, {
     provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey),
     isTokenAutoRefreshEnabled: true,
   });
+  appCheckInitialized = true;
+} else if (
+  import.meta.env.DEV &&
+  app &&
+  appCheckSiteKey &&
+  typeof window !== "undefined" &&
+  !hasFirebaseWebAppId
+) {
+  console.warn(
+    "Firebase App Check is disabled because VITE_FIREBASE_APP_ID is not a Firebase Web App ID. Use the app id from Firebase Project settings, not the G- measurement id.",
+  );
 }

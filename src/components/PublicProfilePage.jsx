@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import { formatCategory } from "../utils/board";
-import { buildAbsoluteUrl, shareUrl } from "../utils/share";
 import RouteShimmer from "./RouteShimmer";
+import StatePanel from "./StatePanel";
+
+function getShareRuntime() {
+  return globalThis.__ICEBREAKER_SHARE__;
+}
 
 function PublicProfilePage({ lines, profileId }) {
   if (lines === undefined) {
@@ -20,8 +24,9 @@ function PublicProfilePage({ lines, profileId }) {
   const sharedCount = lines.length;
 
   async function handleShareProfile() {
-    await shareUrl(
-      buildAbsoluteUrl(`/profile/${profileId}`),
+    const shareRuntime = getShareRuntime();
+    await shareRuntime?.shareUrl(
+      shareRuntime.buildAbsoluteUrl(`/profile/${profileId}`),
       "Anonymous IceBreaker profile",
     );
   }
@@ -55,9 +60,13 @@ function PublicProfilePage({ lines, profileId }) {
 
         <div className="profile-list">
           {!lines.length ? (
-            <article className="section-card">
-              <p className="empty-state">Nothing has been shared here yet.</p>
-            </article>
+            <StatePanel
+              className="section-card"
+              eyebrow="Quiet profile"
+              message="This contributor has not posted an approved line to the board yet."
+              title="Nothing has been shared here yet."
+              variant="empty"
+            />
           ) : null}
           {lines.map((line) => (
             <article key={line.id} className="section-card profile-line">
@@ -80,12 +89,13 @@ function PublicProfilePage({ lines, profileId }) {
                 <button
                   className="action-button"
                   type="button"
-                  onClick={() =>
-                    shareUrl(
-                      buildAbsoluteUrl(`/line/${line.id}`),
+                  onClick={() => {
+                    const shareRuntime = getShareRuntime();
+                    return shareRuntime?.shareUrl(
+                      shareRuntime.buildAbsoluteUrl(`/line/${line.id}`),
                       "IceBreaker idea",
-                    )
-                  }
+                    );
+                  }}
                 >
                   Share
                 </button>

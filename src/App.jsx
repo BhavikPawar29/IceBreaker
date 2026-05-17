@@ -7,21 +7,13 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import {
-  collection,
-  getCountFromServer,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
 import AppHeader from "./components/AppHeader";
+import InstallAppPrompt from "./components/InstallAppPrompt";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import RouteShimmer from "./components/RouteShimmer";
-import { LINE_STATUS_APPROVED } from "./constants/lineStatuses";
-import { db, firebaseConfigReady } from "./lib/firebase";
+import StatePanel from "./components/StatePanel";
+import { firebaseConfigReady } from "./lib/firebase";
 import useAuth from "./context/useAuth";
 import useCommunityBoard from "./hooks/useCommunityBoard";
 import useAdminDashboard from "./hooks/useAdminDashboard";
@@ -32,6 +24,7 @@ const CreatePage = lazy(() => import("./components/CreatePage"));
 const LandingPage = lazy(() => import("./components/LandingPage"));
 const LineDetailPage = lazy(() => import("./components/LineDetailPage"));
 const LoginPage = lazy(() => import("./components/LoginPage"));
+const LivePage = lazy(() => import("./components/LivePage"));
 const ProfilePage = lazy(() => import("./components/ProfilePage"));
 const PublicProfilePage = lazy(() => import("./components/PublicProfilePage"));
 const AdminPage = lazy(() => import("./components/AdminPage"));
@@ -41,17 +34,17 @@ function LoadingShell({
   title = "Loading IceBreaker",
   note = "Bringing your board back into place.",
 }) {
-  const loadingLabel = `${title}. ${note}`;
-
   return (
     <section className="main-shell main-shell--loading">
-      <article
+      <StatePanel
         className="section-card app-loader-card"
-        aria-label={loadingLabel}
-        aria-live="polite"
+        loading
+        message={note}
+        title={title}
+        variant="loading"
       >
         <RouteShimmer className="route-shimmer--hero" />
-      </article>
+      </StatePanel>
     </section>
   );
 }
@@ -100,11 +93,6 @@ function PublicProfileRoute({ getPublicProfileLines }) {
 
 function App() {
   const [filter, setFilter] = useState("all");
-  const [landingStats, setLandingStats] = useState({
-    total: 0,
-    topScore: 0,
-    promotedCount: 0,
-  });
   const location = useLocation();
   const navigate = useNavigate();
   const activeBoardView =
@@ -154,8 +142,8 @@ function App() {
       return;
     }
 
-    if (location.pathname === "/" || location.pathname === "/login") {
-      navigate("/promoted", { replace: true });
+    if (location.pathname === "/login") {
+      navigate("/live", { replace: true });
     }
   }, [location.pathname, navigate, user]);
 
@@ -179,16 +167,9 @@ function App() {
   const filteredPromoted = promotedLines.filter(
     (line) => filter === "all" || line.category === filter,
   );
-  const topLine = filteredCandidates[0] ?? candidateLines[0] ?? null;
   const isSessionLoading = !isAuthReady || (Boolean(user) && !isRoleReady);
   const isBanned = Boolean(user && banInfo);
   const banReason = banInfo?.reason?.trim();
-  const stats = {
-    total: candidateLines.length + promotedLines.length,
-    topScore: topLine?.score ?? 0,
-    promotedCount: promotedLines.length,
-    candidateCount: candidateLines.length,
-  };
 
   async function handleGoogleSignIn() {
     await signInWithGoogle();
@@ -208,81 +189,15 @@ function App() {
 
   const isLandingRoute = location.pathname === "/";
   const isLoginRoute = location.pathname === "/login";
-  const shouldShowFooter = !user && !isLoginRoute;
+  const isLiveRoute = location.pathname === "/live";
+  const shouldShowFooter = !user && !isLoginRoute && !isLiveRoute;
   const isInAppSurface = Boolean(user) && !isLandingRoute && !isLoginRoute;
-  const heroStats = user ? stats : landingStats;
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadLandingStats() {
-      if (!db || !firebaseConfigReady || user || !isLandingRoute) {
-        return;
-      }
-
-      try {
-        const linesCollection = collection(db, "lines");
-        const [approvedCountSnapshot, promotedCountSnapshot, topSnapshot] =
-          await Promise.all([
-            getCountFromServer(
-              query(
-                linesCollection,
-                where("status", "==", LINE_STATUS_APPROVED),
-              ),
-            ),
-            getCountFromServer(
-              query(
-                linesCollection,
-                where("status", "==", LINE_STATUS_APPROVED),
-                where("promoted", "==", true),
-              ),
-            ),
-            getDocs(
-              query(
-                linesCollection,
-                where("status", "==", LINE_STATUS_APPROVED),
-                where("promoted", "==", false),
-                orderBy("score", "desc"),
-                orderBy("createdAt", "desc"),
-                limit(1),
-              ),
-            ),
-          ]);
-
-        if (isCancelled) {
-          return;
-        }
-
-        const topLine = topSnapshot.docs[0]?.data() || null;
-
-        setLandingStats({
-          total: approvedCountSnapshot.data().count || 0,
-          topScore: topLine?.score || 0,
-          promotedCount: promotedCountSnapshot.data().count || 0,
-        });
-      } catch (error) {
-        console.error("Failed to load landing stats.", error);
-      }
-    }
-
-    loadLandingStats();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [isLandingRoute, user]);
-
   return (
     <div className={`page-shell ${isInAppSurface ? "page-shell--app" : ""}`}>
       <div className="paper-grain" aria-hidden="true"></div>
       {isLandingRoute ? (
-        <Hero
-          authEnabled={authEnabled}
-          isAuthReady={isAuthReady}
-          stats={heroStats}
-          user={user}
-        />
-      ) : isLoginRoute ? null : (
+        <Hero authEnabled={authEnabled} isAuthReady={isAuthReady} user={user} />
+      ) : isLoginRoute || (isLiveRoute && !user) ? null : (
         <AppHeader
           authEnabled={authEnabled}
           isAdmin={isAdmin}
@@ -334,7 +249,7 @@ function App() {
                     note="Checking your sign-in so you land in the right place."
                   />
                 ) : user ? (
-                  <Navigate to="/promoted" replace />
+                  <Navigate to="/live" replace />
                 ) : (
                   <LoginPage
                     authEnabled={authEnabled}
@@ -344,6 +259,21 @@ function App() {
                     onPasswordReset={handlePasswordReset}
                     onGoogleSignIn={handleGoogleSignIn}
                   />
+                )
+              }
+            />
+            <Route
+              path="/live"
+              element={
+                isSessionLoading ? (
+                  <LoadingShell
+                    title="Opening live mode"
+                    note="Checking your sign-in before showing conversation prompts."
+                  />
+                ) : user ? (
+                  <LivePage user={user} />
+                ) : (
+                  <Navigate to="/login" replace />
                 )
               }
             />
@@ -468,7 +398,7 @@ function App() {
                       <AdminPage dashboard={adminDashboard} />
                     </section>
                   ) : (
-                    <Navigate to="/promoted" replace />
+                    <Navigate to="/live" replace />
                   )
                 ) : (
                   <Navigate to="/login" replace />
@@ -478,6 +408,7 @@ function App() {
           </Routes>
         </Suspense>
       </main>
+      <InstallAppPrompt user={user} />
       {shouldShowFooter ? <Footer /> : null}
     </div>
   );
