@@ -2,7 +2,7 @@ import InstantAssistant from "./InstantAssistant";
 import useLivePromptSearch from "../hooks/useLivePromptSearch";
 
 function LivePage({ user }) {
-  const { error, findPrompt, isSearching, prompt, resetPrompt } =
+  const { error, findPrompt, isSearching, liveState, prompt, resetPrompt } =
     useLivePromptSearch(user);
 
   return (
@@ -10,6 +10,7 @@ function LivePage({ user }) {
       <InstantAssistant
         error={error}
         isSearching={isSearching}
+        liveState={liveState}
         onFindPrompt={findPrompt}
         onReset={resetPrompt}
         prompt={prompt}

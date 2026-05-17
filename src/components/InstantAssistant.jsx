@@ -1,24 +1,40 @@
 import { useState } from "react";
 import { QUESTION_PACKS, SITUATIONS } from "../data/conversationFilters";
+import StatePanel from "./StatePanel";
 
 const SHARE_MESSAGE = "This saved me from an awkward moment \uD83D\uDC80";
+const STEP_SITUATION = "situation";
+const STEP_PACK = "pack";
+const STEP_TRIGGER = "trigger";
 
 function getShareRuntime() {
   return globalThis.__ICEBREAKER_SHARE__;
 }
 
+function findLabel(items, id) {
+  return items.find((item) => item.id === id)?.label || "";
+}
+
 function InstantAssistant({
   error = "",
   isSearching = false,
+  liveState = "idle",
   onFindPrompt,
   onReset,
   prompt,
 }) {
-  const [selectedSituation, setSelectedSituation] = useState(SITUATIONS[0].id);
-  const [selectedPack, setSelectedPack] = useState(QUESTION_PACKS[0].id);
+  const [selectedSituation, setSelectedSituation] = useState("");
+  const [selectedPack, setSelectedPack] = useState("");
+  const [step, setStep] = useState(STEP_SITUATION);
   const hasPrompt = Boolean(prompt);
+  const selectedSituationLabel = findLabel(SITUATIONS, selectedSituation);
+  const selectedPackLabel = findLabel(QUESTION_PACKS, selectedPack);
 
   function handleFindPrompt() {
+    if (!selectedSituation || !selectedPack) {
+      return;
+    }
+
     onFindPrompt({
       pack: selectedPack,
       situation: selectedSituation,
@@ -33,68 +49,33 @@ function InstantAssistant({
     await getShareRuntime()?.shareText(`${SHARE_MESSAGE}\n\n"${prompt.text}"`);
   }
 
+  function handleSituationSelect(situationId) {
+    setSelectedSituation(situationId);
+    setStep(STEP_PACK);
+  }
+
+  function handlePackSelect(packId) {
+    setSelectedPack(packId);
+    setStep(STEP_TRIGGER);
+  }
+
+  function handleRetry() {
+    handleFindPrompt();
+  }
+
+  function handleChange() {
+    onReset();
+    setSelectedSituation("");
+    setSelectedPack("");
+    setStep(STEP_SITUATION);
+  }
+
   return (
     <section
-      className="instant-assistant"
+      className={`instant-assistant ${hasPrompt ? "instant-assistant--result" : ""}`.trim()}
       aria-label="Live conversation assistant"
     >
-      {!hasPrompt ? (
-        <>
-          <div className="assistant-intro assistant-intro--live">
-            <p className="eyebrow">Live Mode</p>
-            <h2>Pick the moment first.</h2>
-          </div>
-
-          <div className="assistant-controls" aria-label="Conversation context">
-            <div className="assistant-control-group">
-              <span>Situation</span>
-              <div className="assistant-chip-row">
-                {SITUATIONS.map((situation) => (
-                  <button
-                    key={situation.id}
-                    type="button"
-                    className={`assistant-chip ${
-                      selectedSituation === situation.id ? "is-active" : ""
-                    }`}
-                    onClick={() => setSelectedSituation(situation.id)}
-                  >
-                    {situation.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="assistant-control-group">
-              <span>Question pack</span>
-              <div className="assistant-chip-row">
-                {QUESTION_PACKS.map((pack) => (
-                  <button
-                    key={pack.id}
-                    type="button"
-                    className={`assistant-chip ${
-                      selectedPack === pack.id ? "is-active" : ""
-                    }`}
-                    onClick={() => setSelectedPack(pack.id)}
-                  >
-                    {pack.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {error ? <p className="assistant-error">{error}</p> : null}
-
-          <button
-            className="assistant-primary-button"
-            type="button"
-            disabled={isSearching}
-            onClick={handleFindPrompt}
-          >
-            {isSearching ? "Finding..." : "Give me something to say"}
-          </button>
-        </>
-      ) : (
+      {hasPrompt ? (
         <>
           <article className="assistant-card" aria-live="polite">
             <p className="assistant-card-label">Say this</p>
@@ -122,11 +103,186 @@ function InstantAssistant({
             <button
               className="assistant-secondary-button assistant-secondary-button--plain"
               type="button"
-              onClick={onReset}
+              onClick={handleChange}
             >
               Change
             </button>
           </div>
+        </>
+      ) : (
+        <>
+          {step === STEP_SITUATION ? (
+            <div className="assistant-step assistant-step--choices">
+              <div className="assistant-intro assistant-intro--live">
+                <p className="eyebrow">Live Mode</p>
+                <h2>What situation?</h2>
+                <p>
+                  Pick the moment first so we can pull a line that actually
+                  fits.
+                </p>
+              </div>
+
+              <div
+                className="assistant-choice-grid"
+                aria-label="Situation options"
+              >
+                {SITUATIONS.map((situation) => (
+                  <button
+                    key={situation.id}
+                    type="button"
+                    className={`assistant-choice-button ${
+                      selectedSituation === situation.id ? "is-active" : ""
+                    }`}
+                    onClick={() => handleSituationSelect(situation.id)}
+                  >
+                    {situation.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {step === STEP_PACK ? (
+            <div className="assistant-step assistant-step--choices">
+              <div className="assistant-intro assistant-intro--live">
+                <p className="eyebrow">Step 2</p>
+                <h2>Question pack?</h2>
+                <p>
+                  Choose the tone you want before we spin up the next thing to
+                  say.
+                </p>
+              </div>
+
+              <div
+                className="assistant-choice-grid"
+                aria-label="Question pack options"
+              >
+                {QUESTION_PACKS.map((pack) => (
+                  <button
+                    key={pack.id}
+                    type="button"
+                    className={`assistant-choice-button ${
+                      selectedPack === pack.id ? "is-active" : ""
+                    }`}
+                    onClick={() => handlePackSelect(pack.id)}
+                  >
+                    {pack.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {step === STEP_TRIGGER ? (
+            <div className="assistant-step assistant-step--trigger">
+              <div className="assistant-intro assistant-intro--live assistant-intro--centered">
+                <p className="eyebrow">Ready</p>
+                <h2>Tap for a line</h2>
+                <p>
+                  We will use your selected situation and pack to pull one good
+                  question.
+                </p>
+              </div>
+
+              <div className="assistant-orb-stage">
+                <button
+                  className={`assistant-orb-button ${
+                    isSearching ? "is-searching" : ""
+                  }`}
+                  type="button"
+                  aria-label="Tap for a line"
+                  disabled={isSearching}
+                  onClick={handleFindPrompt}
+                >
+                  <span className="assistant-orb-button__inner">
+                    <span className="assistant-orb-button__label">
+                      {isSearching ? "Finding..." : "Tap for a line"}
+                    </span>
+                  </span>
+                </button>
+              </div>
+
+              <div
+                className="assistant-selection-summary"
+                aria-label="Selected live filters"
+              >
+                <span className="assistant-selection-pill">
+                  {selectedSituationLabel}
+                </span>
+                <span className="assistant-selection-pill">
+                  {selectedPackLabel}
+                </span>
+              </div>
+            </div>
+          ) : null}
+
+          {step === STEP_TRIGGER && liveState === "loading" ? (
+            <StatePanel
+              className="assistant-feedback"
+              loading
+              message="We are looking for a question that fits this exact vibe."
+              title="Searching the live queue..."
+              variant="loading"
+            />
+          ) : null}
+
+          {step === STEP_TRIGGER && liveState === "empty" ? (
+            <StatePanel
+              actions={
+                <>
+                  <button
+                    className="assistant-primary-button"
+                    type="button"
+                    onClick={handleChange}
+                  >
+                    Change picks
+                  </button>
+                  <button
+                    className="assistant-secondary-button"
+                    type="button"
+                    disabled={isSearching}
+                    onClick={handleRetry}
+                  >
+                    Refresh
+                  </button>
+                </>
+              }
+              className="assistant-feedback"
+              eyebrow="Nothing live yet"
+              message="Try another situation or switch the pack. This works better as more approved lines land on the board."
+              title="No question matches this combo right now."
+              variant="empty"
+            />
+          ) : null}
+
+          {step === STEP_TRIGGER && liveState === "error" ? (
+            <StatePanel
+              actions={
+                <>
+                  <button
+                    className="assistant-primary-button"
+                    type="button"
+                    disabled={isSearching}
+                    onClick={handleRetry}
+                  >
+                    Try again
+                  </button>
+                  <button
+                    className="assistant-secondary-button"
+                    type="button"
+                    onClick={handleChange}
+                  >
+                    Change picks
+                  </button>
+                </>
+              }
+              className="assistant-feedback"
+              eyebrow="Connection hiccup"
+              message="Try again in a moment, or change the combination and spin a new search."
+              title={error || "Could not load a live line."}
+              variant="error"
+            />
+          ) : null}
         </>
       )}
     </section>

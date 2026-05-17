@@ -42,16 +42,19 @@ function docsToPrompts(snapshot) {
 function useLivePromptSearch(user) {
   const [error, setError] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [liveState, setLiveState] = useState("idle");
   const [prompt, setPrompt] = useState(null);
 
   async function findPrompt({ pack, situation }) {
     if (!db || !firebaseConfigReady || !user) {
       setError("Sign in before opening Live Mode.");
+      setLiveState("error");
       return null;
     }
 
     setIsSearching(true);
     setError("");
+    setLiveState("loading");
 
     try {
       const linesCollection = collection(db, "lines");
@@ -75,14 +78,17 @@ function useLivePromptSearch(user) {
       if (!nextPrompt) {
         setError("No live lines found for that filter yet.");
         setPrompt(null);
+        setLiveState("empty");
         return null;
       }
 
       setPrompt(nextPrompt);
+      setLiveState("ready");
       return nextPrompt;
     } catch (nextError) {
       reportError("Failed to find a live prompt.", nextError);
       setError("Could not load a live line for that filter.");
+      setLiveState("error");
       return null;
     } finally {
       setIsSearching(false);
@@ -92,12 +98,14 @@ function useLivePromptSearch(user) {
   function resetPrompt() {
     setError("");
     setPrompt(null);
+    setLiveState("idle");
   }
 
   return {
     error,
     findPrompt,
     isSearching,
+    liveState,
     prompt,
     resetPrompt,
   };
