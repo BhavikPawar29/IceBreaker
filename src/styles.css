@@ -218,6 +218,7 @@ textarea {
   display: grid;
   gap: 14px;
   align-content: start;
+  justify-items: stretch;
 }
 
 .hero-preview {
@@ -3249,15 +3250,15 @@ textarea {
 
 @media (max-width: 720px) {
   .hero {
-    padding-inline: 16px;
-    padding-top: 14px;
+    padding-inline: 14px;
+    padding-top: 12px;
   }
 
   .main-shell,
   .landing-shell,
   .site-footer,
   .app-header {
-    padding-inline: 16px;
+    padding-inline: 14px;
   }
 
   .main-shell,
@@ -3669,17 +3670,18 @@ textarea {
   }
 
   .hero-grid--mobile {
-    gap: 18px;
+    gap: 14px;
     min-height: auto;
   }
 
   .hero-art-shell {
     order: -1;
+    margin-bottom: 2px;
   }
 
   .hero-copy {
     display: grid;
-    gap: 12px;
+    gap: 10px;
   }
 
   .hero-text {
@@ -3702,7 +3704,7 @@ textarea {
   .hero-stats {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: 8px;
   }
 
   .hero-stats article:last-child {
@@ -3710,13 +3712,67 @@ textarea {
   }
 
   .illustration-panel {
-    min-height: 280px;
+    min-height: 236px;
+    max-width: 540px;
+    width: min(100%, 540px);
+    margin: 0 auto;
+    padding: 10px;
+    border-radius: 28px;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 78% 16%,
+        rgba(240, 201, 93, 0.18),
+        transparent 26%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(255, 252, 247, 0.94),
+        rgba(255, 244, 247, 0.82)
+      );
+    box-shadow: 0 18px 34px rgba(85, 38, 55, 0.08);
+  }
+
+  .illustration-panel .floating-note,
+  .illustration-panel .illustration-credit {
+    display: none;
+  }
+
+  .sun-wash {
+    inset: 42px 18px auto auto;
+    width: 160px;
+    height: 160px;
+    opacity: 0.72;
+    filter: blur(12px);
+  }
+
+  .city-sketch {
+    width: 112%;
+    margin-left: -6%;
+    margin-top: -2px;
+    opacity: 0.88;
+  }
+
+  .city-sketch path {
+    stroke-width: 3.1;
+    opacity: 0.74;
+    animation-duration: 2s;
   }
 
   .heart-doodle,
   .connector,
   .spark {
     display: none;
+  }
+
+  .chat-bubble,
+  .chat-bubble--right {
+    opacity: 0.8;
+  }
+
+  .sketch-ground,
+  .sketch-ground--soft {
+    stroke-width: 3.1;
   }
 
   .line-card {

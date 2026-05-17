@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import useIsMobile from "../hooks/useIsMobile";
 import SketchIllustration from "./SketchIllustration";
 
 function CountUp({ value, duration = 750 }) {
@@ -42,8 +41,6 @@ function CountUp({ value, duration = 750 }) {
 }
 
 function Hero({ authEnabled, stats, user }) {
-  const isMobile = useIsMobile();
-
   return (
     <header className="hero">
       <div className="topbar">
@@ -55,10 +52,7 @@ function Hero({ authEnabled, stats, user }) {
         ) : null}
       </div>
 
-      <section
-        className={`hero-grid ${isMobile ? "hero-grid--mobile" : ""}`}
-        id="top"
-      >
+      <section className="hero-grid hero-grid--mobile" id="top">
         <div className="hero-copy">
           <h1>
             Stop blanking
@@ -94,11 +88,9 @@ function Hero({ authEnabled, stats, user }) {
           </div>
         </div>
 
-        {!isMobile ? (
-          <aside className="hero-side">
-            <SketchIllustration />
-          </aside>
-        ) : null}
+        <aside className="hero-side hero-art-shell">
+          <SketchIllustration />
+        </aside>
       </section>
     </header>
   );
