@@ -12,6 +12,7 @@ import InstallAppPrompt from "./components/InstallAppPrompt";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import RouteShimmer from "./components/RouteShimmer";
+import StatePanel from "./components/StatePanel";
 import { firebaseConfigReady } from "./lib/firebase";
 import useAuth from "./context/useAuth";
 import useCommunityBoard from "./hooks/useCommunityBoard";
@@ -33,17 +34,17 @@ function LoadingShell({
   title = "Loading IceBreaker",
   note = "Bringing your board back into place.",
 }) {
-  const loadingLabel = `${title}. ${note}`;
-
   return (
     <section className="main-shell main-shell--loading">
-      <article
+      <StatePanel
         className="section-card app-loader-card"
-        aria-label={loadingLabel}
-        aria-live="polite"
+        loading
+        message={note}
+        title={title}
+        variant="loading"
       >
         <RouteShimmer className="route-shimmer--hero" />
-      </article>
+      </StatePanel>
     </section>
   );
 }
@@ -248,7 +249,7 @@ function App() {
                     note="Checking your sign-in so you land in the right place."
                   />
                 ) : user ? (
-                  <Navigate to="/promoted" replace />
+                  <Navigate to="/live" replace />
                 ) : (
                   <LoginPage
                     authEnabled={authEnabled}
@@ -397,7 +398,7 @@ function App() {
                       <AdminPage dashboard={adminDashboard} />
                     </section>
                   ) : (
-                    <Navigate to="/promoted" replace />
+                    <Navigate to="/live" replace />
                   )
                 ) : (
                   <Navigate to="/login" replace />

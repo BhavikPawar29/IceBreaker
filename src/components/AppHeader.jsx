@@ -189,7 +189,7 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
           className={`topbar ${isMobile ? "topbar--mobile" : ""}`}
           aria-label="Primary"
         >
-          <NavLink className="brand" to={user ? "/promoted" : "/"}>
+          <NavLink className="brand" to={user ? "/live" : "/"}>
             <span className="brand-mark">Breaking Ice</span>
             {!isMobile ? (
               <span className="brand-sub">instant conversation cheat code</span>
