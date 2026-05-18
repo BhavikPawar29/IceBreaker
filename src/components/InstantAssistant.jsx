@@ -72,7 +72,7 @@ function InstantAssistant({
 
   return (
     <section
-      className={`instant-assistant ${hasPrompt ? "instant-assistant--result" : ""}`.trim()}
+      className={`instant-assistant section-card ${hasPrompt ? "instant-assistant--result" : ""}`.trim()}
       aria-label="Live conversation assistant"
     >
       {hasPrompt ? (
@@ -247,7 +247,7 @@ function InstantAssistant({
                   </button>
                 </>
               }
-              className="assistant-feedback"
+              className="assistant-feedback section-card"
               eyebrow="Nothing live yet"
               message="Try another situation or switch the pack. This works better as more approved lines land on the board."
               title="No question matches this combo right now."
@@ -276,7 +276,7 @@ function InstantAssistant({
                   </button>
                 </>
               }
-              className="assistant-feedback"
+              className="assistant-feedback section-card"
               eyebrow="Connection hiccup"
               message="Try again in a moment, or change the combination and spin a new search."
               title={error || "Could not load a live line."}

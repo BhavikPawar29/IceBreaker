@@ -11,6 +11,7 @@ import AppHeader from "./components/AppHeader";
 import InstallAppPrompt from "./components/InstallAppPrompt";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
+import SketchBackdrop from "./components/SketchBackdrop";
 import RouteShimmer from "./components/RouteShimmer";
 import StatePanel from "./components/StatePanel";
 import { firebaseConfigReady } from "./lib/firebase";
@@ -195,6 +196,7 @@ function App() {
   return (
     <div className={`page-shell ${isInAppSurface ? "page-shell--app" : ""}`}>
       <div className="paper-grain" aria-hidden="true"></div>
+      <SketchBackdrop />
       {isLandingRoute ? (
         <Hero authEnabled={authEnabled} isAuthReady={isAuthReady} user={user} />
       ) : isLoginRoute || (isLiveRoute && !user) ? null : (

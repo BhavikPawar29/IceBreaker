@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600;6..96,700;6..96,800&family=Inter:wght@400;500;600;700;800&display=swap");
+
 :root {
   --surface: rgba(255, 248, 249, 0.88);
   --surface-strong: #fff7f7;
@@ -286,7 +288,7 @@ textarea {
 
 .hero-copy h1 {
   max-width: 12ch;
-  font-size: clamp(2.2rem, 4.1vw, 3.45rem);
+  font-size: clamp(3.5rem, 6vw, 6rem);
   line-height: 0.96;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -353,6 +355,29 @@ textarea {
   -webkit-backdrop-filter: blur(14px);
 }
 
+.instant-assistant.section-card {
+  background:
+    radial-gradient(
+      circle at 18% 10%,
+      rgba(255, 255, 255, 0.88),
+      transparent 34%
+    ),
+    linear-gradient(180deg, rgba(255, 253, 254, 0.98), rgba(255, 246, 248, 0.9));
+}
+
+.instant-assistant.section-card::before {
+  top: 18px;
+  right: 20px;
+  width: 96px;
+  height: 96px;
+  opacity: 0.75;
+}
+
+.instant-assistant.section-card::after {
+  inset: 14px;
+  border-radius: 28px;
+}
+
 .instant-assistant--compact {
   align-self: stretch;
 }
@@ -360,6 +385,10 @@ textarea {
 .assistant-intro {
   display: grid;
   gap: 8px;
+}
+
+.assistant-intro--live {
+  max-width: 44rem;
 }
 
 .assistant-intro h2 {
@@ -556,9 +585,9 @@ textarea {
   display: grid;
   place-items: center;
   min-height: 72px;
-  padding: 18px 20px;
+  padding: 18px 22px;
   border: 1px solid rgba(36, 23, 15, 0.1);
-  border-radius: 24px;
+  border-radius: 26px;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.96),
@@ -588,6 +617,28 @@ textarea {
     rgba(255, 239, 245, 0.96)
   );
   box-shadow: 0 18px 34px rgba(85, 38, 55, 0.12);
+}
+
+.assistant-step--choices .assistant-choice-button {
+  position: relative;
+}
+
+.assistant-step--choices .assistant-choice-button::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid rgba(193, 91, 118, 0.35);
+  background: rgba(255, 247, 249, 0.9);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.72);
+  transform: translateY(-50%);
+}
+
+.assistant-step--choices .assistant-choice-button {
+  padding-left: 50px;
 }
 
 .assistant-choice-button.is-active {
@@ -825,24 +876,87 @@ textarea {
   padding: clamp(14px, 3vw, 28px);
 }
 
+.live-page-shell::before,
+.live-page-shell::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.live-page-shell::before {
+  top: 12vh;
+  right: max(4vw, 24px);
+  width: 320px;
+  height: 320px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(240, 201, 93, 0.18), transparent 62%),
+    radial-gradient(
+      circle at 32% 32%,
+      rgba(193, 91, 118, 0.16),
+      transparent 48%
+    );
+  filter: blur(8px);
+  opacity: 0.82;
+}
+
+.live-page-shell::after {
+  left: max(2vw, 12px);
+  bottom: 10vh;
+  width: 260px;
+  height: 180px;
+  border: 2px solid rgba(193, 91, 118, 0.12);
+  border-radius: 999px 999px 0 0;
+  border-bottom: 0;
+  transform: rotate(-8deg);
+  opacity: 0.55;
+}
+
 .live-page-shell .instant-assistant {
   width: min(100%, 720px);
   min-height: min(780px, calc(100vh - 56px));
   gap: 18px;
   padding: clamp(22px, 3vw, 34px);
-  border-radius: 32px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 252, 253, 0.96),
-    rgba(255, 245, 248, 0.94)
-  );
-  box-shadow: 0 24px 52px rgba(85, 38, 55, 0.12);
+  border-radius: 34px;
+  background:
+    radial-gradient(
+      circle at 85% 14%,
+      rgba(243, 191, 209, 0.24),
+      transparent 24%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 253, 254, 0.98),
+      rgba(255, 245, 248, 0.96)
+    );
+  box-shadow:
+    0 28px 60px rgba(85, 38, 55, 0.12),
+    0 2px 0 rgba(255, 255, 255, 0.8) inset;
+}
+
+.live-page-shell .instant-assistant.section-card::before {
+  top: 20px;
+  right: 24px;
+  width: 100px;
+  height: 100px;
+  opacity: 0.78;
+}
+
+.live-page-shell .instant-assistant.section-card::after {
+  inset: 14px;
+  border-radius: 28px;
 }
 
 .live-page-shell .assistant-card {
   gap: 14px;
   padding: clamp(20px, 2.8vw, 28px);
-  border-radius: 28px;
+  border-radius: 30px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(255, 249, 251, 0.95)
+  );
 }
 
 .live-page-shell .assistant-actions {
@@ -897,6 +1011,70 @@ textarea {
 .live-page-shell .assistant-card-label {
   font-size: 0.68rem;
   letter-spacing: 0.12em;
+}
+
+.live-page-shell .assistant-step--choices {
+  gap: 18px;
+}
+
+.live-page-shell .assistant-selection-summary {
+  padding-top: 4px;
+}
+
+.live-page-shell .assistant-choice-button {
+  min-height: 78px;
+  border-radius: 28px;
+  justify-items: start;
+  text-align: left;
+}
+
+.live-page-shell .assistant-choice-button::before {
+  left: 22px;
+}
+
+.live-page-shell .assistant-step--choices .assistant-choice-button {
+  padding-inline: 50px 24px;
+}
+
+.live-page-shell .assistant-orb-button {
+  box-shadow:
+    0 34px 60px rgba(142, 53, 83, 0.28),
+    0 0 0 10px rgba(193, 91, 118, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.live-page-shell .assistant-orb-button__inner {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.live-page-shell .assistant-feedback.section-card,
+.live-page-shell .state-panel.section-card {
+  max-width: 100%;
+  background:
+    radial-gradient(
+      circle at 18% 12%,
+      rgba(255, 255, 255, 0.82),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 252, 253, 0.98),
+      rgba(255, 246, 248, 0.92)
+    );
+}
+
+.live-page-shell .assistant-feedback.section-card::before,
+.live-page-shell .state-panel.section-card::before {
+  top: 18px;
+  right: 20px;
+  width: 88px;
+  height: 88px;
+}
+
+.live-page-shell .assistant-feedback.section-card::after,
+.live-page-shell .state-panel.section-card::after {
+  inset: 12px;
+  border-radius: 24px;
 }
 
 .hero-copy .eyebrow {
@@ -3950,6 +4128,509 @@ textarea {
   }
 }
 
+@keyframes sketchFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  50% {
+    transform: translate3d(0, -8px, 0) rotate(2deg);
+  }
+}
+
+@keyframes sketchDrift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2deg);
+  }
+
+  50% {
+    transform: translate3d(8px, -6px, 0) rotate(3deg);
+  }
+}
+
+/* Sketchline expansion for the rest of the app */
+.page-shell--app .main-shell,
+.page-shell--app .app-page,
+.page-shell--app .login-page-shell,
+.page-shell--app .profile-page,
+.page-shell--app .admin-page,
+.page-shell--app .create-page {
+  position: relative;
+}
+
+.page-shell--app .main-shell::before,
+.page-shell--app .main-shell::after,
+.page-shell--app .app-page::before,
+.page-shell--app .app-page::after,
+.page-shell--app .login-page-shell::before,
+.page-shell--app .login-page-shell::after,
+.page-shell--app .profile-page::before,
+.page-shell--app .profile-page::after,
+.page-shell--app .admin-page::before,
+.page-shell--app .admin-page::after,
+.page-shell--app .create-page::before,
+.page-shell--app .create-page::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-shell--app .main-shell::before {
+  top: 18px;
+  left: 18px;
+  width: 128px;
+  height: 128px;
+  border-radius: 999px;
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.7),
+      transparent 28%
+    ),
+    radial-gradient(circle, rgba(243, 191, 209, 0.22), transparent 62%);
+  filter: blur(2px);
+  opacity: 0.72;
+  animation: sketchFloat 9s ease-in-out infinite;
+}
+
+.page-shell--app .main-shell::after {
+  right: 20px;
+  bottom: 16px;
+  width: 210px;
+  height: 120px;
+  border: 1.5px solid rgba(120, 60, 70, 0.12);
+  border-radius: 999px 999px 0 0;
+  border-bottom: 0;
+  transform: rotate(-9deg);
+  opacity: 0.45;
+}
+
+.page-shell--app .app-page::before {
+  top: 12px;
+  right: 18px;
+  width: 74px;
+  height: 74px;
+  border-radius: 24px;
+  border: 1.5px solid rgba(120, 60, 70, 0.14);
+  background:
+    radial-gradient(
+      circle at 28% 28%,
+      rgba(255, 255, 255, 0.86),
+      transparent 32%
+    ),
+    rgba(255, 248, 250, 0.52);
+  transform: rotate(12deg);
+  opacity: 0.85;
+  animation: sketchDrift 10s ease-in-out infinite;
+}
+
+.page-shell--app .app-page::after {
+  left: -6px;
+  bottom: 42px;
+  width: 96px;
+  height: 96px;
+  background: radial-gradient(circle, rgba(193, 91, 118, 0.1), transparent 58%);
+  border-radius: 999px;
+  opacity: 0.85;
+}
+
+.page-shell--app .login-page-shell::before {
+  top: 16px;
+  left: -8px;
+  width: 170px;
+  height: 170px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(240, 201, 93, 0.14),
+    transparent 60%
+  );
+  opacity: 0.78;
+}
+
+.page-shell--app .login-page-shell::after {
+  right: 24px;
+  bottom: 24px;
+  width: 170px;
+  height: 98px;
+  border: 1.5px solid rgba(120, 60, 70, 0.1);
+  border-radius: 999px;
+  transform: rotate(10deg);
+  opacity: 0.45;
+}
+
+.page-shell--app .profile-page::before {
+  top: 10px;
+  right: 32px;
+  width: 100px;
+  height: 100px;
+  border-radius: 32px;
+  background:
+    radial-gradient(
+      circle at 32% 28%,
+      rgba(255, 255, 255, 0.9),
+      transparent 28%
+    ),
+    radial-gradient(circle, rgba(243, 191, 209, 0.22), transparent 62%);
+  opacity: 0.74;
+}
+
+.page-shell--app .profile-page::after {
+  left: 18px;
+  bottom: 12px;
+  width: 200px;
+  height: 130px;
+  border: 1.5px solid rgba(120, 60, 70, 0.1);
+  border-radius: 999px 999px 0 0;
+  border-bottom: 0;
+  transform: rotate(-7deg);
+  opacity: 0.42;
+}
+
+.page-shell--app .admin-page::before {
+  top: 16px;
+  left: 10px;
+  width: 148px;
+  height: 148px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(243, 191, 209, 0.16),
+    transparent 62%
+  );
+  opacity: 0.75;
+}
+
+.page-shell--app .admin-page::after {
+  right: 12px;
+  bottom: 18px;
+  width: 190px;
+  height: 110px;
+  border: 1.5px solid rgba(120, 60, 70, 0.11);
+  border-radius: 999px;
+  transform: rotate(8deg);
+  opacity: 0.44;
+}
+
+.page-shell--app .create-page::before {
+  top: 24px;
+  right: 16px;
+  width: 84px;
+  height: 84px;
+  border-radius: 28px;
+  border: 1.5px solid rgba(120, 60, 70, 0.12);
+  background:
+    radial-gradient(
+      circle at 30% 28%,
+      rgba(255, 255, 255, 0.92),
+      transparent 32%
+    ),
+    rgba(255, 246, 248, 0.4);
+  transform: rotate(-12deg);
+  opacity: 0.78;
+}
+
+.page-shell--app .create-page::after {
+  left: 8px;
+  bottom: 18px;
+  width: 180px;
+  height: 100px;
+  border: 1.5px solid rgba(120, 60, 70, 0.1);
+  border-radius: 999px 999px 0 0;
+  border-bottom: 0;
+  transform: rotate(-11deg);
+  opacity: 0.38;
+}
+
+.page-shell--app .section-card,
+.page-shell--app .page-panel,
+.page-shell--app .login-side,
+.page-shell--app .login-shell,
+.page-shell--app .profile-dashboard-hero,
+.page-shell--app .profile-status-column,
+.page-shell--app .profile-line,
+.page-shell--app .profile-empty-card,
+.page-shell--app .submit-card,
+.page-shell--app .admin-panel,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-line-card,
+.page-shell--app .admin-user-card,
+.page-shell--app .detail-card,
+.page-shell--app .board-empty,
+.page-shell--app .route-skeleton-card {
+  background:
+    radial-gradient(
+      circle at 18% 12%,
+      rgba(255, 255, 255, 0.88),
+      transparent 30%
+    ),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 247, 249, 0.9));
+  border-color: rgba(120, 60, 70, 0.12);
+  box-shadow:
+    0 4px 12px rgba(80, 20, 40, 0.04),
+    0 20px 60px rgba(80, 20, 40, 0.08),
+    0 40px 100px rgba(80, 20, 40, 0.06);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.page-shell--app .section-card::before,
+.page-shell--app .section-card::after,
+.page-shell--app .page-panel::before,
+.page-shell--app .page-panel::after,
+.page-shell--app .line-card::before,
+.page-shell--app .line-card::after {
+  display: block;
+}
+
+.page-shell--app .section-card::before,
+.page-shell--app .page-panel::before,
+.page-shell--app .line-card::before {
+  opacity: 0.8;
+}
+
+.page-shell--app .section-card::after,
+.page-shell--app .page-panel::after,
+.page-shell--app .line-card::after {
+  opacity: 0.7;
+}
+
+.page-shell--app .page-panel {
+  padding: 16px;
+  border-radius: 30px;
+}
+
+.page-shell--app .board-grid,
+.page-shell--app .profile-board,
+.page-shell--app .admin-grid,
+.page-shell--app .admin-card-list {
+  position: relative;
+  z-index: 1;
+}
+
+.page-shell--app .page-copy h2,
+.page-shell--app .login-side h1,
+.page-shell--app .login-shell h2,
+.page-shell--app .detail-card h2,
+.page-shell--app .profile-dashboard-copy h2,
+.page-shell--app .admin-head h2,
+.page-shell--app .submit-card h3,
+.page-shell--app .profile-empty-card h3,
+.page-shell--app .profile-status-head h3,
+.page-shell--app .admin-panel h3,
+.page-shell--app .admin-user-top h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+}
+
+.page-shell--app .page-description,
+.page-shell--app .login-lead,
+.page-shell--app .login-copy,
+.page-shell--app .profile-dashboard-copy p,
+.page-shell--app .profile-status-head p,
+.page-shell--app .admin-alert p,
+.page-shell--app .admin-copy,
+.page-shell--app .empty-state,
+.page-shell--app .form-note {
+  color: var(--muted);
+  line-height: 1.72;
+}
+
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .category-filter-chip,
+.page-shell--app .provider-auth-button,
+.page-shell--app .login-submit,
+.page-shell--app .admin-tab,
+.page-shell--app .route-tab {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+.page-shell--app .action-link:hover,
+.page-shell--app .action-button:hover,
+.page-shell--app .submit-button:hover,
+.page-shell--app .category-filter-chip:hover,
+.page-shell--app .provider-auth-button:hover,
+.page-shell--app .login-submit:hover,
+.page-shell--app .admin-tab:hover,
+.page-shell--app .route-tab:hover {
+  transform: translateY(-2px);
+}
+
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit,
+.page-shell--app .provider-auth-button {
+  background: linear-gradient(
+    135deg,
+    rgba(198, 93, 134, 0.16),
+    rgba(143, 37, 79, 0.08)
+  );
+  border: 1px solid rgba(120, 60, 70, 0.12);
+}
+
+.page-shell--app .action-link--primary,
+.page-shell--app .action-button--primary,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  background: linear-gradient(135deg, #c65d86, #8f254f);
+  color: #fffaf3;
+  box-shadow:
+    0 10px 30px rgba(160, 50, 90, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.page-shell--app .category-filter-chip,
+.page-shell--app .route-tab,
+.page-shell--app .admin-tab,
+.page-shell--app .provider-auth-button,
+.page-shell--app .login-submit {
+  border-radius: 999px;
+}
+
+.page-shell--app .category-filter-chip {
+  background: rgba(255, 252, 253, 0.78);
+}
+
+.page-shell--app .category-filter-chip.is-active {
+  color: #fffaf3;
+  background: linear-gradient(
+    135deg,
+    rgba(143, 37, 79, 0.98),
+    rgba(102, 28, 58, 0.98)
+  );
+}
+
+.page-shell--app .route-tab {
+  min-height: 42px;
+}
+
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  min-height: 52px;
+}
+
+.page-shell--app .provider-auth-button {
+  box-shadow:
+    0 14px 32px rgba(80, 20, 40, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.page-shell--app .provider-auth-button__badge {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.page-shell--app .line-card {
+  border-radius: 24px;
+  animation: cardEnter 320ms ease both;
+}
+
+.page-shell--app .line-card .line-body {
+  font-size: clamp(1.15rem, 1.4vw, 1.55rem);
+  line-height: 1.42;
+}
+
+.page-shell--app .profile-status-stat,
+.page-shell--app .profile-mini-card,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-mini-row,
+.page-shell--app .admin-mini-line {
+  border-radius: 20px;
+}
+
+.page-shell--app .profile-dashboard-hero,
+.page-shell--app .login-side,
+.page-shell--app .login-shell,
+.page-shell--app .submit-card,
+.page-shell--app .detail-card,
+.page-shell--app .board-empty,
+.page-shell--app .profile-empty-card,
+.page-shell--app .admin-panel,
+.page-shell--app .admin-line-card,
+.page-shell--app .admin-user-card,
+.page-shell--app .profile-status-column {
+  position: relative;
+}
+
+.page-shell--app .profile-dashboard-hero::before,
+.page-shell--app .login-side::before,
+.page-shell--app .login-shell::before,
+.page-shell--app .submit-card::before,
+.page-shell--app .detail-card::before,
+.page-shell--app .board-empty::before,
+.page-shell--app .profile-empty-card::before,
+.page-shell--app .admin-panel::before,
+.page-shell--app .admin-line-card::before,
+.page-shell--app .admin-user-card::before,
+.page-shell--app .profile-status-column::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: inherit;
+  border: 1px dashed rgba(120, 60, 70, 0.14);
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+.page-shell--app .profile-dashboard-hero::after,
+.page-shell--app .login-side::after,
+.page-shell--app .login-shell::after,
+.page-shell--app .submit-card::after,
+.page-shell--app .detail-card::after,
+.page-shell--app .board-empty::after,
+.page-shell--app .profile-empty-card::after,
+.page-shell--app .admin-panel::after,
+.page-shell--app .admin-line-card::after,
+.page-shell--app .admin-user-card::after,
+.page-shell--app .profile-status-column::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 78px;
+  height: 78px;
+  border-radius: 26px;
+  background:
+    radial-gradient(
+      circle at 28% 28%,
+      rgba(255, 255, 255, 0.9),
+      transparent 32%
+    ),
+    rgba(243, 191, 209, 0.12);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.page-shell--app .page-panel > *,
+.page-shell--app .section-card > *,
+.page-shell--app .login-side > *,
+.page-shell--app .login-shell > *,
+.page-shell--app .profile-dashboard-hero > *,
+.page-shell--app .submit-card > *,
+.page-shell--app .detail-card > *,
+.page-shell--app .board-empty > *,
+.page-shell--app .profile-empty-card > *,
+.page-shell--app .admin-panel > *,
+.page-shell--app .admin-line-card > *,
+.page-shell--app .admin-user-card > *,
+.page-shell--app .profile-status-column > * {
+  position: relative;
+  z-index: 1;
+}
+
 @media (max-width: 1080px) {
   .hero-grid,
   .login-layout,
@@ -4254,12 +4935,52 @@ textarea {
 
   .landing-inline-actions {
     width: 100%;
+    justify-content: flex-start;
+    align-items: flex-start;
   }
 
   .landing-inline-actions .ink-link,
   .landing-inline-actions .ghost-link {
-    width: 100%;
-    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+    justify-content: flex-start;
+    align-self: flex-start;
+    padding: 10px 14px;
+    min-height: 40px;
+    font-size: 0.9rem;
+    text-align: left;
+  }
+
+  .landing-shell {
+    gap: 18px;
+    padding-top: 10px;
+  }
+
+  .landing-section {
+    gap: 14px;
+  }
+
+  .section-copy h2 {
+    margin-top: 6px;
+    font-size: clamp(1.8rem, 7vw, 2.35rem);
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+  }
+
+  .section-copy p {
+    margin-top: 12px;
+    font-size: 0.94rem;
+    line-height: 1.62;
+  }
+
+  .feature-list,
+  .timeline-grid,
+  .comparison-grid {
+    gap: 12px;
+  }
+
+  .section-card {
+    padding: 20px;
   }
 
   .page-shell--app .page-panel {
@@ -4408,12 +5129,14 @@ textarea {
 
   .hero-copy h1 {
     max-width: 100%;
-    font-size: clamp(2rem, 9.2vw, 3rem);
-    line-height: 0.98;
+    max-width: 9ch;
+    font-size: clamp(2.55rem, 11.4vw, 3.8rem);
+    line-height: 0.84;
+    letter-spacing: -0.06em;
   }
 
   .hero-grid--mobile {
-    gap: 14px;
+    gap: 12px;
     min-height: auto;
   }
 
@@ -4424,24 +5147,44 @@ textarea {
 
   .hero-copy {
     display: grid;
-    gap: 12px;
+    gap: 10px;
+    align-items: start;
   }
 
   .hero-text {
     margin-top: 0;
-    font-size: 0.98rem;
-    line-height: 1.7;
+    max-width: 34ch;
+    font-size: 0.94rem;
+    line-height: 1.58;
   }
 
   .hero-actions,
   .hero-stats {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .hero-actions .ink-link,
   .hero-actions .ghost-link {
-    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+    min-height: 40px;
+    padding: 10px 14px;
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 0.9rem;
+    box-shadow: 0 10px 24px rgba(143, 37, 79, 0.16);
+  }
+
+  .hero-proof-row {
+    max-width: 34ch;
+    gap: 6px;
+  }
+
+  .hero-proof-row span {
+    padding: 6px 10px;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
   }
 
   .instant-assistant {
@@ -4863,5 +5606,1009 @@ textarea {
   .illustration-credit {
     max-width: calc(100% - 24px);
     white-space: normal;
+  }
+}
+
+/* MaxMara-inspired editorial refresh */
+:root {
+  --surface: rgba(255, 247, 248, 0.86);
+  --surface-strong: rgba(255, 252, 253, 0.95);
+  --text: #2a1719;
+  --muted: rgba(74, 46, 49, 0.72);
+  --line: rgba(120, 60, 70, 0.12);
+  --brand: #c65d86;
+  --brand-deep: #8f254f;
+  --accent: #ffd0da;
+  --success: #2f7b57;
+  --shadow: 0 22px 60px rgba(96, 34, 52, 0.08);
+  --radius-xl: 34px;
+  --radius-pill: 999px;
+  --font-display:
+    "Bodoni Moda", "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype",
+    Georgia, serif;
+  --font-body:
+    Inter, "Avenir Next", "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+}
+
+html,
+body {
+  background-attachment: fixed;
+}
+
+body {
+  background:
+    radial-gradient(
+      circle at 16% 14%,
+      rgba(255, 214, 225, 0.72),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 82% 12%,
+      rgba(246, 196, 208, 0.58),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 50% 78%,
+      rgba(245, 205, 97, 0.12),
+      transparent 18%
+    ),
+    linear-gradient(180deg, #fff7f8 0%, #fdeef2 38%, #f7e0e6 100%);
+}
+
+body::before {
+  opacity: 0.56;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.08)
+    ),
+    radial-gradient(
+      circle at 50% 12%,
+      rgba(255, 232, 237, 0.92),
+      transparent 36%
+    ),
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 8%,
+      rgba(120, 60, 70, 0.02) 8.5%,
+      rgba(120, 60, 70, 0.02) 9%,
+      transparent 9.5%,
+      transparent 90.5%,
+      rgba(120, 60, 70, 0.02) 91%,
+      rgba(120, 60, 70, 0.02) 91.5%,
+      transparent 92%
+    ),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='160' viewBox='0 0 240 160'%3E%3Cg fill='none' stroke='rgba(120,60,70,0.12)' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 146V58l18-14 16 12v90'/%3E%3Cpath d='M52 146V42l20-20 16 12v112'/%3E%3Cpath d='M88 146V34l16-14 20 18v108'/%3E%3Cpath d='M130 146V18l16-8 18 12v124'/%3E%3Cpath d='M170 146V46l20-12 18 10v102'/%3E%3Cpath d='M208 146V70l16-12 10 8v80'/%3E%3Cpath d='M24 74h12M24 92h12M24 110h12M24 128h12'/%3E%3Cpath d='M61 60h14M61 78h14M61 96h14M61 114h14M61 132h14'/%3E%3Cpath d='M96 56h14M96 74h14M96 92h14M96 110h14M96 128h14'/%3E%3Cpath d='M136 30h14M136 48h14M136 66h14M136 84h14M136 102h14M136 120h14'/%3E%3Cpath d='M178 64h14M178 82h14M178 100h14M178 118h14M178 136h14'/%3E%3Cpath d='M215 92h8M215 110h8M215 128h8'/%3E%3C/g%3E%3C/svg%3E");
+  background-position:
+    center top,
+    center top,
+    center top,
+    left top;
+  background-repeat: no-repeat, no-repeat, repeat-x, repeat;
+  background-size:
+    cover,
+    cover,
+    100% 100%,
+    240px 160px;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto 0 0;
+  pointer-events: none;
+  height: 36vh;
+  opacity: 0.22;
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(255, 245, 248, 0.56) 28%,
+      rgba(255, 245, 248, 0.86)
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(240, 201, 93, 0.24),
+      transparent 42%
+    );
+}
+
+.page-shell {
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 255, 255, 0.24),
+      transparent 34%
+    ),
+    linear-gradient(180deg, rgba(255, 248, 249, 0.1), rgba(255, 248, 249, 0.03));
+}
+
+.sketch-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.66;
+  mix-blend-mode: multiply;
+}
+
+.sketch-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 50% 32%,
+      rgba(255, 255, 255, 0.48),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 50% 58%,
+      rgba(255, 219, 231, 0.22),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 18% 18%,
+      rgba(255, 236, 193, 0.18),
+      transparent 16%
+    ),
+    radial-gradient(
+      circle at 82% 28%,
+      rgba(255, 214, 225, 0.18),
+      transparent 18%
+    );
+}
+
+.sketch-backdrop__art {
+  position: absolute;
+  inset: -4% -3% -6%;
+  width: 106%;
+  height: 110%;
+}
+
+.sketch-backdrop__art path,
+.sketch-backdrop__art circle {
+  fill: none;
+  stroke: rgba(120, 60, 70, 0.3);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.sketch-backdrop__cloud,
+.sketch-backdrop__street,
+.sketch-backdrop__awning,
+.sketch-backdrop__face-line,
+.sketch-backdrop__figures path,
+.sketch-backdrop__details path {
+  stroke-width: 2.2;
+}
+
+.sketch-backdrop__cloud {
+  opacity: 0.5;
+}
+
+.sketch-backdrop__cloud--right {
+  opacity: 0.4;
+}
+
+.sketch-backdrop__street {
+  stroke: rgba(120, 60, 70, 0.22);
+  opacity: 0.7;
+}
+
+.sketch-backdrop__street--soft {
+  stroke-width: 1.8;
+  opacity: 0.42;
+}
+
+.sketch-backdrop__buildings path {
+  stroke-width: 2.3;
+  opacity: 0.44;
+}
+
+.sketch-backdrop__buildings path:nth-child(n + 9) {
+  opacity: 0.36;
+}
+
+.sketch-backdrop__details path,
+.sketch-backdrop__figures path {
+  stroke-width: 1.8;
+  opacity: 0.32;
+}
+
+.sketch-backdrop__face {
+  stroke-width: 2.6;
+  opacity: 0.5;
+}
+
+.sketch-backdrop__face-line {
+  stroke-width: 1.9;
+  opacity: 0.4;
+}
+
+.sketch-backdrop__face-line--small {
+  opacity: 0.22;
+}
+
+.sketch-backdrop__awning {
+  stroke-width: 2;
+  opacity: 0.42;
+}
+
+.sketch-backdrop__awning--bottom {
+  opacity: 0.26;
+}
+
+.sketch-backdrop__glow {
+  fill: rgba(245, 204, 93, 0.42);
+  stroke: none;
+  filter: blur(1px);
+  opacity: 0.85;
+}
+
+.sketch-backdrop__glow--soft {
+  fill: rgba(255, 214, 225, 0.22);
+  opacity: 0.7;
+}
+
+.sketch-backdrop__glow--small {
+  fill: rgba(255, 226, 133, 0.36);
+}
+
+.page-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.42;
+  background:
+    radial-gradient(
+      circle at 13% 24%,
+      rgba(255, 255, 255, 0.9),
+      transparent 14%
+    ),
+    radial-gradient(
+      circle at 88% 22%,
+      rgba(255, 237, 240, 0.9),
+      transparent 16%
+    ),
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(240, 201, 93, 0.12),
+      transparent 18%
+    );
+}
+
+.page-shell--app {
+  --surface: rgba(255, 248, 249, 0.82);
+  --surface-strong: rgba(255, 253, 254, 0.95);
+  --line: rgba(120, 60, 70, 0.13);
+  --shadow: 0 24px 60px rgba(96, 34, 52, 0.08);
+}
+
+.page-shell--app .app-header {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 250, 251, 0.9),
+    rgba(255, 244, 246, 0.72)
+  );
+  border-bottom-color: rgba(120, 60, 70, 0.08);
+}
+
+.page-shell--app .main-shell,
+.page-shell--app .app-page,
+.page-shell--app .login-page-shell,
+.page-shell--app .profile-page,
+.page-shell--app .admin-page,
+.page-shell--app .create-page {
+  padding-top: 28px;
+}
+
+.page-shell--app .page-head,
+.page-shell--app .profile-dashboard-hero,
+.page-shell--app .login-layout,
+.page-shell--app .admin-grid,
+.page-shell--app .admin-overview-grid,
+.page-shell--app .create-page {
+  gap: 22px;
+}
+
+.page-shell--app .section-card,
+.page-shell--app .page-panel,
+.page-shell--app .login-side,
+.page-shell--app .login-shell,
+.page-shell--app .profile-dashboard-hero,
+.page-shell--app .profile-status-column,
+.page-shell--app .profile-line,
+.page-shell--app .profile-empty-card,
+.page-shell--app .submit-card,
+.page-shell--app .admin-panel,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-line-card,
+.page-shell--app .admin-user-card,
+.page-shell--app .detail-card,
+.page-shell--app .board-empty,
+.page-shell--app .route-skeleton-card {
+  overflow: hidden;
+  border-radius: 36px 32px 38px 30px;
+  background:
+    radial-gradient(
+      circle at 18% 12%,
+      rgba(255, 255, 255, 0.96),
+      transparent 22%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 244, 247, 0.91)
+    );
+  box-shadow:
+    0 6px 14px rgba(80, 20, 40, 0.04),
+    0 24px 64px rgba(80, 20, 40, 0.09),
+    0 46px 110px rgba(80, 20, 40, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.page-shell--app .section-card::before,
+.page-shell--app .page-panel::before,
+.page-shell--app .line-card::before {
+  display: block;
+  opacity: 0.86;
+}
+
+.page-shell--app .section-card::after,
+.page-shell--app .page-panel::after,
+.page-shell--app .line-card::after {
+  display: block;
+  opacity: 0.62;
+}
+
+.page-shell--app .page-panel {
+  padding: 14px;
+  border-radius: 38px 32px 40px 30px;
+}
+
+.page-shell--app .page-head h2,
+.page-shell--app .page-copy h2,
+.page-shell--app .login-side h1,
+.page-shell--app .login-shell h2,
+.page-shell--app .detail-card h2,
+.page-shell--app .profile-dashboard-copy h2,
+.page-shell--app .admin-head h2,
+.page-shell--app .submit-card h3,
+.page-shell--app .profile-empty-card h3,
+.page-shell--app .profile-status-head h3,
+.page-shell--app .admin-panel h3,
+.page-shell--app .admin-user-top h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.04em;
+}
+
+.page-shell--app .page-copy h2,
+.page-shell--app .login-side h1,
+.page-shell--app .detail-card h2,
+.page-shell--app .profile-dashboard-copy h2,
+.page-shell--app .admin-head h2 {
+  font-size: clamp(2.1rem, 4vw, 4rem);
+  line-height: 0.93;
+}
+
+.page-shell--app .page-copy h2 {
+  max-width: 11ch;
+}
+
+.page-shell--app .page-description,
+.page-shell--app .login-lead,
+.page-shell--app .login-copy,
+.page-shell--app .profile-dashboard-copy p,
+.page-shell--app .profile-status-head p,
+.page-shell--app .admin-alert p,
+.page-shell--app .admin-copy,
+.page-shell--app .empty-state,
+.page-shell--app .form-note,
+.page-shell--app .hero-text,
+.page-shell--app .moderation-note {
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .category-filter-chip,
+.page-shell--app .provider-auth-button,
+.page-shell--app .login-submit,
+.page-shell--app .admin-tab,
+.page-shell--app .route-tab {
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+.page-shell--app .action-link:hover,
+.page-shell--app .action-button:hover,
+.page-shell--app .submit-button:hover,
+.page-shell--app .category-filter-chip:hover,
+.page-shell--app .provider-auth-button:hover,
+.page-shell--app .login-submit:hover,
+.page-shell--app .admin-tab:hover,
+.page-shell--app .route-tab:hover {
+  transform: translateY(-2px);
+}
+
+.page-shell--app .action-link--primary,
+.page-shell--app .action-button--primary,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  background: linear-gradient(135deg, #c65d86, #8f254f);
+  color: #fffaf3;
+  box-shadow:
+    0 10px 30px rgba(160, 50, 90, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.page-shell--app .ghost-link,
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit,
+.page-shell--app .provider-auth-button,
+.page-shell--app .admin-tab,
+.page-shell--app .route-tab,
+.page-shell--app .category-filter-chip {
+  border-radius: 999px;
+}
+
+.page-shell--app .category-filter-chip {
+  background: rgba(255, 252, 253, 0.8);
+  border-color: rgba(120, 60, 70, 0.12);
+}
+
+.page-shell--app .category-filter-chip.is-active {
+  color: #fffaf3;
+  background: linear-gradient(
+    135deg,
+    rgba(143, 37, 79, 0.98),
+    rgba(102, 28, 58, 0.98)
+  );
+  box-shadow: 0 10px 24px rgba(143, 37, 79, 0.2);
+}
+
+.page-shell--app .route-tab {
+  min-height: 42px;
+}
+
+.page-shell--app .line-card {
+  border-radius: 30px 26px 32px 28px;
+  background:
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(243, 191, 209, 0.18),
+      transparent 20%
+    ),
+    rgba(255, 252, 253, 0.94);
+}
+
+.page-shell--app .line-card .line-body,
+.page-shell--app .detail-card--refined h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.page-shell--app .line-card .line-body {
+  font-size: clamp(1.2rem, 1.5vw, 1.68rem);
+  line-height: 1.36;
+}
+
+.page-shell--app .detail-card--refined h2 {
+  font-size: clamp(2.1rem, 4.8vw, 4.2rem);
+  max-width: 15ch;
+}
+
+.page-shell--app .profile-status-stat,
+.page-shell--app .profile-mini-card,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-mini-row,
+.page-shell--app .admin-mini-line {
+  border-radius: 24px;
+}
+
+.page-shell--app .profile-dashboard-hero::before,
+.page-shell--app .login-side::before,
+.page-shell--app .login-shell::before,
+.page-shell--app .submit-card::before,
+.page-shell--app .detail-card::before,
+.page-shell--app .board-empty::before,
+.page-shell--app .profile-empty-card::before,
+.page-shell--app .admin-panel::before,
+.page-shell--app .admin-line-card::before,
+.page-shell--app .admin-user-card::before,
+.page-shell--app .profile-status-column::before {
+  inset: 14px;
+  border: 1px dashed rgba(120, 60, 70, 0.14);
+  border-radius: inherit;
+}
+
+.page-shell--app .profile-dashboard-hero::after,
+.page-shell--app .login-side::after,
+.page-shell--app .login-shell::after,
+.page-shell--app .submit-card::after,
+.page-shell--app .detail-card::after,
+.page-shell--app .board-empty::after,
+.page-shell--app .profile-empty-card::after,
+.page-shell--app .admin-panel::after,
+.page-shell--app .admin-line-card::after,
+.page-shell--app .admin-user-card::after,
+.page-shell--app .profile-status-column::after {
+  top: 18px;
+  right: 18px;
+  width: 84px;
+  height: 84px;
+  border-radius: 28px;
+  background:
+    radial-gradient(
+      circle at 32% 28%,
+      rgba(255, 255, 255, 0.92),
+      transparent 28%
+    ),
+    rgba(243, 191, 209, 0.14);
+}
+
+.page-shell--app .page-panel::after {
+  right: 14px;
+  bottom: 12px;
+  width: 148px;
+  height: 106px;
+}
+
+.page-shell--app .main-shell::before {
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.7),
+      transparent 28%
+    ),
+    radial-gradient(circle, rgba(243, 191, 209, 0.22), transparent 62%);
+}
+
+.page-shell--app .main-shell::before {
+  border-radius: 999px;
+}
+
+.page-shell--app .main-shell::after,
+.page-shell--app .app-page::after,
+.page-shell--app .login-page-shell::after,
+.page-shell--app .profile-page::after,
+.page-shell--app .admin-page::after,
+.page-shell--app .create-page::after {
+  border-color: rgba(120, 60, 70, 0.1);
+}
+
+.page-shell--app .page-panel > *,
+.page-shell--app .section-card > *,
+.page-shell--app .login-side > *,
+.page-shell--app .login-shell > *,
+.page-shell--app .profile-dashboard-hero > *,
+.page-shell--app .submit-card > *,
+.page-shell--app .detail-card > *,
+.page-shell--app .board-empty > *,
+.page-shell--app .profile-empty-card > *,
+.page-shell--app .admin-panel > *,
+.page-shell--app .admin-line-card > *,
+.page-shell--app .admin-user-card > *,
+.page-shell--app .profile-status-column > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page-shell--app .page-head {
+  padding-inline: 4px;
+}
+
+.page-shell--app .page-head h2,
+.page-shell--app .login-side h1,
+.page-shell--app .profile-dashboard-copy h2,
+.page-shell--app .admin-head h2 {
+  text-wrap: balance;
+}
+
+.page-shell--app .hero-text,
+.page-shell--app .page-description,
+.page-shell--app .login-copy,
+.page-shell--app .login-lead,
+.page-shell--app .profile-dashboard-copy p,
+.page-shell--app .admin-alert p,
+.page-shell--app .empty-state {
+  max-width: 58ch;
+}
+
+.page-shell--app .hero-text {
+  font-size: 1.02rem;
+}
+
+.page-shell--app .page-summary strong {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 0.96;
+}
+
+.page-shell--app .detail-card--refined .line-badges,
+.page-shell--app .profile-line .line-badges,
+.page-shell--app .admin-line-card .line-badges,
+.page-shell--app .admin-user-card .line-badges {
+  gap: 10px;
+}
+
+.page-shell--app .login-layout {
+  align-items: stretch;
+}
+
+.page-shell--app .login-side {
+  background:
+    radial-gradient(
+      circle at 82% 12%,
+      rgba(245, 204, 93, 0.12),
+      transparent 18%
+    ),
+    radial-gradient(
+      circle at 18% 78%,
+      rgba(243, 191, 209, 0.22),
+      transparent 28%
+    ),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 241, 244, 0.9));
+}
+
+.page-shell--app .login-shell {
+  background:
+    radial-gradient(
+      circle at 18% 16%,
+      rgba(255, 255, 255, 0.96),
+      transparent 20%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 252, 253, 0.96),
+      rgba(255, 244, 247, 0.92)
+    );
+}
+
+.page-shell--app .provider-auth-button {
+  min-height: 66px;
+  border-radius: 24px;
+}
+
+.page-shell--app .provider-auth-button__badge {
+  border-radius: 18px;
+}
+
+.page-shell--app .submit-card {
+  background:
+    radial-gradient(
+      circle at 88% 12%,
+      rgba(245, 204, 93, 0.1),
+      transparent 22%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(255, 244, 247, 0.92)
+    );
+}
+
+.page-shell--app .submit-card .submission-form select,
+.page-shell--app .submit-card .submission-form textarea,
+.page-shell--app .admin-search-field input,
+.page-shell--app .admin-inline-field input {
+  border-radius: 20px;
+  background: rgba(255, 254, 254, 0.8);
+  border-color: rgba(120, 60, 70, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.page-shell--app .submit-card .submission-form textarea:focus,
+.page-shell--app .submit-card .submission-form select:focus,
+.page-shell--app .admin-search-field input:focus,
+.page-shell--app .admin-inline-field input:focus {
+  border-color: rgba(198, 93, 134, 0.42);
+  box-shadow: 0 0 0 4px rgba(198, 93, 134, 0.08);
+}
+
+.page-shell--app .page-actions--board {
+  gap: 14px;
+}
+
+.page-shell--app .category-filter-chip {
+  min-height: 38px;
+  padding-inline: 14px;
+}
+
+.page-shell--app .line-card::before {
+  color: rgba(143, 37, 79, 0.12);
+}
+
+.page-shell--app .line-card::after {
+  opacity: 0.68;
+}
+
+.page-shell--app .profile-status-stat,
+.page-shell--app .profile-mini-card,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-mini-row,
+.page-shell--app .admin-mini-line {
+  background:
+    radial-gradient(
+      circle at 88% 16%,
+      rgba(245, 204, 93, 0.1),
+      transparent 20%
+    ),
+    rgba(255, 252, 253, 0.88);
+}
+
+.page-shell--app .admin-tabs {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 252, 253, 0.92),
+    rgba(255, 244, 247, 0.9)
+  );
+  border-color: rgba(120, 60, 70, 0.1);
+}
+
+.page-shell--app .admin-tab {
+  border-radius: 20px;
+}
+
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  min-height: 46px;
+}
+
+.page-shell--app .action-link--primary,
+.page-shell--app .action-button--primary,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  box-shadow:
+    0 12px 34px rgba(160, 50, 90, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.page-shell--app .page-panel,
+.page-shell--app .section-card {
+  box-shadow: 0 24px 70px rgba(80, 20, 40, 0.08);
+}
+
+.page-shell--app .profile-dashboard-hero {
+  background:
+    radial-gradient(
+      circle at 84% 14%,
+      rgba(245, 204, 93, 0.16),
+      transparent 18%
+    ),
+    radial-gradient(
+      circle at 14% 86%,
+      rgba(243, 191, 209, 0.24),
+      transparent 24%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(255, 243, 246, 0.92)
+    );
+}
+
+.page-shell--app .profile-dashboard-hero .profile-avatar,
+.page-shell--app .admin-stat-card strong,
+.page-shell--app .profile-status-stat strong,
+.page-shell--app .profile-mini-card strong {
+  font-family: var(--font-display);
+}
+
+.page-shell--app .profile-avatar {
+  background: linear-gradient(135deg, #ffd4df, #fff1c8);
+  box-shadow:
+    0 18px 36px rgba(143, 37, 79, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.page-shell--app .detail-card--loading,
+.page-shell--app .route-skeleton-card {
+  background:
+    radial-gradient(
+      circle at 18% 14%,
+      rgba(243, 191, 209, 0.18),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at 82% 20%,
+      rgba(245, 204, 93, 0.12),
+      transparent 18%
+    ),
+    rgba(255, 252, 253, 0.92);
+}
+
+@media (max-width: 1080px) {
+  .sketch-backdrop {
+    opacity: 0.42;
+  }
+
+  .page-shell--app .main-shell::after,
+  .page-shell--app .profile-page::after,
+  .page-shell--app .admin-page::after,
+  .page-shell--app .create-page::after {
+    opacity: 0.22;
+  }
+}
+
+@media (max-width: 720px) {
+  .sketch-backdrop {
+    opacity: 0.42;
+  }
+
+  .sketch-backdrop__art {
+    inset: 0;
+    width: 112%;
+    height: 114%;
+  }
+
+  .page-shell--app .section-card,
+  .page-shell--app .page-panel,
+  .page-shell--app .login-side,
+  .page-shell--app .login-shell,
+  .page-shell--app .profile-dashboard-hero,
+  .page-shell--app .profile-status-column,
+  .page-shell--app .profile-line,
+  .page-shell--app .profile-empty-card,
+  .page-shell--app .submit-card,
+  .page-shell--app .admin-panel,
+  .page-shell--app .admin-stat-card,
+  .page-shell--app .admin-line-card,
+  .page-shell--app .admin-user-card,
+  .page-shell--app .detail-card,
+  .page-shell--app .board-empty,
+  .page-shell--app .route-skeleton-card {
+    border-radius: 26px 22px 28px 24px;
+  }
+
+  .page-shell--app .page-copy h2,
+  .page-shell--app .login-side h1,
+  .page-shell--app .detail-card h2,
+  .page-shell--app .profile-dashboard-copy h2,
+  .page-shell--app .admin-head h2 {
+    font-size: clamp(1.85rem, 8vw, 2.8rem);
+  }
+
+  .page-shell--app .page-description,
+  .page-shell--app .login-lead,
+  .page-shell--app .login-copy,
+  .page-shell--app .profile-dashboard-copy p,
+  .page-shell--app .admin-alert p,
+  .page-shell--app .empty-state {
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+
+  .page-shell--app .action-link,
+  .page-shell--app .action-button,
+  .page-shell--app .submit-button,
+  .page-shell--app .login-submit {
+    min-height: 42px;
+    padding-inline: 14px;
+    font-size: 0.94rem;
+  }
+
+  .page-shell--app .page-panel {
+    padding: 6px;
+  }
+
+  .page-shell--app .section-card,
+  .page-shell--app .page-panel,
+  .page-shell--app .login-side,
+  .page-shell--app .login-shell,
+  .page-shell--app .profile-dashboard-hero,
+  .page-shell--app .profile-status-column,
+  .page-shell--app .profile-line,
+  .page-shell--app .profile-empty-card,
+  .page-shell--app .submit-card,
+  .page-shell--app .admin-panel,
+  .page-shell--app .admin-stat-card,
+  .page-shell--app .admin-line-card,
+  .page-shell--app .admin-user-card,
+  .page-shell--app .detail-card,
+  .page-shell--app .board-empty,
+  .page-shell--app .route-skeleton-card {
+    border-radius: 24px 20px 26px 22px;
+  }
+
+  .page-shell--app .submit-card .submission-form select,
+  .page-shell--app .submit-card .submission-form textarea,
+  .page-shell--app .admin-search-field input,
+  .page-shell--app .admin-inline-field input {
+    border-radius: 16px;
+    font-size: 0.94rem;
+  }
+
+  .page-shell--app .category-filter-chip {
+    min-height: 34px;
+    padding-inline: 12px;
+    font-size: 0.84rem;
+  }
+
+  .page-shell--app .profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 24px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    background:
+      radial-gradient(
+        circle at 50% 0%,
+        rgba(255, 225, 232, 0.7),
+        transparent 30%
+      ),
+      linear-gradient(180deg, #fff8f9 0%, #fdeef2 48%, #f6dfe5 100%);
+  }
+
+  body::before {
+    background:
+      radial-gradient(
+        circle at 50% 12%,
+        rgba(255, 236, 241, 0.92),
+        transparent 34%
+      ),
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 10%,
+        rgba(120, 60, 70, 0.02) 10.5%,
+        rgba(120, 60, 70, 0.02) 11%,
+        transparent 11.5%,
+        transparent 88.5%,
+        rgba(120, 60, 70, 0.02) 89%,
+        rgba(120, 60, 70, 0.02) 89.5%,
+        transparent 90%
+      );
+    background-size:
+      cover,
+      100% 100%;
+  }
+
+  .page-shell--app .section-card,
+  .page-shell--app .page-panel,
+  .page-shell--app .login-side,
+  .page-shell--app .login-shell,
+  .page-shell--app .profile-dashboard-hero,
+  .page-shell--app .profile-status-column,
+  .page-shell--app .profile-line,
+  .page-shell--app .profile-empty-card,
+  .page-shell--app .submit-card,
+  .page-shell--app .admin-panel,
+  .page-shell--app .admin-stat-card,
+  .page-shell--app .admin-line-card,
+  .page-shell--app .admin-user-card,
+  .page-shell--app .detail-card,
+  .page-shell--app .board-empty,
+  .page-shell--app .route-skeleton-card {
+    border-radius: 26px;
+  }
+
+  .page-shell--app .page-copy h2,
+  .page-shell--app .login-side h1,
+  .page-shell--app .detail-card h2,
+  .page-shell--app .profile-dashboard-copy h2,
+  .page-shell--app .admin-head h2 {
+    font-size: clamp(2rem, 8.5vw, 3.1rem);
   }
 }

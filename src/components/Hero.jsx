@@ -19,9 +19,9 @@ function Hero({ authEnabled, user }) {
       <section className="hero-grid hero-grid--mobile" id="top">
         <div className="hero-copy">
           <h1>
-            Your
-            <span>conversation cheat code</span>
-            for awkward silence.
+            Questions are
+            <span>more romantic</span>
+            than compliments.
           </h1>
           <p className="hero-text">
             Open Breaking Ice, tap once, and get one natural thing to say for
