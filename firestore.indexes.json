@@ -109,6 +109,24 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "pack",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "situation",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "lines",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "category",
           "order": "ASCENDING"
         },
