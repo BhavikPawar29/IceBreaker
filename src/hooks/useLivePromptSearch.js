@@ -39,6 +39,67 @@ function docsToPrompts(snapshot) {
     .filter((prompt) => prompt.text);
 }
 
+function mergeUniquePrompts(promptGroups) {
+  const seenIds = new Set();
+
+  return promptGroups.flatMap((group) =>
+    group.filter((prompt) => {
+      if (seenIds.has(prompt.id)) {
+        return false;
+      }
+
+      seenIds.add(prompt.id);
+      return true;
+    }),
+  );
+}
+
+async function fetchDirectPrompts(linesCollection, { pack, situation }) {
+  const [exactSnapshot, anySnapshot] = await Promise.all([
+    getDocs(
+      query(
+        linesCollection,
+        where("status", "==", LINE_STATUS_APPROVED),
+        where("pack", "==", pack),
+        where("situation", "==", situation),
+        limit(SEARCH_LIMIT),
+      ),
+    ),
+    getDocs(
+      query(
+        linesCollection,
+        where("status", "==", LINE_STATUS_APPROVED),
+        where("pack", "==", pack),
+        where("situation", "==", "any"),
+        limit(SEARCH_LIMIT),
+      ),
+    ),
+  ]);
+
+  return mergeUniquePrompts([
+    docsToPrompts(exactSnapshot),
+    docsToPrompts(anySnapshot),
+  ]);
+}
+
+async function fetchLegacyPrompts(linesCollection, { pack, situation }) {
+  const snapshot = await getDocs(
+    query(
+      linesCollection,
+      where("status", "==", LINE_STATUS_APPROVED),
+      limit(SEARCH_LIMIT * 2),
+    ),
+  );
+
+  return docsToPrompts(snapshot).filter((livePrompt) => {
+    const matchesSituation =
+      livePrompt.situation === situation || livePrompt.situation === "any";
+    const matchesPack = livePrompt.pack === pack;
+
+    return matchesSituation && matchesPack;
+  });
+}
+
 function useLivePromptSearch(user) {
   const [error, setError] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -58,20 +119,18 @@ function useLivePromptSearch(user) {
 
     try {
       const linesCollection = collection(db, "lines");
-      const snapshot = await getDocs(
-        query(
-          linesCollection,
-          where("status", "==", LINE_STATUS_APPROVED),
-          limit(SEARCH_LIMIT * 2),
-        ),
-      );
-      const prompts = docsToPrompts(snapshot).filter((livePrompt) => {
-        const matchesSituation =
-          livePrompt.situation === situation || livePrompt.situation === "any";
-        const matchesPack = livePrompt.pack === pack;
-
-        return matchesSituation && matchesPack;
+      let prompts = await fetchDirectPrompts(linesCollection, {
+        pack,
+        situation,
       });
+
+      // Older approved lines may not have explicit live metadata yet.
+      if (!prompts.length) {
+        prompts = await fetchLegacyPrompts(linesCollection, {
+          pack,
+          situation,
+        });
+      }
 
       const nextPrompt = pickPrompt(prompts, prompt?.id);
 
