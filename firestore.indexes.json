@@ -109,22 +109,30 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "pack",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "situation",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "lines",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "category",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "createdAt",
           "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "votes",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
         }
       ]
     }

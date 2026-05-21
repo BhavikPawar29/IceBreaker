@@ -29,6 +29,7 @@ function InstantAssistant({
   const hasPrompt = Boolean(prompt);
   const selectedSituationLabel = findLabel(SITUATIONS, selectedSituation);
   const selectedPackLabel = findLabel(QUESTION_PACKS, selectedPack);
+  const hasSelection = Boolean(selectedSituationLabel && selectedPackLabel);
 
   function handleFindPrompt() {
     if (!selectedSituation || !selectedPack) {
@@ -68,6 +69,24 @@ function InstantAssistant({
     setSelectedSituation("");
     setSelectedPack("");
     setStep(STEP_SITUATION);
+  }
+
+  function renderSelectionSummary(extraClassName = "") {
+    if (!hasSelection) {
+      return null;
+    }
+
+    return (
+      <div
+        className={`assistant-selection-summary ${extraClassName}`.trim()}
+        aria-label="Selected live filters"
+      >
+        <span className="assistant-selection-pill">
+          {selectedSituationLabel}
+        </span>
+        <span className="assistant-selection-pill">{selectedPackLabel}</span>
+      </div>
+    );
   }
 
   return (
@@ -173,7 +192,9 @@ function InstantAssistant({
             </div>
           ) : null}
 
-          {step === STEP_TRIGGER ? (
+          {step === STEP_TRIGGER &&
+          liveState !== "empty" &&
+          liveState !== "error" ? (
             <div className="assistant-step assistant-step--trigger">
               <div className="assistant-intro assistant-intro--live assistant-intro--centered">
                 <p className="eyebrow">Ready</p>
@@ -184,52 +205,55 @@ function InstantAssistant({
                 </p>
               </div>
 
-              <div className="assistant-orb-stage">
-                <button
-                  className={`assistant-orb-button ${
-                    isSearching ? "is-searching" : ""
-                  }`}
-                  type="button"
-                  aria-label="Tap for a line"
-                  disabled={isSearching}
-                  onClick={handleFindPrompt}
-                >
-                  <span className="assistant-orb-button__inner">
-                    <span className="assistant-orb-button__label">
-                      {isSearching ? "Finding..." : "Tap for a line"}
+              {liveState !== "loading" ? (
+                <div className="assistant-orb-stage">
+                  <button
+                    className={`assistant-orb-button ${
+                      isSearching ? "is-searching" : ""
+                    }`}
+                    type="button"
+                    aria-label="Tap for a line"
+                    disabled={isSearching}
+                    onClick={handleFindPrompt}
+                  >
+                    <span className="assistant-orb-button__inner">
+                      <span className="assistant-orb-button__label">
+                        {isSearching ? "Shuffling..." : "Tap for a line"}
+                      </span>
                     </span>
-                  </span>
-                </button>
-              </div>
+                  </button>
+                </div>
+              ) : null}
 
-              <div
-                className="assistant-selection-summary"
-                aria-label="Selected live filters"
-              >
-                <span className="assistant-selection-pill">
-                  {selectedSituationLabel}
-                </span>
-                <span className="assistant-selection-pill">
-                  {selectedPackLabel}
-                </span>
-              </div>
+              {renderSelectionSummary()}
             </div>
           ) : null}
 
           {step === STEP_TRIGGER && liveState === "loading" ? (
-            <StatePanel
-              className="assistant-feedback"
-              loading
-              message="We are looking for a question that fits this exact vibe."
-              title="Searching the live queue..."
-              variant="loading"
-            />
+            <article
+              className="assistant-live-search section-card"
+              aria-live="polite"
+            >
+              <div className="assistant-orb-stage">
+                <div
+                  className="assistant-orb-button is-searching"
+                  aria-hidden="true"
+                >
+                  <span className="assistant-orb-button__inner">
+                    <span className="assistant-orb-button__label">
+                      Shuffling...
+                    </span>
+                  </span>
+                </div>
+              </div>
+              {renderSelectionSummary("assistant-selection-summary--quiet")}
+            </article>
           ) : null}
 
           {step === STEP_TRIGGER && liveState === "empty" ? (
-            <StatePanel
-              actions={
-                <>
+            <div className="assistant-state-stack">
+              <StatePanel
+                actions={
                   <button
                     className="assistant-primary-button"
                     type="button"
@@ -237,51 +261,46 @@ function InstantAssistant({
                   >
                     Change picks
                   </button>
-                  <button
-                    className="assistant-secondary-button"
-                    type="button"
-                    disabled={isSearching}
-                    onClick={handleRetry}
-                  >
-                    Refresh
-                  </button>
-                </>
-              }
-              className="assistant-feedback section-card"
-              eyebrow="Nothing live yet"
-              message="Try another situation or switch the pack. This works better as more approved lines land on the board."
-              title="No question matches this combo right now."
-              variant="empty"
-            />
+                }
+                className="assistant-feedback assistant-feedback--compact section-card"
+                eyebrow="Ooh, you caught us"
+                message="Nothing is live for this combo yet. Try another situation or switch the pack while the board warms up."
+                title="This combo is still waiting for its moment."
+                variant="empty"
+              />
+            </div>
           ) : null}
 
           {step === STEP_TRIGGER && liveState === "error" ? (
-            <StatePanel
-              actions={
-                <>
-                  <button
-                    className="assistant-primary-button"
-                    type="button"
-                    disabled={isSearching}
-                    onClick={handleRetry}
-                  >
-                    Try again
-                  </button>
-                  <button
-                    className="assistant-secondary-button"
-                    type="button"
-                    onClick={handleChange}
-                  >
-                    Change picks
-                  </button>
-                </>
-              }
-              className="assistant-feedback section-card"
-              eyebrow="Connection hiccup"
-              message="Try again in a moment, or change the combination and spin a new search."
-              title={error || "Could not load a live line."}
-              variant="error"
-            />
+            <div className="assistant-state-stack assistant-state-stack--error">
+              {renderSelectionSummary("assistant-selection-summary--quiet")}
+              <StatePanel
+                actions={
+                  <>
+                    <button
+                      className="assistant-primary-button"
+                      type="button"
+                      disabled={isSearching}
+                      onClick={handleRetry}
+                    >
+                      Try again
+                    </button>
+                    <button
+                      className="assistant-secondary-button"
+                      type="button"
+                      onClick={handleChange}
+                    >
+                      Change picks
+                    </button>
+                  </>
+                }
+                className="assistant-feedback assistant-feedback--compact section-card"
+                eyebrow="Connection hiccup"
+                message="Try again in a moment, or change the combination and spin a new search."
+                title={error || "Could not load a live line."}
+                variant="error"
+              />
+            </div>
           ) : null}
         </>
       )}
