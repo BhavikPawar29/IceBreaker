@@ -81,7 +81,9 @@ function InstantAssistant({
         className={`assistant-selection-summary ${extraClassName}`.trim()}
         aria-label="Selected live filters"
       >
-        <span className="assistant-selection-pill">{selectedSituationLabel}</span>
+        <span className="assistant-selection-pill">
+          {selectedSituationLabel}
+        </span>
         <span className="assistant-selection-pill">{selectedPackLabel}</span>
       </div>
     );
@@ -233,7 +235,10 @@ function InstantAssistant({
               aria-live="polite"
             >
               <div className="assistant-orb-stage">
-                <div className="assistant-orb-button is-searching" aria-hidden="true">
+                <div
+                  className="assistant-orb-button is-searching"
+                  aria-hidden="true"
+                >
                   <span className="assistant-orb-button__inner">
                     <span className="assistant-orb-button__label">
                       Shuffling...
