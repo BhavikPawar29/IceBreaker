@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function LandingPage({ authEnabled }) {
+function LandingPage() {
   return (
     <section className="landing-shell">
       <section className="landing-section feature-band">
@@ -99,7 +99,7 @@ function LandingPage({ authEnabled }) {
           <h2>Get one good line before the moment passes.</h2>
           <div className="hero-actions">
             <Link className="ink-link" to="/login">
-              {authEnabled ? "Start onboarding" : "Sign-in is not ready yet"}
+              Steal the lines
             </Link>
             <a className="ghost-link" href="#how-it-works">
               See how it works

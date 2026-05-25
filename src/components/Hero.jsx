@@ -34,7 +34,7 @@ function Hero({ authEnabled, user }) {
           </div>
           <div className="hero-actions">
             <NavLink className="ink-link" to={user ? "/live" : "/login"}>
-              {user ? "Open live mode" : "Start onboarding"}
+              Steal the lines
             </NavLink>
             {user ? (
               <NavLink className="ghost-link" to="/promoted">
