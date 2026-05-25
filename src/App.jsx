@@ -238,10 +238,7 @@ function App() {
 
         <Suspense fallback={<LoadingShell />}>
           <Routes>
-            <Route
-              path="/"
-              element={<LandingPage authEnabled={authEnabled} />}
-            />
+            <Route path="/" element={<LandingPage />} />
             <Route
               path="/login"
               element={
