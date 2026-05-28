@@ -3,9 +3,11 @@ import {
   initializeAppCheck,
   ReCaptchaEnterpriseProvider,
 } from "firebase/app-check";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+const measurementId = import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "";
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -13,6 +15,7 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  ...(measurementId ? { measurementId } : {}),
 };
 
 export const firebaseConfigReady = Object.values(firebaseConfig).every(Boolean);
@@ -39,6 +42,18 @@ const app = firebaseConfigReady
 export const auth = app ? getAuth(app) : null;
 export const db = app ? getFirestore(app) : null;
 export const googleProvider = auth ? new GoogleAuthProvider() : null;
+export const analyticsReady =
+  app && typeof window !== "undefined"
+    ? isSupported()
+        .then((supported) => (supported ? getAnalytics(app) : null))
+        .catch((error) => {
+          console.warn(
+            "Firebase Analytics is unavailable in this browser.",
+            error,
+          );
+          return null;
+        })
+    : Promise.resolve(null);
 
 googleProvider?.setCustomParameters({
   prompt: "select_account",
