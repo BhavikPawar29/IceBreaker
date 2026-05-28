@@ -194,7 +194,10 @@ function App() {
   const isLandingRoute = location.pathname === "/";
   const isLoginRoute = location.pathname === "/login";
   const isLiveRoute = location.pathname === "/live";
-  const shouldShowFooter = !user && !isLoginRoute && !isLiveRoute;
+  const shouldShowFooter =
+    isLandingRoute ||
+    location.pathname === "/privacy" ||
+    location.pathname === "/security";
   const isInAppSurface = Boolean(user) && !isLandingRoute && !isLoginRoute;
   return (
     <div className={`page-shell ${isInAppSurface ? "page-shell--app" : ""}`}>
