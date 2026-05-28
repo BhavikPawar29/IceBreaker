@@ -206,6 +206,10 @@ textarea {
   color: var(--muted);
 }
 
+.site-footer .eyebrow {
+  color: rgba(248, 239, 229, 0.78);
+}
+
 .hero-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(420px, 0.9fr);
@@ -4277,6 +4281,66 @@ textarea {
   border-radius: var(--radius-pill);
   border: 1px solid rgba(255, 250, 243, 0.12);
   color: #fffaf3;
+}
+
+.legal-shell {
+  padding-top: 10px;
+}
+
+.legal-page {
+  display: grid;
+  gap: 20px;
+}
+
+.legal-hero,
+.legal-card {
+  padding: clamp(22px, 3vw, 34px);
+}
+
+.legal-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: end;
+}
+
+.legal-intro {
+  max-width: 720px;
+}
+
+.legal-actions {
+  align-items: center;
+}
+
+.legal-content {
+  display: grid;
+  gap: 22px;
+}
+
+.legal-section {
+  display: grid;
+  gap: 10px;
+}
+
+.legal-section h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.legal-section p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.legal-list {
+  margin: 0;
+}
+
+.legal-list li,
+.legal-section code,
+.legal-section a {
+  word-break: break-word;
 }
 
 @keyframes drawIn {

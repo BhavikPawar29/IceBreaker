@@ -14,6 +14,7 @@ import Footer from "./components/Footer";
 import SketchBackdrop from "./components/SketchBackdrop";
 import RouteShimmer from "./components/RouteShimmer";
 import StatePanel from "./components/StatePanel";
+import ScrollToTop from "./components/ScrollToTop";
 import { firebaseConfigReady } from "./lib/firebase";
 import useAuth from "./context/useAuth";
 import useCommunityBoard from "./hooks/useCommunityBoard";
@@ -29,6 +30,8 @@ const LivePage = lazy(() => import("./components/LivePage"));
 const ProfilePage = lazy(() => import("./components/ProfilePage"));
 const PublicProfilePage = lazy(() => import("./components/PublicProfilePage"));
 const AdminPage = lazy(() => import("./components/AdminPage"));
+const PrivacyPage = lazy(() => import("./components/PrivacyPage"));
+const SecurityPage = lazy(() => import("./components/SecurityPage"));
 const showCapacityNote = import.meta.env.VITE_SHOW_CAPACITY_NOTE === "true";
 
 function LoadingShell({
@@ -195,6 +198,7 @@ function App() {
   const isInAppSurface = Boolean(user) && !isLandingRoute && !isLoginRoute;
   return (
     <div className={`page-shell ${isInAppSurface ? "page-shell--app" : ""}`}>
+      <ScrollToTop />
       <div className="paper-grain" aria-hidden="true"></div>
       <SketchBackdrop />
       {isLandingRoute ? (
@@ -239,6 +243,8 @@ function App() {
         <Suspense fallback={<LoadingShell />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/security" element={<SecurityPage />} />
             <Route
               path="/login"
               element={
