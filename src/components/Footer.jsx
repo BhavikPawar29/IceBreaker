@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Footer() {
   return (
     <footer className="site-footer">
@@ -27,6 +29,8 @@ function Footer() {
           </p>
         </div>
         <div className="footer-links">
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/security">Security</Link>
           <a
             href="https://github.com/BhavikPawar29/IceBreaker"
             target="_blank"
