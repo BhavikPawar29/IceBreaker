@@ -19,6 +19,7 @@ import {
   LINE_STATUS_REJECTED,
 } from "../constants/lineStatuses";
 import { db, firebaseConfigReady } from "../lib/firebase";
+import { trackEvent } from "../utils/analytics";
 import { createLineFingerprint } from "../utils/textNormalization";
 import { sortLines } from "../utils/board";
 import { validateLineSubmission } from "../utils/contentValidation";
@@ -321,6 +322,12 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
         promotionScore: null,
       });
 
+      trackEvent("line_submitted", {
+        category: submission.category,
+        pack: submission.pack,
+        situation: submission.situation,
+      });
+
       return {
         ok: true,
         message: "Sent. We will review it before it goes live.",
@@ -456,6 +463,11 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
             .filter(Boolean),
         ),
       );
+
+      trackEvent("vote_cast", {
+        action: optimisticCurrentVote === 1 ? "remove" : "upvote",
+        line_id: lineId,
+      });
 
       return { ok: true, message: "" };
     } catch (error) {
