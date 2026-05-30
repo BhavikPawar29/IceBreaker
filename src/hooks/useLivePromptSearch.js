@@ -1,10 +1,11 @@
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { LINE_STATUS_APPROVED } from "../constants/lineStatuses";
 import { db, firebaseConfigReady } from "../lib/firebase";
 import { reportError } from "../utils/reportError";
 
 const SEARCH_LIMIT = 24;
+const LEGACY_SEARCH_LIMIT = 200;
 
 const CATEGORY_TO_PACK = {
   curious: "deep",
@@ -23,14 +24,27 @@ function mapLineToLivePrompt(line) {
   };
 }
 
-function pickPrompt(prompts, previousId) {
+function pickPrompt(prompts, previousId, seenIds) {
+  const unseenPrompts = prompts.filter((prompt) => !seenIds.has(prompt.id));
+  const cyclePool = unseenPrompts.length ? unseenPrompts : prompts;
   const promptPool =
-    prompts.length > 1
-      ? prompts.filter((prompt) => prompt.id !== previousId)
-      : prompts;
-  const index = Math.floor(Math.random() * promptPool.length);
+    cyclePool.length > 1
+      ? cyclePool.filter((prompt) => prompt.id !== previousId)
+      : cyclePool;
+  const fallbackPool = promptPool.length ? promptPool : cyclePool;
+  const index = Math.floor(Math.random() * fallbackPool.length);
+  const nextPrompt = fallbackPool[index] || null;
 
-  return promptPool[index] || null;
+  if (!nextPrompt) {
+    return null;
+  }
+
+  if (!unseenPrompts.length) {
+    seenIds.clear();
+  }
+
+  seenIds.add(nextPrompt.id);
+  return nextPrompt;
 }
 
 function docsToPrompts(snapshot) {
@@ -87,7 +101,7 @@ async function fetchLegacyPrompts(linesCollection, { pack, situation }) {
     query(
       linesCollection,
       where("status", "==", LINE_STATUS_APPROVED),
-      limit(SEARCH_LIMIT * 2),
+      limit(LEGACY_SEARCH_LIMIT),
     ),
   );
 
@@ -101,6 +115,7 @@ async function fetchLegacyPrompts(linesCollection, { pack, situation }) {
 }
 
 function useLivePromptSearch(user) {
+  const seenPromptIdsByFilterRef = useRef(new Map());
   const [error, setError] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [liveState, setLiveState] = useState("idle");
@@ -119,20 +134,24 @@ function useLivePromptSearch(user) {
 
     try {
       const linesCollection = collection(db, "lines");
-      let prompts = await fetchDirectPrompts(linesCollection, {
-        pack,
-        situation,
-      });
-
-      // Older approved lines may not have explicit live metadata yet.
-      if (!prompts.length) {
-        prompts = await fetchLegacyPrompts(linesCollection, {
+      const [directPrompts, legacyPrompts] = await Promise.all([
+        fetchDirectPrompts(linesCollection, {
           pack,
           situation,
-        });
-      }
+        }),
+        fetchLegacyPrompts(linesCollection, {
+          pack,
+          situation,
+        }),
+      ]);
+      const prompts = mergeUniquePrompts([directPrompts, legacyPrompts]);
+      const filterKey = `${pack}:${situation}`;
+      const seenIds =
+        seenPromptIdsByFilterRef.current.get(filterKey) || new Set();
 
-      const nextPrompt = pickPrompt(prompts, prompt?.id);
+      seenPromptIdsByFilterRef.current.set(filterKey, seenIds);
+
+      const nextPrompt = pickPrompt(prompts, prompt?.id, seenIds);
 
       if (!nextPrompt) {
         setError("No live lines found for that filter yet.");
