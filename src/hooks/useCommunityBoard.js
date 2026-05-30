@@ -466,7 +466,6 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
 
       trackEvent("vote_cast", {
         action: optimisticCurrentVote === 1 ? "remove" : "upvote",
-        line_id: lineId,
       });
 
       return { ok: true, message: "" };

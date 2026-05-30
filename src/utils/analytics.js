@@ -30,7 +30,12 @@ function bindAnalyticsUser(user) {
         auth_provider:
           user.providerData?.[0]?.providerId || user.providerId || "unknown",
       });
+      return;
     }
+
+    setUserProperties(analytics, {
+      auth_provider: "",
+    });
   });
 }
 
