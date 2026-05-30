@@ -2,6 +2,7 @@ import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { useRef, useState } from "react";
 import { LINE_STATUS_APPROVED } from "../constants/lineStatuses";
 import { db, firebaseConfigReady } from "../lib/firebase";
+import { trackEvent } from "../utils/analytics";
 import { reportError } from "../utils/reportError";
 
 const SEARCH_LIMIT = 24;
@@ -157,11 +158,21 @@ function useLivePromptSearch(user) {
         setError("No live lines found for that filter yet.");
         setPrompt(null);
         setLiveState("empty");
+        trackEvent("live_prompt_empty", {
+          pack,
+          situation,
+        });
         return null;
       }
 
       setPrompt(nextPrompt);
       setLiveState("ready");
+      trackEvent("live_prompt_requested", {
+        pack,
+        prompt_id: nextPrompt.id,
+        prompt_source: nextPrompt.id.startsWith("db-") ? "firestore" : "other",
+        situation,
+      });
       return nextPrompt;
     } catch (nextError) {
       reportError("Failed to find a live prompt.", nextError);

@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db, firebaseConfigReady, googleProvider } from "../lib/firebase";
+import { bindAnalyticsUser, trackEvent } from "../utils/analytics";
 import { reportError } from "../utils/reportError";
 
 const AuthContext = createContext(null);
@@ -50,6 +51,7 @@ function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
       setUser(nextUser);
       setIsAuthReady(true);
+      bindAnalyticsUser(nextUser);
     });
 
     return unsubscribe;
@@ -181,6 +183,7 @@ function AuthProvider({ children }) {
     try {
       const credential = await signInWithPopup(auth, googleProvider);
       await upsertUserProfile(credential.user);
+      trackEvent("login", { method: "google" });
     } catch (error) {
       if (
         error?.code === "auth/operation-not-allowed" ||
@@ -205,6 +208,7 @@ function AuthProvider({ children }) {
       password,
     );
     await upsertUserProfile(credential.user);
+    trackEvent("login", { method: "password" });
   }
 
   async function signUpWithEmail(email, password, displayName) {
@@ -217,6 +221,7 @@ function AuthProvider({ children }) {
     );
     await updateProfile(credential.user, { displayName: normalizedName });
     await upsertUserProfile(credential.user, normalizedName);
+    trackEvent("sign_up", { method: "password" });
   }
 
   async function sendEmailPasswordReset(email) {
