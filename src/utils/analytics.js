@@ -21,6 +21,14 @@ function trackEvent(name, params = {}) {
   });
 }
 
+function safeTrackEvent(name, params = {}) {
+  try {
+    return trackEvent(name, params);
+  } catch (error) {
+    console.warn("Analytics event skipped.", error);
+  }
+}
+
 function bindAnalyticsUser(user) {
   void withAnalytics((analytics) => {
     setUserId(analytics, user?.uid || null);
@@ -39,4 +47,4 @@ function bindAnalyticsUser(user) {
   });
 }
 
-export { bindAnalyticsUser, trackEvent };
+export { bindAnalyticsUser, safeTrackEvent, trackEvent };
