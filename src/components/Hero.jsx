@@ -1,6 +1,15 @@
 import { NavLink } from "react-router-dom";
 import useIsMobile from "../hooks/useIsMobile";
+import { safeTrackEvent } from "../utils/analytics";
 import SketchIllustration from "./SketchIllustration";
+
+function trackCta(params) {
+  try {
+    safeTrackEvent("cta_clicked", params);
+  } catch {
+    // Analytics should never interfere with navigation.
+  }
+}
 
 function Hero({ authEnabled, user }) {
   const isMobile = useIsMobile();
@@ -33,15 +42,45 @@ function Hero({ authEnabled, user }) {
             <span>No endless scrolling</span>
           </div>
           <div className="hero-actions">
-            <NavLink className="ink-link" to={user ? "/live" : "/login"}>
+            <NavLink
+              className="ink-link"
+              to={user ? "/live" : "/login"}
+              onClick={() =>
+                trackCta({
+                  cta_location: "hero",
+                  cta_name: "steal_the_lines",
+                  destination: user ? "/live" : "/login",
+                })
+              }
+            >
               Steal the lines
             </NavLink>
             {user ? (
-              <NavLink className="ghost-link" to="/promoted">
+              <NavLink
+                className="ghost-link"
+                to="/promoted"
+                onClick={() =>
+                  trackCta({
+                    cta_location: "hero",
+                    cta_name: "browse_top_picks",
+                    destination: "/promoted",
+                  })
+                }
+              >
                 Browse top picks
               </NavLink>
             ) : (
-              <a className="ghost-link" href="#how-it-works">
+              <a
+                className="ghost-link"
+                href="#how-it-works"
+                onClick={() =>
+                  trackCta({
+                    cta_location: "hero",
+                    cta_name: "see_how_it_works",
+                    destination: "#how-it-works",
+                  })
+                }
+              >
                 See how it works
               </a>
             )}

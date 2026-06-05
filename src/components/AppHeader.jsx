@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import useIsMobile from "../hooks/useIsMobile";
+import { safeTrackEvent } from "../utils/analytics";
 
 function StarIcon() {
   return (
@@ -147,6 +148,8 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const accountLabel = user?.displayName || user?.email || "community member";
   const accountInitial = accountLabel.slice(0, 1).toUpperCase();
+  const navSurface = isMobile ? "mobile_bottom_nav" : "header_nav";
+  const logoutSurface = isMobile ? "mobile_header" : "desktop_header";
 
   const appLinks = [
     { icon: <BoltIcon />, label: "Live", to: "/live" },
@@ -169,6 +172,17 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
       key={link.to}
       to={link.to}
       className={({ isActive }) => `route-tab ${isActive ? "is-active" : ""}`}
+      onClick={() => {
+        const navLabel = String(link.label ?? "")
+          .toLowerCase()
+          .replace(/\s+/g, "_");
+
+        safeTrackEvent("nav_clicked", {
+          destination: link.to,
+          nav_label: navLabel,
+          nav_surface: navSurface,
+        });
+      }}
     >
       <span className="route-tab-icon" aria-hidden="true">
         {link.icon}
@@ -179,6 +193,7 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
 
   async function confirmLogout() {
     setIsLogoutOpen(false);
+    safeTrackEvent("logout_confirmed", { logout_surface: logoutSurface });
     await onSignOut();
   }
 
@@ -226,7 +241,12 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
                   <button
                     className="ghost-link auth-button"
                     type="button"
-                    onClick={() => setIsLogoutOpen(true)}
+                    onClick={() => {
+                      setIsLogoutOpen(true);
+                      safeTrackEvent("logout_prompt_opened", {
+                        logout_surface: logoutSurface,
+                      });
+                    }}
                     aria-label="Logout"
                     title="Logout"
                   >
@@ -272,7 +292,12 @@ function AppHeader({ authEnabled, isAdmin, isBanned, onSignOut, user }) {
               <button
                 className="action-button"
                 type="button"
-                onClick={() => setIsLogoutOpen(false)}
+                onClick={() => {
+                  setIsLogoutOpen(false);
+                  safeTrackEvent("logout_cancelled", {
+                    logout_surface: logoutSurface,
+                  });
+                }}
               >
                 Stay
               </button>

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import {
   Navigate,
   Route,
@@ -20,6 +20,7 @@ import useAuth from "./context/useAuth";
 import useCommunityBoard from "./hooks/useCommunityBoard";
 import useAdminDashboard from "./hooks/useAdminDashboard";
 import { ALLOWED_CATEGORIES } from "./constants/categories";
+import { safeTrackEvent } from "./utils/analytics";
 
 const BoardPage = lazy(() => import("./components/BoardPage"));
 const CreatePage = lazy(() => import("./components/CreatePage"));
@@ -33,6 +34,60 @@ const AdminPage = lazy(() => import("./components/AdminPage"));
 const PrivacyPage = lazy(() => import("./components/PrivacyPage"));
 const SecurityPage = lazy(() => import("./components/SecurityPage"));
 const showCapacityNote = import.meta.env.VITE_SHOW_CAPACITY_NOTE === "true";
+
+function normalizeAnalyticsPath(path) {
+  const normalizedInput = String(path || "")
+    .split("#")[0]
+    .split("?")[0]
+    .replace(/\/+$/, "");
+
+  if (!normalizedInput || normalizedInput === "/") {
+    return "/";
+  }
+
+  if (/^\/line\/[^/]+$/.test(normalizedInput)) {
+    return "/line/:id";
+  }
+
+  if (/^\/profile\/[^/]+$/.test(normalizedInput)) {
+    return "/profile/:id";
+  }
+
+  return normalizedInput;
+}
+
+function getRouteTitle(pathname) {
+  const normalizedPath = normalizeAnalyticsPath(pathname);
+
+  switch (normalizedPath) {
+    case "/":
+      return "landing";
+    case "/login":
+      return "login";
+    case "/live":
+      return "live";
+    case "/lines":
+      return "explore";
+    case "/promoted":
+      return "top_picks";
+    case "/create":
+      return "share";
+    case "/profile":
+      return "profile";
+    case "/profile/:id":
+      return "public_profile";
+    case "/line/:id":
+      return "line_detail";
+    case "/admin":
+      return "admin";
+    case "/privacy":
+      return "privacy";
+    case "/security":
+      return "security";
+    default:
+      return "unknown";
+  }
+}
 
 function LoadingShell({
   title = "Loading IceBreaker",
@@ -99,6 +154,7 @@ function App() {
   const [filter, setFilter] = useState("all");
   const location = useLocation();
   const navigate = useNavigate();
+  const lastTrackedRouteRef = useRef("");
   const activeBoardView =
     location.pathname === "/lines"
       ? "candidates"
@@ -150,6 +206,22 @@ function App() {
       navigate("/live", { replace: true });
     }
   }, [location.pathname, navigate, user]);
+
+  useEffect(() => {
+    const normalizedPath = normalizeAnalyticsPath(location.pathname);
+    const trackingKey = `${normalizedPath}:${location.key || ""}`;
+
+    if (lastTrackedRouteRef.current === trackingKey) {
+      return;
+    }
+
+    lastTrackedRouteRef.current = trackingKey;
+    safeTrackEvent("route_view", {
+      route_path: normalizedPath,
+      route_title: getRouteTitle(location.pathname),
+      route_type: "page",
+    });
+  }, [location.key, location.pathname]);
 
   const combinedCategories = useMemo(
     () =>

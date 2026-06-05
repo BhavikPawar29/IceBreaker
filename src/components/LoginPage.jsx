@@ -3,6 +3,7 @@ import LoginAuthCard from "./LoginAuthCard";
 import LoginDesktopView from "./LoginDesktopView";
 import LoginMobileView from "./LoginMobileView";
 import useIsMobile from "../hooks/useIsMobile";
+import { safeTrackEvent } from "../utils/analytics";
 import { reportError } from "../utils/reportError";
 
 function getFriendlyAuthMessage(error, mode) {
@@ -137,6 +138,10 @@ function LoginPage({
   }
 
   function switchMode() {
+    safeTrackEvent("auth_mode_switched", {
+      from_mode: mode,
+      to_mode: isSignup ? "login" : "signup",
+    });
     setMode(isSignup ? "login" : "signup");
     setFeedback({ message: "", tone: "info" });
   }
@@ -167,6 +172,10 @@ function LoginPage({
     }
 
     setIsSubmitting(true);
+    safeTrackEvent("auth_submit_clicked", {
+      auth_method: "password",
+      auth_mode: mode,
+    });
 
     try {
       if (isSignup) {
@@ -188,6 +197,10 @@ function LoginPage({
   async function handleGoogleSignIn() {
     setFeedback({ message: "", tone: "info" });
     setIsSubmitting(true);
+    safeTrackEvent("auth_submit_clicked", {
+      auth_method: "google",
+      auth_mode: mode,
+    });
 
     try {
       await onGoogleSignIn();
@@ -214,6 +227,9 @@ function LoginPage({
     }
 
     setIsSubmitting(true);
+    safeTrackEvent("password_reset_requested", {
+      auth_mode: mode,
+    });
 
     try {
       await onPasswordReset(email);

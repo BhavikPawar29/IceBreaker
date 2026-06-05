@@ -1,4 +1,13 @@
 import { Link } from "react-router-dom";
+import { safeTrackEvent } from "../utils/analytics";
+
+function trackCta(params) {
+  try {
+    safeTrackEvent("cta_clicked", params);
+  } catch {
+    // Analytics should never interfere with navigation.
+  }
+}
 
 function LandingPage() {
   return (
@@ -98,10 +107,30 @@ function LandingPage() {
           <p className="eyebrow">Ready when it gets quiet</p>
           <h2>Get one good line before the moment passes.</h2>
           <div className="hero-actions">
-            <Link className="ink-link" to="/login">
+            <Link
+              className="ink-link"
+              to="/login"
+              onClick={() =>
+                trackCta({
+                  cta_location: "landing_cta_band",
+                  cta_name: "steal_the_lines",
+                  destination: "/login",
+                })
+              }
+            >
               Steal the lines
             </Link>
-            <a className="ghost-link" href="#how-it-works">
+            <a
+              className="ghost-link"
+              href="#how-it-works"
+              onClick={() =>
+                trackCta({
+                  cta_location: "landing_cta_band",
+                  cta_name: "see_how_it_works",
+                  destination: "#how-it-works",
+                })
+              }
+            >
               See how it works
             </a>
           </div>
