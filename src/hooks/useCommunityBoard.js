@@ -21,7 +21,6 @@ import {
 import { db, firebaseConfigReady } from "../lib/firebase";
 import { trackEvent } from "../utils/analytics";
 import { createLineFingerprint } from "../utils/textNormalization";
-import { sortLines } from "../utils/board";
 import { validateLineSubmission } from "../utils/contentValidation";
 import { reportError } from "../utils/reportError";
 import { getPublicDisplayNameFromUser } from "../utils/userIdentity";
@@ -93,7 +92,6 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
                   collection(db, "lines"),
                   where("status", "==", LINE_STATUS_APPROVED),
                   where("promoted", "==", false),
-                  orderBy("score", "desc"),
                   orderBy("createdAt", "desc"),
                   limit(PAGE_SIZE),
                 ),
@@ -156,9 +154,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
             ? mapDocs(promotedSnapshot)
             : [];
 
-          setCandidateLines(
-            shouldLoadCandidates ? sortLines(nextCandidates) : [],
-          );
+          setCandidateLines(shouldLoadCandidates ? nextCandidates : []);
           setPromotedLines(shouldLoadPromoted ? nextPromoted : []);
           setPendingLines(
             shouldLoadAdmin && pendingSnapshot ? mapDocs(pendingSnapshot) : [],
@@ -438,30 +434,28 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
       });
 
       setCandidateLines((currentLines) =>
-        sortLines(
-          currentLines
-            .map((line) => {
-              if (line.id !== lineId) {
-                return line;
-              }
+        currentLines
+          .map((line) => {
+            if (line.id !== lineId) {
+              return line;
+            }
 
-              const currentVote = optimisticCurrentVote;
-              const nextVote = currentVote === 1 ? 0 : 1;
-              const scoreDelta = nextVote - currentVote;
-              const nextScore = (line.score || 0) + scoreDelta;
+            const currentVote = optimisticCurrentVote;
+            const nextVote = currentVote === 1 ? 0 : 1;
+            const scoreDelta = nextVote - currentVote;
+            const nextScore = (line.score || 0) + scoreDelta;
 
-              if (nextScore >= PROMOTION_THRESHOLD) {
-                return null;
-              }
+            if (nextScore >= PROMOTION_THRESHOLD) {
+              return null;
+            }
 
-              return {
-                ...line,
-                score: nextScore,
-                upvoteCount: (line.upvoteCount || 0) + scoreDelta,
-              };
-            })
-            .filter(Boolean),
-        ),
+            return {
+              ...line,
+              score: nextScore,
+              upvoteCount: (line.upvoteCount || 0) + scoreDelta,
+            };
+          })
+          .filter(Boolean),
       );
 
       trackEvent("vote_cast", {
@@ -646,7 +640,6 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
             collection(db, "lines"),
             where("status", "==", LINE_STATUS_APPROVED),
             where("promoted", "==", false),
-            orderBy("score", "desc"),
             orderBy("createdAt", "desc"),
             startAfter(cursor),
             limit(PAGE_SIZE),
@@ -663,9 +656,7 @@ function useCommunityBoard(user, activeBoardView = null, isAdmin = false) {
       const nextLines = mapDocs(snapshot);
 
       if (isCandidateFeed) {
-        setCandidateLines((currentLines) =>
-          sortLines([...currentLines, ...nextLines]),
-        );
+        setCandidateLines((currentLines) => [...currentLines, ...nextLines]);
         setCandidateCursor(
           snapshot.docs.length
             ? snapshot.docs[snapshot.docs.length - 1]
