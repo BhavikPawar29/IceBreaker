@@ -1,7 +1,7 @@
 import process from "node:process";
 import { log } from "node:console";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { FieldValue, getFirestore } from "firebase-admin/firestore";
 
 const PROJECT_ID =
   process.env.FIREBASE_PROJECT_ID ||
@@ -59,41 +59,25 @@ function inferSituation(text) {
   return "any";
 }
 
-function buildFollowUps(line) {
-  const text = line.text || "that";
-
-  return [
-    {
-      label: "If they answer short",
-      text: "Ask what made them think of that first.",
-    },
-    {
-      label: "If convo slows",
-      text:
-        text.length > 80
-          ? "Ask them for the honest version, not the polite one."
-          : "Ask them to give you the real story behind it.",
-    },
-  ];
-}
-
 function buildLivePatch(line) {
-  return {
-    followUps:
-      Array.isArray(line.followUps) && line.followUps.length
-        ? line.followUps.slice(0, 2)
-        : buildFollowUps(line),
+  const patch = {
     pack: line.pack || CATEGORY_TO_PACK[line.category] || "playful",
     situation: line.situation || inferSituation(line.text || ""),
     updatedAt: Date.now(),
   };
+
+  if ("followUps" in line) {
+    patch.followUps = FieldValue.delete();
+  }
+
+  return patch;
 }
 
 function patchChangesLine(line, patch) {
   return (
     line.situation !== patch.situation ||
     line.pack !== patch.pack ||
-    JSON.stringify(line.followUps || null) !== JSON.stringify(patch.followUps)
+    "followUps" in line
   );
 }
 
@@ -149,7 +133,12 @@ try {
         toUpdate: updates.length,
         preview: updates.slice(0, 10).map((update) => ({
           id: update.id,
-          patch: update.patch,
+          patch: {
+            ...update.patch,
+            ...("followUps" in update.patch
+              ? { followUps: "[deleteField]" }
+              : {}),
+          },
           text: update.text,
         })),
       },
