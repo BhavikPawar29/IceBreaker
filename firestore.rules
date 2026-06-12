@@ -248,26 +248,20 @@ service cloud.firestore {
     }
 
     function isVoteAggregateUpdate(lineId) {
-      return hasLineShape(request.resource.data)
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'score',
+          'upvoteCount',
+          'updatedAt',
+          'promoted',
+          'promotedAt',
+          'promotionScore'
+        ])
         && resource.data.status == 'approved'
         && resource.data.promoted == false
-        && request.resource.data.createdByUid == resource.data.createdByUid
-        && request.resource.data.createdByName == resource.data.createdByName
-        && request.resource.data.text == resource.data.text
-        && request.resource.data.normalizedText == resource.data.normalizedText
-        && request.resource.data.fingerprint == resource.data.fingerprint
-        && request.resource.data.category == resource.data.category
-        && request.resource.data.category is string
-        && isAllowedCategory(request.resource.data.category)
-        && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.updatedAt is int
         && request.resource.data.updatedAt >= resource.data.updatedAt
         && isRecentMillis(request.resource.data.updatedAt)
         && request.resource.data.status == 'approved'
-        && request.resource.data.moderatedAt == resource.data.moderatedAt
-        && request.resource.data.moderatedByUid == resource.data.moderatedByUid
-        && request.resource.data.moderationReason == resource.data.moderationReason
-        && liveFieldsUnchanged()
         && request.resource.data.score == resource.data.score + scoreDelta(lineId)
         && request.resource.data.upvoteCount == resource.data.upvoteCount + upvoteDelta(lineId)
         && (
