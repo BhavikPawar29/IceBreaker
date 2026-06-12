@@ -25,7 +25,7 @@ import { validateLineSubmission } from "../utils/contentValidation";
 import { reportError } from "../utils/reportError";
 import { getPublicDisplayNameFromUser } from "../utils/userIdentity";
 
-const PROMOTION_THRESHOLD = 50;
+const PROMOTION_THRESHOLD = 10;
 const PAGE_SIZE = 10;
 
 function mapDocs(snapshot) {
