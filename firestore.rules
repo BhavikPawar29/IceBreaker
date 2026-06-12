@@ -24,34 +24,14 @@ service cloud.firestore {
       return pack in ['playful', 'deep', 'flirty'];
     }
 
-    function isValidFollowUp(followUp) {
-      return followUp is map
-        && followUp.keys().hasOnly(['label', 'text'])
-        && followUp.keys().hasAll(['label', 'text'])
-        && followUp.label is string
-        && followUp.label.size() >= 1
-        && followUp.label.size() <= 40
-        && followUp.text is string
-        && followUp.text.size() >= 1
-        && followUp.text.size() <= 160;
-    }
-
     function hasValidLiveFields(data) {
       return (!('situation' in data) || (data.situation is string && isAllowedSituation(data.situation)))
-        && (!('pack' in data) || (data.pack is string && isAllowedPack(data.pack)))
-        && (!('followUps' in data)
-          || (
-            data.followUps is list
-            && data.followUps.size() <= 2
-            && (data.followUps.size() < 1 || isValidFollowUp(data.followUps[0]))
-            && (data.followUps.size() < 2 || isValidFollowUp(data.followUps[1]))
-          ));
+        && (!('pack' in data) || (data.pack is string && isAllowedPack(data.pack)));
     }
 
     function liveFieldsUnchanged() {
       return request.resource.data.get('situation', null) == resource.data.get('situation', null)
-        && request.resource.data.get('pack', null) == resource.data.get('pack', null)
-        && request.resource.data.get('followUps', null) == resource.data.get('followUps', null);
+        && request.resource.data.get('pack', null) == resource.data.get('pack', null);
     }
 
     function isAdminLiveMetadataUpdate() {
@@ -60,7 +40,6 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'situation',
           'pack',
-          'followUps',
           'updatedAt'
         ])
         && request.resource.data.updatedAt is int
