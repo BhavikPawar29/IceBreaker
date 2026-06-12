@@ -292,7 +292,7 @@ service cloud.firestore {
         && request.resource.data.score == resource.data.score + scoreDelta(lineId)
         && request.resource.data.upvoteCount == resource.data.upvoteCount + upvoteDelta(lineId)
         && (
-          request.resource.data.score < 50
+          request.resource.data.score < 10
             ? request.resource.data.promoted == false
               && request.resource.data.promotedAt == null
               && request.resource.data.promotionScore == null
