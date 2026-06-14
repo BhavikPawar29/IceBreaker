@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import LoginAuthCard from "./LoginAuthCard";
 import LoginDesktopView from "./LoginDesktopView";
 import LoginMobileView from "./LoginMobileView";
 import useIsMobile from "../hooks/useIsMobile";
 import { safeTrackEvent } from "../utils/analytics";
 import { reportError } from "../utils/reportError";
+import {
+  clearPendingShareAuth,
+  getShareAttribution,
+  rememberPendingShareAuth,
+} from "../utils/shareFlow";
 
 function getFriendlyAuthMessage(error, mode) {
   if (error?.code === "auth/email-already-in-use") {
@@ -119,6 +125,7 @@ function LoginPage({
   onGoogleSignIn,
 }) {
   const isMobile = useIsMobile();
+  const routeLocation = useLocation();
   const [mode, setMode] = useState("signup");
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -128,6 +135,10 @@ function LoginPage({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isSignup = mode === "signup";
+  const shareAttribution = useMemo(
+    () => getShareAttribution(routeLocation.search),
+    [routeLocation.search],
+  );
   const title = isSignup ? "Create your account" : "Welcome back";
   const submitCopy = isSignup ? "Sign up with email" : "Log in with email";
   const switchCopy = isSignup ? "Already a user?" : "New here?";
@@ -136,6 +147,20 @@ function LoginPage({
   function showFeedback(message, tone = "info") {
     setFeedback({ message, tone });
   }
+
+  useEffect(() => {
+    if (!shareAttribution) {
+      clearPendingShareAuth();
+      return;
+    }
+
+    safeTrackEvent("share_login_viewed", {
+      share_id: shareAttribution.shareId,
+      share_surface: shareAttribution.shareSurface,
+      share_target: shareAttribution.shareTarget,
+      share_type: shareAttribution.shareType,
+    });
+  }, [shareAttribution]);
 
   function switchMode() {
     safeTrackEvent("auth_mode_switched", {
@@ -173,9 +198,23 @@ function LoginPage({
 
     setIsSubmitting(true);
     safeTrackEvent("auth_submit_clicked", {
+      acquisition_source: shareAttribution?.source || "",
       auth_method: "password",
       auth_mode: mode,
+      share_surface: shareAttribution?.shareSurface || "",
+      share_type: shareAttribution?.shareType || "",
     });
+
+    if (shareAttribution) {
+      rememberPendingShareAuth({
+        auth_intent_mode: mode,
+        auth_method: "password",
+        share_id: shareAttribution.shareId,
+        share_surface: shareAttribution.shareSurface,
+        share_target: shareAttribution.shareTarget,
+        share_type: shareAttribution.shareType,
+      });
+    }
 
     try {
       if (isSignup) {
@@ -184,6 +223,7 @@ function LoginPage({
         await onEmailLogin(email, password);
       }
     } catch (error) {
+      clearPendingShareAuth();
       reportError("Email auth failed.", error);
       const message = getFriendlyAuthMessage(error, mode);
       if (message) {
@@ -198,13 +238,28 @@ function LoginPage({
     setFeedback({ message: "", tone: "info" });
     setIsSubmitting(true);
     safeTrackEvent("auth_submit_clicked", {
+      acquisition_source: shareAttribution?.source || "",
       auth_method: "google",
       auth_mode: mode,
+      share_surface: shareAttribution?.shareSurface || "",
+      share_type: shareAttribution?.shareType || "",
     });
+
+    if (shareAttribution) {
+      rememberPendingShareAuth({
+        auth_intent_mode: mode,
+        auth_method: "google",
+        share_id: shareAttribution.shareId,
+        share_surface: shareAttribution.shareSurface,
+        share_target: shareAttribution.shareTarget,
+        share_type: shareAttribution.shareType,
+      });
+    }
 
     try {
       await onGoogleSignIn();
     } catch (error) {
+      clearPendingShareAuth();
       reportError("Google auth failed.", error);
       const message = getFriendlyAuthMessage(error, "google");
       if (message) {
