@@ -4,6 +4,9 @@ import {
   LINE_STATUS_APPROVED,
   LINE_STATUS_PENDING,
 } from "../constants/lineStatuses";
+import Seo from "./Seo";
+import { safeTrackEvent } from "../utils/analytics";
+import { buildLoginHref } from "../utils/shareFlow";
 import RouteShimmer from "./RouteShimmer";
 import StatePanel from "./StatePanel";
 
@@ -11,7 +14,29 @@ function getShareRuntime() {
   return globalThis.__ICEBREAKER_SHARE__;
 }
 
-function LineDetailPage({ line }) {
+function buildLineDescription(line) {
+  const rawText =
+    line?.text?.trim() ||
+    "A public conversation idea from the Breaking Ice community.";
+
+  if (rawText.length <= 150) {
+    return rawText;
+  }
+
+  return `${rawText.slice(0, 147).trimEnd()}...`;
+}
+
+function buildLineTitle(line) {
+  const rawText = line?.text?.trim() || "Conversation Idea";
+
+  if (rawText.length <= 60) {
+    return `${rawText} | Breaking Ice`;
+  }
+
+  return `${rawText.slice(0, 57).trimEnd()}... | Breaking Ice`;
+}
+
+function LineDetailPage({ line, user }) {
   if (line === undefined) {
     return (
       <section className="main-shell">
@@ -39,14 +64,34 @@ function LineDetailPage({ line }) {
 
   async function handleShare() {
     const shareRuntime = getShareRuntime();
-    await shareRuntime?.shareUrl(
-      shareRuntime.buildAbsoluteUrl(`/line/${line.id}`),
-      "IceBreaker idea",
-    );
+    const shareUrl = shareRuntime?.buildShareUrl(`/line/${line.id}`, {
+      surface: "line_detail",
+      targetPath: `/line/${line.id}`,
+      type: "line",
+    });
+
+    await shareRuntime?.shareUrl({
+      shareSurface: "line_detail",
+      shareType: "line",
+      text: `This IceBreaker line is actually usable:\n\n"${line.text}"\n\nTry more here:`,
+      title: "Breaking Ice",
+      url: shareUrl,
+    });
   }
 
   return (
     <section className="main-shell">
+      <Seo
+        canonicalPath={`/line/${line.id}`}
+        description={buildLineDescription(line)}
+        robots={
+          line.status === LINE_STATUS_APPROVED
+            ? "index,follow"
+            : "noindex,nofollow"
+        }
+        title={buildLineTitle(line)}
+        type="article"
+      />
       <article className="section-card detail-card detail-card--refined">
         <div className="line-badges">
           <span className="category-chip">{formatCategory(line.category)}</span>
@@ -98,6 +143,38 @@ function LineDetailPage({ line }) {
             </span>
           ) : null}
         </div>
+        {!user ? (
+          <article className="share-cta-card">
+            <p className="eyebrow">Found through a share?</p>
+            <h3>Get your own line before the moment goes weird.</h3>
+            <p>
+              Open live mode, pick the situation, and get one natural thing to
+              say in seconds.
+            </p>
+            <div className="line-actions">
+              <Link
+                className="action-link action-link--primary"
+                to={buildLoginHref({
+                  surface: "line_detail_cta",
+                  targetPath: `/line/${line.id}`,
+                  type: "signup",
+                })}
+                onClick={() =>
+                  safeTrackEvent("cta_clicked", {
+                    cta_location: "line_detail_share_page",
+                    cta_name: "get_your_own_line",
+                    destination: "/login",
+                  })
+                }
+              >
+                Get your own line
+              </Link>
+              <Link className="action-link" to="/">
+                See how it works
+              </Link>
+            </div>
+          </article>
+        ) : null}
       </article>
     </section>
   );

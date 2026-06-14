@@ -129,10 +129,19 @@ function ProfileLine({ line }) {
             type="button"
             onClick={() => {
               const shareRuntime = getShareRuntime();
-              return shareRuntime?.shareUrl(
-                shareRuntime.buildAbsoluteUrl(`/line/${line.id}`),
-                "IceBreaker idea",
-              );
+              const shareUrl = shareRuntime?.buildShareUrl(`/line/${line.id}`, {
+                surface: "profile_line",
+                targetPath: `/line/${line.id}`,
+                type: "line",
+              });
+
+              return shareRuntime?.shareUrl({
+                shareSurface: "profile_line",
+                shareType: "line",
+                text: `This IceBreaker line is actually usable:\n\n"${line.text}"\n\nTry more here:`,
+                title: "Breaking Ice",
+                url: shareUrl,
+              });
             }}
           >
             Share

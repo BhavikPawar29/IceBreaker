@@ -47,7 +47,20 @@ function InstantAssistant({
       return;
     }
 
-    await getShareRuntime()?.shareText(`${SHARE_MESSAGE}\n\n"${prompt.text}"`);
+    const shareRuntime = getShareRuntime();
+    const shareUrl = shareRuntime?.buildShareUrl("/", {
+      surface: "instant_assistant",
+      targetPath: "/",
+      type: "live_prompt",
+    });
+
+    await shareRuntime?.shareUrl({
+      shareSurface: "instant_assistant",
+      shareType: "live_prompt",
+      text: `${SHARE_MESSAGE}\n\n"${prompt.text}"\n\nGet more here:`,
+      title: "Breaking Ice",
+      url: shareUrl,
+    });
   }
 
   function handleSituationSelect(situationId) {

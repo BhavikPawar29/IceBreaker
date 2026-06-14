@@ -97,10 +97,13 @@ VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 VITE_FIREBASE_MEASUREMENT_ID=
+VITE_SITE_URL=https://breaking-ice.pages.dev
 VITE_FIREBASE_APP_CHECK_SITE_KEY=
 VITE_ENABLE_APP_CHECK=false
 VITE_APP_CHECK_DEBUG_TOKEN=
 ```
+
+Set `VITE_SITE_URL` to the real production host so canonicals and share metadata point at the correct domain. The current deployed Pages host is `https://breaking-ice.pages.dev`.
 
 For local development, keep `VITE_ENABLE_APP_CHECK=false` unless you have registered a valid Firebase App Check debug token. If Firebase Auth App Check enforcement is enabled in the Firebase Console, local sign-in needs either enforcement disabled for dev or a valid debug token.
 

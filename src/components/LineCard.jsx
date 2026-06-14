@@ -45,10 +45,19 @@ function LineCard({ canVote, line, rank, voteState, onVote }) {
 
   async function handleShare() {
     const shareRuntime = getShareRuntime();
-    await shareRuntime?.shareUrl(
-      shareRuntime.buildAbsoluteUrl(`/line/${line.id}`),
-      "IceBreaker idea",
-    );
+    const shareUrl = shareRuntime?.buildShareUrl(`/line/${line.id}`, {
+      surface: "line_card",
+      targetPath: `/line/${line.id}`,
+      type: "line",
+    });
+
+    await shareRuntime?.shareUrl({
+      shareSurface: "line_card",
+      shareType: "line",
+      text: `This IceBreaker line is actually usable:\n\n"${line.text}"\n\nTry more here:`,
+      title: "Breaking Ice",
+      url: shareUrl,
+    });
   }
 
   async function flushVoteToTarget(targetVote) {
