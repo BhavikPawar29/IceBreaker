@@ -11,6 +11,7 @@ import AppHeader from "./components/AppHeader";
 import InstallAppPrompt from "./components/InstallAppPrompt";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
+import Seo from "./components/Seo";
 import SketchBackdrop from "./components/SketchBackdrop";
 import RouteShimmer from "./components/RouteShimmer";
 import StatePanel from "./components/StatePanel";
@@ -21,6 +22,10 @@ import useCommunityBoard from "./hooks/useCommunityBoard";
 import useAdminDashboard from "./hooks/useAdminDashboard";
 import { ALLOWED_CATEGORIES } from "./constants/categories";
 import { safeTrackEvent } from "./utils/analytics";
+import {
+  consumePendingShareAuth,
+  getShareAttribution,
+} from "./utils/shareFlow";
 
 const BoardPage = lazy(() => import("./components/BoardPage"));
 const CreatePage = lazy(() => import("./components/CreatePage"));
@@ -89,6 +94,75 @@ function getRouteTitle(pathname) {
   }
 }
 
+function getRouteSeo(pathname) {
+  const normalizedPath = normalizeAnalyticsPath(pathname);
+
+  switch (normalizedPath) {
+    case "/":
+      return {
+        canonicalPath: "/",
+        description:
+          "Instant conversation lines for awkward moments, dates, new friends, and group chats.",
+        robots: "index,follow",
+        title: "Breaking Ice",
+        type: "website",
+      };
+    case "/privacy":
+      return {
+        canonicalPath: "/privacy",
+        description:
+          "Read how Breaking Ice handles account data, anonymous public sharing, moderation records, and limited browser storage.",
+        robots: "index,follow",
+        title: "Privacy Policy | Breaking Ice",
+        type: "article",
+      };
+    case "/security":
+      return {
+        canonicalPath: "/security",
+        description:
+          "Read the current security posture for Breaking Ice, including moderation, abuse controls, sign-in, and reporting.",
+        robots: "index,follow",
+        title: "Security | Breaking Ice",
+        type: "article",
+      };
+    case "/profile/:id":
+      return {
+        canonicalPath: pathname,
+        description: "Anonymous contributor ideas shared on Breaking Ice.",
+        robots: "index,follow",
+        title: "Anonymous Contributor Ideas | Breaking Ice",
+        type: "profile",
+      };
+    case "/line/:id":
+      return {
+        canonicalPath: pathname,
+        description:
+          "A public conversation idea from the Breaking Ice community.",
+        robots: "index,follow",
+        title: "Conversation Idea | Breaking Ice",
+        type: "article",
+      };
+    case "/login":
+      return {
+        canonicalPath: "/login",
+        description:
+          "Create an account or sign in to use Breaking Ice live mode and share conversation ideas.",
+        robots: "noindex,nofollow",
+        title: "Login | Breaking Ice",
+        type: "website",
+      };
+    default:
+      return {
+        canonicalPath: pathname,
+        description:
+          "Breaking Ice helps you get one natural thing to say without endless scrolling.",
+        robots: "noindex,nofollow",
+        title: "Breaking Ice",
+        type: "website",
+      };
+  }
+}
+
 function LoadingShell({
   title = "Loading IceBreaker",
   note = "Bringing your board back into place.",
@@ -108,7 +182,7 @@ function LoadingShell({
   );
 }
 
-function PublicLineRoute({ getLineById }) {
+function PublicLineRoute({ getLineById, user }) {
   const { id } = useParams();
   const [line, setLine] = useState(undefined);
 
@@ -126,10 +200,10 @@ function PublicLineRoute({ getLineById }) {
     };
   }, [getLineById, id]);
 
-  return <LineDetailPage line={line} />;
+  return <LineDetailPage line={line} user={user} />;
 }
 
-function PublicProfileRoute({ getPublicProfileLines }) {
+function PublicProfileRoute({ getPublicProfileLines, user }) {
   const { id } = useParams();
   const [lines, setLines] = useState(undefined);
 
@@ -147,23 +221,23 @@ function PublicProfileRoute({ getPublicProfileLines }) {
     };
   }, [getPublicProfileLines, id]);
 
-  return <PublicProfilePage lines={lines} profileId={id} />;
+  return <PublicProfilePage lines={lines} profileId={id} user={user} />;
 }
 
 function App() {
   const [filter, setFilter] = useState("all");
-  const location = useLocation();
+  const routeLocation = useLocation();
   const navigate = useNavigate();
   const lastTrackedRouteRef = useRef("");
   const activeBoardView =
-    location.pathname === "/lines"
+    routeLocation.pathname === "/lines"
       ? "candidates"
-      : location.pathname === "/promoted"
+      : routeLocation.pathname === "/promoted"
         ? "promoted"
-        : location.pathname === "/profile"
+        : routeLocation.pathname === "/profile"
           ? "profile"
           : null;
-  const isAdminRoute = location.pathname === "/admin";
+  const isAdminRoute = routeLocation.pathname === "/admin";
   const {
     authEnabled,
     banInfo,
@@ -202,14 +276,22 @@ function App() {
       return;
     }
 
-    if (location.pathname === "/login") {
+    if (routeLocation.pathname === "/login") {
+      const pendingShareAuth = consumePendingShareAuth();
+
+      if (pendingShareAuth) {
+        safeTrackEvent("auth_completed_from_share", pendingShareAuth);
+      }
+    }
+
+    if (routeLocation.pathname === "/login") {
       navigate("/live", { replace: true });
     }
-  }, [location.pathname, navigate, user]);
+  }, [navigate, routeLocation.pathname, user]);
 
   useEffect(() => {
-    const normalizedPath = normalizeAnalyticsPath(location.pathname);
-    const trackingKey = `${normalizedPath}:${location.key || ""}`;
+    const normalizedPath = normalizeAnalyticsPath(routeLocation.pathname);
+    const trackingKey = `${normalizedPath}:${routeLocation.key || ""}`;
 
     if (lastTrackedRouteRef.current === trackingKey) {
       return;
@@ -218,10 +300,27 @@ function App() {
     lastTrackedRouteRef.current = trackingKey;
     safeTrackEvent("route_view", {
       route_path: normalizedPath,
-      route_title: getRouteTitle(location.pathname),
+      route_title: getRouteTitle(routeLocation.pathname),
       route_type: "page",
     });
-  }, [location.key, location.pathname]);
+  }, [routeLocation.key, routeLocation.pathname]);
+
+  useEffect(() => {
+    const shareAttribution = getShareAttribution(routeLocation.search);
+
+    if (!shareAttribution) {
+      return;
+    }
+
+    safeTrackEvent("share_landing_viewed", {
+      route_path: normalizeAnalyticsPath(routeLocation.pathname),
+      share_id: shareAttribution.shareId,
+      share_surface: shareAttribution.shareSurface,
+      share_target: shareAttribution.shareTarget,
+      share_type: shareAttribution.shareType,
+      visitor_state: user ? "signed_in" : "signed_out",
+    });
+  }, [routeLocation.pathname, routeLocation.search, user]);
 
   const combinedCategories = useMemo(
     () =>
@@ -263,16 +362,18 @@ function App() {
     await sendEmailPasswordReset(email);
   }
 
-  const isLandingRoute = location.pathname === "/";
-  const isLoginRoute = location.pathname === "/login";
-  const isLiveRoute = location.pathname === "/live";
+  const isLandingRoute = routeLocation.pathname === "/";
+  const isLoginRoute = routeLocation.pathname === "/login";
+  const isLiveRoute = routeLocation.pathname === "/live";
+  const routeSeo = getRouteSeo(routeLocation.pathname);
   const shouldShowFooter =
     isLandingRoute ||
-    location.pathname === "/privacy" ||
-    location.pathname === "/security";
+    routeLocation.pathname === "/privacy" ||
+    routeLocation.pathname === "/security";
   const isInAppSurface = Boolean(user) && !isLandingRoute && !isLoginRoute;
   return (
     <div className={`page-shell ${isInAppSurface ? "page-shell--app" : ""}`}>
+      <Seo {...routeSeo} />
       <ScrollToTop />
       <div className="paper-grain" aria-hidden="true"></div>
       <SketchBackdrop />
@@ -457,12 +558,15 @@ function App() {
               element={
                 <PublicProfileRoute
                   getPublicProfileLines={getPublicProfileLines}
+                  user={user}
                 />
               }
             />
             <Route
               path="/line/:id"
-              element={<PublicLineRoute getLineById={getLineById} />}
+              element={
+                <PublicLineRoute getLineById={getLineById} user={user} />
+              }
             />
             <Route
               path="/admin"
