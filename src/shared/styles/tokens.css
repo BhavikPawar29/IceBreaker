@@ -1,0 +1,16 @@
+:root {
+  --surface: rgba(255, 248, 249, 0.88);
+  --surface-strong: #fff7f7;
+  --text: #24170f;
+  --muted: #77605f;
+  --line: rgba(36, 23, 15, 0.1);
+  --brand: #c15b76;
+  --brand-deep: #8e3553;
+  --accent: #f3bfd1;
+  --success: #2d7d52;
+  --shadow: 0 20px 55px rgba(85, 38, 55, 0.1);
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+  --font-display: "Times New Roman", Times, serif;
+  --font-body: "Times New Roman", Times, serif;
+}
