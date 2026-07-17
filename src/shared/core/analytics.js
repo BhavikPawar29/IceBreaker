@@ -1,9 +1,9 @@
 import { logEvent, setUserId, setUserProperties } from "firebase/analytics";
-import { analyticsReady } from "../lib/firebase";
+import { getAnalyticsInstance } from "../lib/firebase";
 
 async function withAnalytics(callback) {
   try {
-    const analytics = await analyticsReady;
+    const analytics = await getAnalyticsInstance();
 
     if (!analytics) {
       return;

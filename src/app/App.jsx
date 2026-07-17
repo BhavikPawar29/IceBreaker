@@ -14,7 +14,12 @@ import {
   getShareAttribution,
 } from "../shared/core/shareFlow";
 import { firebaseConfigReady } from "../shared/lib/firebase";
+import {
+  ANALYTICS_CONSENT_EVENT,
+  getAnalyticsConsent,
+} from "../shared/core/analyticsConsent";
 import AppHeader from "../shared/ui/AppHeader";
+import AnalyticsConsentBanner from "../shared/ui/AnalyticsConsentBanner";
 import RouteShimmer from "../shared/ui/RouteShimmer";
 import ScrollToTop from "../shared/ui/ScrollToTop";
 import Seo from "../shared/ui/Seo";
@@ -23,7 +28,6 @@ import useAdminDashboard from "../features/admin/hooks/useAdminDashboard";
 import { ALLOWED_CATEGORIES } from "../features/board/categories";
 import useCommunityBoard from "../features/board/hooks/useCommunityBoard";
 import Footer from "../features/landing/components/Footer";
-import Hero from "../features/landing/components/Hero";
 import InstallAppPrompt from "../features/landing/components/InstallAppPrompt";
 import SketchBackdrop from "../features/landing/components/SketchBackdrop";
 
@@ -240,7 +244,24 @@ function PublicProfileRoute({ getPublicProfileLines, user }) {
 
 function App() {
   const [filter, setFilter] = useState("all");
+  const [analyticsConsent, setAnalyticsConsent] = useState(() =>
+    getAnalyticsConsent(),
+  );
   const routeLocation = useLocation();
+
+  useEffect(() => {
+    function syncAnalyticsConsent() {
+      setAnalyticsConsent(getAnalyticsConsent());
+    }
+
+    window.addEventListener(ANALYTICS_CONSENT_EVENT, syncAnalyticsConsent);
+    window.addEventListener("storage", syncAnalyticsConsent);
+
+    return () => {
+      window.removeEventListener(ANALYTICS_CONSENT_EVENT, syncAnalyticsConsent);
+      window.removeEventListener("storage", syncAnalyticsConsent);
+    };
+  }, []);
   const navigate = useNavigate();
   const lastTrackedRouteRef = useRef("");
   const activeBoardView =
@@ -304,6 +325,10 @@ function App() {
   }, [navigate, routeLocation.pathname, user]);
 
   useEffect(() => {
+    if (analyticsConsent !== "accepted") {
+      return;
+    }
+
     const normalizedPath = normalizeAnalyticsPath(routeLocation.pathname);
     const trackingKey = `${normalizedPath}:${routeLocation.key || ""}`;
 
@@ -317,9 +342,13 @@ function App() {
       route_title: getRouteTitle(routeLocation.pathname),
       route_type: "page",
     });
-  }, [routeLocation.key, routeLocation.pathname]);
+  }, [analyticsConsent, routeLocation.key, routeLocation.pathname]);
 
   useEffect(() => {
+    if (analyticsConsent !== "accepted") {
+      return;
+    }
+
     const shareAttribution = getShareAttribution(routeLocation.search);
 
     if (!shareAttribution) {
@@ -334,7 +363,7 @@ function App() {
       share_type: shareAttribution.shareType,
       visitor_state: user ? "signed_in" : "signed_out",
     });
-  }, [routeLocation.pathname, routeLocation.search, user]);
+  }, [analyticsConsent, routeLocation.pathname, routeLocation.search, user]);
 
   const combinedCategories = useMemo(
     () =>
@@ -381,19 +410,22 @@ function App() {
   const isLiveRoute = routeLocation.pathname === "/live";
   const routeSeo = getRouteSeo(routeLocation.pathname);
   const shouldShowFooter =
-    isLandingRoute ||
     routeLocation.pathname === "/privacy" ||
     routeLocation.pathname === "/security";
   const isInAppSurface = Boolean(user) && !isLandingRoute && !isLoginRoute;
   return (
-    <div className={`page-shell ${isInAppSurface ? "page-shell--app" : ""}`}>
+    <div
+      className={`page-shell ${isInAppSurface ? "page-shell--app" : ""} ${
+        isLandingRoute ? "page-shell--landing" : ""
+      }`}
+    >
       <Seo {...routeSeo} />
       <ScrollToTop />
-      <div className="paper-grain" aria-hidden="true"></div>
-      <SketchBackdrop />
-      {isLandingRoute ? (
-        <Hero authEnabled={authEnabled} isAuthReady={isAuthReady} user={user} />
-      ) : isLoginRoute || (isLiveRoute && !user) ? null : (
+      {!isLandingRoute ? (
+        <div className="paper-grain" aria-hidden="true"></div>
+      ) : null}
+      {!isLandingRoute ? <SketchBackdrop /> : null}
+      {!isLandingRoute && !(isLoginRoute || (isLiveRoute && !user)) ? (
         <AppHeader
           authEnabled={authEnabled}
           isAdmin={isAdmin}
@@ -401,8 +433,9 @@ function App() {
           onSignOut={signOutUser}
           user={user}
         />
-      )}
+      ) : null}
       <main>
+        <AnalyticsConsentBanner onDecision={setAnalyticsConsent} />
         {!firebaseConfigReady ? (
           <section className="status-banner">
             Add your Firebase web config to <code>.env</code> to enable social
@@ -432,7 +465,7 @@ function App() {
 
         <Suspense fallback={<LoadingShell />}>
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<LandingPage user={user} />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/security" element={<SecurityPage />} />
             <Route
@@ -444,7 +477,7 @@ function App() {
                     note="Checking your sign-in so you land in the right place."
                   />
                 ) : user ? (
-                  <Navigate to="/live" replace />
+                  <Navigate to="/live" replace state={routeLocation.state} />
                 ) : (
                   <LoginPage
                     authEnabled={authEnabled}
@@ -606,7 +639,7 @@ function App() {
           </Routes>
         </Suspense>
       </main>
-      <InstallAppPrompt user={user} />
+      {!isLandingRoute ? <InstallAppPrompt user={user} /> : null}
       {shouldShowFooter ? <Footer /> : null}
     </div>
   );

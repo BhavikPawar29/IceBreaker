@@ -23,9 +23,13 @@ function InstantAssistant({
   onReset,
   prompt,
 }) {
-  const [selectedSituation, setSelectedSituation] = useState("");
-  const [selectedPack, setSelectedPack] = useState("");
-  const [step, setStep] = useState(STEP_SITUATION);
+  const [selectedSituation, setSelectedSituation] = useState(
+    () => prompt?.situation || "",
+  );
+  const [selectedPack, setSelectedPack] = useState(() => prompt?.pack || "");
+  const [step, setStep] = useState(() =>
+    prompt ? STEP_TRIGGER : STEP_SITUATION,
+  );
   const hasPrompt = Boolean(prompt);
   const selectedSituationLabel = findLabel(SITUATIONS, selectedSituation);
   const selectedPackLabel = findLabel(QUESTION_PACKS, selectedPack);

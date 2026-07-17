@@ -1,9 +1,11 @@
+import { useLocation } from "react-router-dom";
 import InstantAssistant from "./InstantAssistant";
 import useLivePromptSearch from "../hooks/useLivePromptSearch";
 
 function LivePage({ user }) {
+  const { state } = useLocation();
   const { error, findPrompt, isSearching, liveState, prompt, resetPrompt } =
-    useLivePromptSearch(user);
+    useLivePromptSearch(user, state?.previewPrompt);
 
   return (
     <section className="live-page-shell">

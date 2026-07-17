@@ -115,12 +115,12 @@ async function fetchLegacyPrompts(linesCollection, { pack, situation }) {
   });
 }
 
-function useLivePromptSearch(user) {
+function useLivePromptSearch(user, initialPrompt = null) {
   const seenPromptIdsByFilterRef = useRef(new Map());
   const [error, setError] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [liveState, setLiveState] = useState("idle");
-  const [prompt, setPrompt] = useState(null);
+  const [liveState, setLiveState] = useState(initialPrompt ? "ready" : "idle");
+  const [prompt, setPrompt] = useState(initialPrompt);
 
   async function findPrompt({ pack, situation }) {
     if (!db || !firebaseConfigReady || !user) {

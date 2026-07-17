@@ -1,4 +1,5 @@
 import LegalPageLayout from "./LegalPageLayout";
+import AnalyticsConsentSettings from "../../../shared/ui/AnalyticsConsentSettings";
 
 function PrivacyPage() {
   return (
@@ -31,7 +32,12 @@ function PrivacyPage() {
             </li>
             <li>
               Limited browser storage for simple app behavior, such as hiding
-              the install prompt or slowing repeated submissions
+              the install prompt, remembering analytics consent, or slowing
+              repeated submissions
+            </li>
+            <li>
+              Usage analytics collected through Firebase Analytics only if you
+              accept analytics cookies
             </li>
           </ul>
         </section>
@@ -43,8 +49,23 @@ function PrivacyPage() {
             <li>To show, review, vote on, and manage submitted ideas</li>
             <li>To support profiles, moderation, and abuse prevention</li>
             <li>To run the app and its core community features</li>
+            <li>
+              To understand product usage and improve the app when analytics
+              consent is given
+            </li>
           </ul>
         </section>
+
+        <section className="legal-section">
+          <h3>Analytics cookies</h3>
+          <p>
+            Breaking Ice uses Firebase Analytics to understand aggregate product
+            usage. Analytics stays off until you accept analytics cookies, and
+            you can decline them without losing access to the core app.
+          </p>
+        </section>
+
+        <AnalyticsConsentSettings />
 
         <section className="legal-section">
           <h3>Public and private data</h3>

@@ -6,6 +6,7 @@ import {
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { hasAnalyticsConsent } from "../core/analyticsConsent";
 
 const measurementId = import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "";
 const firebaseConfig = {
@@ -42,18 +43,27 @@ const app = firebaseConfigReady
 export const auth = app ? getAuth(app) : null;
 export const db = app ? getFirestore(app) : null;
 export const googleProvider = auth ? new GoogleAuthProvider() : null;
-export const analyticsReady =
-  app && typeof window !== "undefined"
-    ? isSupported()
-        .then((supported) => (supported ? getAnalytics(app) : null))
-        .catch((error) => {
-          console.warn(
-            "Firebase Analytics is unavailable in this browser.",
-            error,
-          );
-          return null;
-        })
-    : Promise.resolve(null);
+let analyticsPromise = null;
+
+export function getAnalyticsInstance() {
+  if (!app || typeof window === "undefined" || !hasAnalyticsConsent()) {
+    return Promise.resolve(null);
+  }
+
+  if (!analyticsPromise) {
+    analyticsPromise = isSupported()
+      .then((supported) => (supported ? getAnalytics(app) : null))
+      .catch((error) => {
+        console.warn(
+          "Firebase Analytics is unavailable in this browser.",
+          error,
+        );
+        return null;
+      });
+  }
+
+  return analyticsPromise;
+}
 
 googleProvider?.setCustomParameters({
   prompt: "select_account",

@@ -166,6 +166,33 @@
   color: var(--brand-deep);
 }
 
+.status-banner--consent {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status-banner-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.status-banner-copy strong {
+  color: var(--brand-deep);
+}
+
+.status-banner-copy span {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.status-banner-actions {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
 .auth-chip-group--app {
   gap: 10px;
 }
@@ -805,6 +832,23 @@
     gap: 4px;
     margin: 8px 12px 18px;
     padding: 12px 14px;
+  }
+
+  .status-banner--consent {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 8px 12px 18px;
+    padding: 12px 14px;
+  }
+
+  .status-banner-actions {
+    width: 100%;
+  }
+
+  .status-banner-actions .ghost-link,
+  .status-banner-actions .ink-link {
+    flex: 1 1 0;
+    text-align: center;
   }
 
   .page-head--mobile {

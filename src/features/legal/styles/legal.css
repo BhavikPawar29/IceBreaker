@@ -100,3 +100,34 @@
     line-height: 1.6;
   }
 }
+
+.legal-consent-settings {
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(193, 91, 118, 0.16);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 251, 252, 0.92),
+    rgba(255, 243, 247, 0.92)
+  );
+}
+
+.legal-consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .legal-consent-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .legal-consent-actions .ghost-link,
+  .legal-consent-actions .ink-link {
+    width: 100%;
+    justify-content: center;
+  }
+}

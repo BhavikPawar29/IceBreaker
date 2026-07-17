@@ -30,6 +30,7 @@ function Footer() {
         </div>
         <div className="footer-links">
           <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/privacy#analytics-settings">Analytics settings</Link>
           <Link to="/security">Security</Link>
           <a
             href="https://github.com/BhavikPawar29/IceBreaker"

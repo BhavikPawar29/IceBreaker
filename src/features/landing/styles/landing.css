@@ -959,3 +959,39 @@
   border: 1px solid rgba(255, 250, 243, 0.12);
   color: #fffaf3;
 }
+
+.page-shell--landing > main > .status-banner--consent {
+  position: fixed;
+  top: 5rem;
+  left: 50%;
+  z-index: 21;
+  width: min(1180px, calc(100vw - 40px));
+  margin: 0;
+  transform: translateX(-50%);
+}
+
+html.landing-no-scrollbar,
+html.landing-no-scrollbar * {
+  scrollbar-width: none;
+}
+
+html.landing-no-scrollbar::-webkit-scrollbar,
+html.landing-no-scrollbar *::-webkit-scrollbar {
+  display: none;
+}
+
+.landing-redesign .conversation-card .button--ghost {
+  border-color: rgba(33, 27, 23, 0.18);
+  color: var(--fg-dark);
+}
+
+.landing-redesign > .topbar {
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.page-shell--landing {
+  overflow: visible;
+}
