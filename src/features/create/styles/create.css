@@ -1,0 +1,208 @@
+/* create styles */
+
+.create-shell,
+.login-shell,
+.detail-card {
+  max-width: 860px;
+}
+
+.create-guidelines {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.create-guidelines article {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(36, 23, 15, 0.08);
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.create-guidelines strong {
+  color: var(--brand-deep);
+  font-size: 0.95rem;
+}
+
+.create-guidelines span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.create-panel {
+  width: 100%;
+  max-width: 760px;
+}
+
+.create-page {
+  justify-items: center;
+  gap: 20px;
+}
+
+.create-copy {
+  width: 100%;
+  max-width: 760px;
+}
+
+.create-copy h2 {
+  margin: 8px 0 0;
+  max-width: 14ch;
+}
+
+@media (max-width: 979px) {
+  .page-shell--app .create-page {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+    width: 100%;
+  }
+
+  .page-shell--app .create-copy,
+  .page-shell--app .create-panel,
+  .page-shell--app .create-shell {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .page-shell--app .create-page {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .page-shell--app .create-copy {
+    display: grid;
+    gap: 8px;
+  }
+
+  .page-shell--app .create-copy h2 {
+    margin-top: 2px;
+    max-width: 100%;
+    font-size: clamp(1.7rem, 7vw, 2rem);
+    line-height: 1.05;
+  }
+
+  .page-shell--app .create-copy .page-description {
+    margin-top: 4px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .page-shell--app .create-guidelines {
+    gap: 8px;
+  }
+
+  .page-shell--app .create-guidelines article {
+    padding: 10px 12px;
+  }
+
+  .page-shell--app .create-guidelines article:nth-child(3) {
+    display: none;
+  }
+
+  .page-shell--app .submit-card .card-heading h3 {
+    font-size: 1.35rem;
+  }
+
+  .page-shell--app .submit-card .submission-form {
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .page-shell--app .submit-card .submission-form textarea {
+    min-height: 132px;
+  }
+}
+
+@media (min-width: 980px) {
+  .create-page {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+    gap: 36px;
+    align-items: start;
+    justify-items: stretch;
+  }
+
+  .create-copy {
+    position: sticky;
+    top: 108px;
+    max-width: 400px;
+    padding-top: 18px;
+  }
+
+  .create-copy h2 {
+    max-width: 10ch;
+    font-size: clamp(2.8rem, 3.8vw, 3.8rem);
+    line-height: 0.96;
+  }
+
+  .create-copy .page-description {
+    max-width: 34ch;
+    font-size: 1.06rem;
+    line-height: 1.75;
+  }
+
+  .create-shell.create-panel {
+    width: 100%;
+    max-width: none;
+    padding: 18px;
+    border-radius: 34px;
+  }
+
+  .submit-card .card-heading h3 {
+    font-size: 2rem;
+  }
+
+  .submit-card .submission-form {
+    gap: 18px;
+  }
+
+  .submit-card .submission-form textarea {
+    min-height: 220px;
+  }
+
+  .submit-card .submit-button {
+    min-width: 220px;
+    min-height: 54px;
+  }
+
+  .admin-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .admin-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .admin-stat-grid {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .admin-card-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .admin-filter-bar {
+    grid-column: 1 / -1;
+  }
+
+  .admin-search-field,
+  .admin-load-row {
+    grid-column: 1 / -1;
+  }
+
+  .admin-tabs {
+    top: 104px;
+    justify-self: start;
+  }
+}

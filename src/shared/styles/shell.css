@@ -1,0 +1,1537 @@
+.app-header {
+  padding: 14px clamp(20px, 4vw, 56px) 0;
+  border-bottom: 1px solid rgba(36, 23, 15, 0.06);
+  background:
+    radial-gradient(
+      circle at left top,
+      rgba(243, 191, 209, 0.22),
+      transparent 32%
+    ),
+    rgba(255, 246, 247, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.route-tabs--header {
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.route-tabs--header::-webkit-scrollbar {
+  display: none;
+}
+
+.route-tabs--mobile {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.route-tabs--mobile::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+.route-tab {
+  min-height: 42px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  line-height: 1;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.route-tab-icon {
+  display: none;
+}
+
+.route-tab-label {
+  display: block;
+  white-space: nowrap;
+}
+
+/* Authenticated app surfaces get a denser, cleaner style system. */
+.page-shell--app {
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-strong: rgba(255, 255, 255, 0.94);
+  --line: rgba(36, 23, 15, 0.12);
+  --shadow: 0 10px 30px rgba(48, 30, 21, 0.08);
+  --radius-xl: 24px;
+  --radius-pill: 16px;
+}
+
+.page-shell--app .paper-grain {
+  opacity: 0.35;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 40%),
+    linear-gradient(0deg, rgba(193, 91, 118, 0.05), rgba(193, 91, 118, 0.05));
+}
+
+.page-shell--app .app-header {
+  border-bottom: 1px solid rgba(36, 23, 15, 0.08);
+  background: rgba(255, 252, 252, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.page-shell--app .route-tab {
+  min-height: 40px;
+  border-radius: 14px;
+  padding: 9px 14px;
+  border-color: rgba(36, 23, 15, 0.14);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.page-shell--app .route-tab.is-active {
+  color: #fff;
+  border-color: #2c1910;
+  background: #2c1910;
+}
+
+.page-shell--app .main-shell {
+  padding-top: 26px;
+}
+
+.page-shell--app .app-page {
+  display: grid;
+  gap: 18px;
+  width: min(100%, 1140px);
+  margin: 0 auto;
+}
+
+.page-shell--app h2,
+.page-shell--app h3,
+.page-shell--app h4 {
+  font-family: var(--font-body);
+}
+
+.page-shell--app .page-copy h2 {
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  line-height: 1;
+}
+
+.page-shell--app .page-description {
+  max-width: 62ch;
+  font-size: 1.06rem;
+}
+
+.page-shell--app .page-actions--board {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.page-shell--app .section-card {
+  border-radius: 18px;
+  border-color: rgba(36, 23, 15, 0.1);
+  box-shadow: 0 10px 26px rgba(52, 32, 22, 0.07);
+}
+
+.page-shell--app .section-card::before,
+.page-shell--app .section-card::after,
+.page-shell--app .app-page::before,
+.page-shell--app .app-page::after,
+.page-shell--app .page-panel::before,
+.page-shell--app .page-panel::after,
+.page-shell--app .line-card::before,
+.page-shell--app .line-card::after,
+.page-shell--app .floating-note {
+  display: none;
+}
+
+.page-shell--app .page-panel {
+  border-radius: 22px;
+  padding: 12px;
+  border: 1px solid rgba(36, 23, 15, 0.08);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 255, 255, 0.15)
+  );
+}
+
+.page-shell--app .line-card {
+  border-radius: 16px;
+  gap: 14px;
+  animation: cardEnter 320ms ease both;
+}
+
+.page-shell--app .line-body {
+  font-size: clamp(1.17rem, 1.35vw, 1.4rem);
+  line-height: 1.4;
+  max-width: 34ch;
+}
+
+.page-shell--app .action-link,
+.page-shell--app .action-button {
+  border-radius: 12px;
+  min-height: 42px;
+}
+
+.page-shell--app .vote-button {
+  min-width: 84px;
+  border-radius: 12px;
+}
+
+.page-shell--app .create-page {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.page-shell--app .create-copy h2 {
+  max-width: 9ch;
+}
+
+.page-shell--app .submit-card .submission-form textarea {
+  min-height: 190px;
+}
+
+.page-shell--app .profile-dashboard-copy h2 {
+  max-width: 11ch;
+  font-size: clamp(2rem, 3vw, 3.2rem);
+  line-height: 0.98;
+  font-family: var(--font-display);
+}
+
+.page-shell--app .profile-status-stat,
+.page-shell--app .profile-mini-card {
+  border-radius: 14px;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-shell--app {
+  --surface: rgba(255, 248, 249, 0.82);
+  --surface-strong: rgba(255, 253, 254, 0.95);
+  --line: rgba(120, 60, 70, 0.13);
+  --shadow: 0 24px 60px rgba(96, 34, 52, 0.08);
+}
+
+.page-shell--app .app-header {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 250, 251, 0.9),
+    rgba(255, 244, 246, 0.72)
+  );
+  border-bottom-color: rgba(120, 60, 70, 0.08);
+}
+
+.page-shell--app .main-shell,
+.page-shell--app .app-page,
+.page-shell--app .login-page-shell,
+.page-shell--app .profile-page,
+.page-shell--app .admin-page,
+.page-shell--app .create-page {
+  padding-top: 28px;
+}
+
+.page-shell--app .page-head,
+.page-shell--app .profile-dashboard-hero,
+.page-shell--app .login-layout,
+.page-shell--app .admin-grid,
+.page-shell--app .admin-overview-grid,
+.page-shell--app .create-page {
+  gap: 22px;
+}
+
+.page-shell--app .section-card,
+.page-shell--app .page-panel,
+.page-shell--app .login-side,
+.page-shell--app .login-shell,
+.page-shell--app .profile-dashboard-hero,
+.page-shell--app .profile-status-column,
+.page-shell--app .profile-line,
+.page-shell--app .profile-empty-card,
+.page-shell--app .submit-card,
+.page-shell--app .admin-panel,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-line-card,
+.page-shell--app .admin-user-card,
+.page-shell--app .detail-card,
+.page-shell--app .board-empty,
+.page-shell--app .route-skeleton-card {
+  overflow: hidden;
+  border-radius: 36px 32px 38px 30px;
+  background:
+    radial-gradient(
+      circle at 18% 12%,
+      rgba(255, 255, 255, 0.96),
+      transparent 22%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 244, 247, 0.91)
+    );
+  box-shadow:
+    0 6px 14px rgba(80, 20, 40, 0.04),
+    0 24px 64px rgba(80, 20, 40, 0.09),
+    0 46px 110px rgba(80, 20, 40, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.page-shell--app .section-card::before,
+.page-shell--app .page-panel::before,
+.page-shell--app .line-card::before {
+  display: block;
+  opacity: 0.86;
+}
+
+.page-shell--app .section-card::after,
+.page-shell--app .page-panel::after,
+.page-shell--app .line-card::after {
+  display: block;
+  opacity: 0.62;
+}
+
+.page-shell--app .page-panel {
+  padding: 14px;
+  border-radius: 38px 32px 40px 30px;
+}
+
+.page-shell--app .page-head h2,
+.page-shell--app .page-copy h2,
+.page-shell--app .login-side h1,
+.page-shell--app .login-shell h2,
+.page-shell--app .detail-card h2,
+.page-shell--app .profile-dashboard-copy h2,
+.page-shell--app .admin-head h2,
+.page-shell--app .submit-card h3,
+.page-shell--app .profile-empty-card h3,
+.page-shell--app .profile-status-head h3,
+.page-shell--app .admin-panel h3,
+.page-shell--app .admin-user-top h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.04em;
+}
+
+.page-shell--app .page-copy h2,
+.page-shell--app .login-side h1,
+.page-shell--app .detail-card h2,
+.page-shell--app .profile-dashboard-copy h2,
+.page-shell--app .admin-head h2 {
+  font-size: clamp(2.1rem, 4vw, 4rem);
+  line-height: 0.93;
+}
+
+.page-shell--app .page-copy h2 {
+  max-width: 11ch;
+}
+
+.page-shell--app .page-description,
+.page-shell--app .login-lead,
+.page-shell--app .login-copy,
+.page-shell--app .profile-dashboard-copy p,
+.page-shell--app .profile-status-head p,
+.page-shell--app .admin-alert p,
+.page-shell--app .admin-copy,
+.page-shell--app .empty-state,
+.page-shell--app .form-note,
+.page-shell--app .hero-text,
+.page-shell--app .moderation-note {
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .category-filter-chip,
+.page-shell--app .provider-auth-button,
+.page-shell--app .login-submit,
+.page-shell--app .admin-tab,
+.page-shell--app .route-tab {
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+.page-shell--app .action-link:hover,
+.page-shell--app .action-button:hover,
+.page-shell--app .submit-button:hover,
+.page-shell--app .category-filter-chip:hover,
+.page-shell--app .provider-auth-button:hover,
+.page-shell--app .login-submit:hover,
+.page-shell--app .admin-tab:hover,
+.page-shell--app .route-tab:hover {
+  transform: translateY(-2px);
+}
+
+.page-shell--app .action-link--primary,
+.page-shell--app .action-button--primary,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  background: linear-gradient(135deg, #c65d86, #8f254f);
+  color: #fffaf3;
+  box-shadow:
+    0 10px 30px rgba(160, 50, 90, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.page-shell--app .ghost-link,
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit,
+.page-shell--app .provider-auth-button,
+.page-shell--app .admin-tab,
+.page-shell--app .route-tab,
+.page-shell--app .category-filter-chip {
+  border-radius: 999px;
+}
+
+.page-shell--app .category-filter-chip {
+  background: rgba(255, 252, 253, 0.8);
+  border-color: rgba(120, 60, 70, 0.12);
+}
+
+.page-shell--app .category-filter-chip.is-active {
+  color: #fffaf3;
+  background: linear-gradient(
+    135deg,
+    rgba(143, 37, 79, 0.98),
+    rgba(102, 28, 58, 0.98)
+  );
+  box-shadow: 0 10px 24px rgba(143, 37, 79, 0.2);
+}
+
+.page-shell--app .route-tab {
+  min-height: 42px;
+}
+
+.page-shell--app .line-card {
+  border-radius: 30px 26px 32px 28px;
+  background:
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(243, 191, 209, 0.18),
+      transparent 20%
+    ),
+    rgba(255, 252, 253, 0.94);
+}
+
+.page-shell--app .line-card .line-body,
+.page-shell--app .detail-card--refined h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.page-shell--app .line-card .line-body {
+  font-size: clamp(1.2rem, 1.5vw, 1.68rem);
+  line-height: 1.36;
+}
+
+.page-shell--app .detail-card--refined h2 {
+  font-size: clamp(2.1rem, 4.8vw, 4.2rem);
+  max-width: 15ch;
+}
+
+.page-shell--app .profile-status-stat,
+.page-shell--app .profile-mini-card,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-mini-row,
+.page-shell--app .admin-mini-line {
+  border-radius: 24px;
+}
+
+.page-shell--app .profile-dashboard-hero::before,
+.page-shell--app .login-side::before,
+.page-shell--app .login-shell::before,
+.page-shell--app .submit-card::before,
+.page-shell--app .detail-card::before,
+.page-shell--app .board-empty::before,
+.page-shell--app .profile-empty-card::before,
+.page-shell--app .admin-panel::before,
+.page-shell--app .admin-line-card::before,
+.page-shell--app .admin-user-card::before,
+.page-shell--app .profile-status-column::before {
+  inset: 14px;
+  border: 1px dashed rgba(120, 60, 70, 0.14);
+  border-radius: inherit;
+}
+
+.page-shell--app .profile-dashboard-hero::after,
+.page-shell--app .login-side::after,
+.page-shell--app .login-shell::after,
+.page-shell--app .submit-card::after,
+.page-shell--app .detail-card::after,
+.page-shell--app .board-empty::after,
+.page-shell--app .profile-empty-card::after,
+.page-shell--app .admin-panel::after,
+.page-shell--app .admin-line-card::after,
+.page-shell--app .admin-user-card::after,
+.page-shell--app .profile-status-column::after {
+  top: 18px;
+  right: 18px;
+  width: 84px;
+  height: 84px;
+  border-radius: 28px;
+  background:
+    radial-gradient(
+      circle at 32% 28%,
+      rgba(255, 255, 255, 0.92),
+      transparent 28%
+    ),
+    rgba(243, 191, 209, 0.14);
+}
+
+.app-loader-card {
+  width: min(1120px, 100%);
+  justify-items: stretch;
+  gap: 0;
+  padding: 22px;
+  text-align: left;
+  background:
+    radial-gradient(
+      circle at 14% 8%,
+      rgba(243, 191, 209, 0.24),
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 86% 14%,
+      rgba(240, 201, 93, 0.2),
+      transparent 36%
+    ),
+    rgba(255, 251, 252, 0.94);
+  border-color: rgba(36, 23, 15, 0.08);
+}
+
+.app-loader-mark {
+  display: none;
+}
+
+.app-loader-skeleton {
+  display: grid;
+  gap: 12px;
+  width: min(380px, 100%);
+  justify-items: center;
+}
+
+.app-loader-skeleton--rich {
+  width: min(420px, 100%);
+  gap: 10px;
+}
+
+.app-loader-skeleton-row {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.route-skeleton-card {
+  display: grid;
+  gap: 10px;
+  width: min(1180px, 100%);
+  padding: 22px;
+  background:
+    radial-gradient(
+      circle at 16% 14%,
+      rgba(243, 191, 209, 0.12),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 88% 16%,
+      rgba(240, 201, 93, 0.12),
+      transparent 32%
+    ),
+    rgba(255, 250, 252, 0.92);
+}
+
+.route-shimmer {
+  display: grid;
+  gap: 18px;
+  width: 100%;
+}
+
+.route-shimmer-head {
+  display: grid;
+  gap: 12px;
+  max-width: 680px;
+  padding: 6px 4px 2px;
+}
+
+.route-shimmer-card {
+  position: relative;
+  display: grid;
+  gap: 28px;
+  width: 100%;
+  padding: clamp(22px, 3vw, 30px);
+  border-radius: 18px;
+  border: 1px solid rgba(36, 23, 15, 0.08);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.74),
+      rgba(255, 247, 250, 0.82)
+    ),
+    radial-gradient(
+      circle at 86% 24%,
+      rgba(243, 191, 209, 0.18),
+      transparent 34%
+    );
+  box-shadow: 0 22px 60px rgba(85, 38, 55, 0.1);
+  overflow: hidden;
+}
+
+.route-shimmer-card::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(193, 91, 118, 0.08);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.route-shimmer-card--primary {
+  min-height: 240px;
+}
+
+.route-shimmer-card--secondary {
+  min-height: 154px;
+  opacity: 0.68;
+  transform: scale(0.985);
+  transform-origin: top center;
+}
+
+.route-shimmer-card-top,
+.route-shimmer-card-bottom {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.route-shimmer-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.route-shimmer-row--actions {
+  margin-top: 14px;
+}
+
+.route-shimmer-row--stats {
+  justify-content: flex-end;
+  align-self: end;
+}
+
+.route-shimmer-text {
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.snackbar {
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  z-index: 40;
+  min-width: min(420px, calc(100vw - 32px));
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 14px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(36, 23, 15, 0.08);
+  box-shadow: 0 20px 36px rgba(36, 23, 15, 0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.snackbar--info {
+  background: rgba(255, 252, 247, 0.96);
+  color: var(--text);
+}
+
+.snackbar--success {
+  background: rgba(237, 248, 241, 0.96);
+  color: #21593b;
+}
+
+.snackbar--warning {
+  background: rgba(255, 242, 239, 0.97);
+  color: #8c2d1b;
+  border-color: rgba(177, 77, 50, 0.18);
+}
+
+@media (max-width: 960px) {
+  .app-loader-card {
+    padding: 28px 20px;
+  }
+
+  .route-shimmer {
+    gap: 14px;
+  }
+
+  .route-shimmer-card {
+    gap: 18px;
+    padding: 18px;
+  }
+
+  .route-shimmer-card-top,
+  .route-shimmer-card-bottom {
+    display: grid;
+  }
+
+  .route-shimmer-row--stats {
+    justify-content: flex-start;
+  }
+
+  .route-shimmer-card--secondary {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .snackbar {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    min-width: 0;
+    max-width: none;
+    padding: 12px 14px;
+  }
+}
+
+.page-shell--app .main-shell,
+.page-shell--app .app-page,
+.page-shell--app .login-page-shell,
+.page-shell--app .profile-page,
+.page-shell--app .admin-page,
+.page-shell--app .create-page {
+  position: relative;
+}
+
+.page-shell--app .main-shell::before,
+.page-shell--app .main-shell::after,
+.page-shell--app .app-page::before,
+.page-shell--app .app-page::after,
+.page-shell--app .login-page-shell::before,
+.page-shell--app .login-page-shell::after,
+.page-shell--app .profile-page::before,
+.page-shell--app .profile-page::after,
+.page-shell--app .admin-page::before,
+.page-shell--app .admin-page::after,
+.page-shell--app .create-page::before,
+.page-shell--app .create-page::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-shell--app .main-shell::before {
+  top: 18px;
+  left: 18px;
+  width: 128px;
+  height: 128px;
+  border-radius: 999px;
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.7),
+      transparent 28%
+    ),
+    radial-gradient(circle, rgba(243, 191, 209, 0.22), transparent 62%);
+  filter: blur(2px);
+  opacity: 0.72;
+  animation: sketchFloat 9s ease-in-out infinite;
+}
+
+.page-shell--app .main-shell::after {
+  right: 20px;
+  bottom: 16px;
+  width: 210px;
+  height: 120px;
+  border: 1.5px solid rgba(120, 60, 70, 0.12);
+  border-radius: 999px 999px 0 0;
+  border-bottom: 0;
+  transform: rotate(-9deg);
+  opacity: 0.45;
+}
+
+.page-shell--app .app-page::before {
+  top: 12px;
+  right: 18px;
+  width: 74px;
+  height: 74px;
+  border-radius: 24px;
+  border: 1.5px solid rgba(120, 60, 70, 0.14);
+  background:
+    radial-gradient(
+      circle at 28% 28%,
+      rgba(255, 255, 255, 0.86),
+      transparent 32%
+    ),
+    rgba(255, 248, 250, 0.52);
+  transform: rotate(12deg);
+  opacity: 0.85;
+  animation: sketchDrift 10s ease-in-out infinite;
+}
+
+.page-shell--app .app-page::after {
+  left: -6px;
+  bottom: 42px;
+  width: 96px;
+  height: 96px;
+  background: radial-gradient(circle, rgba(193, 91, 118, 0.1), transparent 58%);
+  border-radius: 999px;
+  opacity: 0.85;
+}
+
+.page-shell--app .login-page-shell::before {
+  top: 16px;
+  left: -8px;
+  width: 170px;
+  height: 170px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(240, 201, 93, 0.14),
+    transparent 60%
+  );
+  opacity: 0.78;
+}
+
+.page-shell--app .login-page-shell::after {
+  right: 24px;
+  bottom: 24px;
+  width: 170px;
+  height: 98px;
+  border: 1.5px solid rgba(120, 60, 70, 0.1);
+  border-radius: 999px;
+  transform: rotate(10deg);
+  opacity: 0.45;
+}
+
+.page-shell--app .profile-page::before {
+  top: 10px;
+  right: 32px;
+  width: 100px;
+  height: 100px;
+  border-radius: 32px;
+  background:
+    radial-gradient(
+      circle at 32% 28%,
+      rgba(255, 255, 255, 0.9),
+      transparent 28%
+    ),
+    radial-gradient(circle, rgba(243, 191, 209, 0.22), transparent 62%);
+  opacity: 0.74;
+}
+
+.page-shell--app .profile-page::after {
+  left: 18px;
+  bottom: 12px;
+  width: 200px;
+  height: 130px;
+  border: 1.5px solid rgba(120, 60, 70, 0.1);
+  border-radius: 999px 999px 0 0;
+  border-bottom: 0;
+  transform: rotate(-7deg);
+  opacity: 0.42;
+}
+
+.page-shell--app .admin-page::before {
+  top: 16px;
+  left: 10px;
+  width: 148px;
+  height: 148px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(243, 191, 209, 0.16),
+    transparent 62%
+  );
+  opacity: 0.75;
+}
+
+.page-shell--app .admin-page::after {
+  right: 12px;
+  bottom: 18px;
+  width: 190px;
+  height: 110px;
+  border: 1.5px solid rgba(120, 60, 70, 0.11);
+  border-radius: 999px;
+  transform: rotate(8deg);
+  opacity: 0.44;
+}
+
+.page-shell--app .create-page::before {
+  top: 24px;
+  right: 16px;
+  width: 84px;
+  height: 84px;
+  border-radius: 28px;
+  border: 1.5px solid rgba(120, 60, 70, 0.12);
+  background:
+    radial-gradient(
+      circle at 30% 28%,
+      rgba(255, 255, 255, 0.92),
+      transparent 32%
+    ),
+    rgba(255, 246, 248, 0.4);
+  transform: rotate(-12deg);
+  opacity: 0.78;
+}
+
+.page-shell--app .create-page::after {
+  left: 8px;
+  bottom: 18px;
+  width: 180px;
+  height: 100px;
+  border: 1.5px solid rgba(120, 60, 70, 0.1);
+  border-radius: 999px 999px 0 0;
+  border-bottom: 0;
+  transform: rotate(-11deg);
+  opacity: 0.38;
+}
+
+.page-shell--app .section-card,
+.page-shell--app .page-panel,
+.page-shell--app .login-side,
+.page-shell--app .login-shell,
+.page-shell--app .profile-dashboard-hero,
+.page-shell--app .profile-status-column,
+.page-shell--app .profile-line,
+.page-shell--app .profile-empty-card,
+.page-shell--app .submit-card,
+.page-shell--app .admin-panel,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-line-card,
+.page-shell--app .admin-user-card,
+.page-shell--app .detail-card,
+.page-shell--app .board-empty,
+.page-shell--app .route-skeleton-card {
+  background:
+    radial-gradient(
+      circle at 18% 12%,
+      rgba(255, 255, 255, 0.88),
+      transparent 30%
+    ),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 247, 249, 0.9));
+  border-color: rgba(120, 60, 70, 0.12);
+  box-shadow:
+    0 4px 12px rgba(80, 20, 40, 0.04),
+    0 20px 60px rgba(80, 20, 40, 0.08),
+    0 40px 100px rgba(80, 20, 40, 0.06);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.page-shell--app .section-card::before,
+.page-shell--app .section-card::after,
+.page-shell--app .page-panel::before,
+.page-shell--app .page-panel::after,
+.page-shell--app .line-card::before,
+.page-shell--app .line-card::after {
+  display: block;
+}
+
+.page-shell--app .section-card::before,
+.page-shell--app .page-panel::before,
+.page-shell--app .line-card::before {
+  opacity: 0.8;
+}
+
+.page-shell--app .section-card::after,
+.page-shell--app .page-panel::after,
+.page-shell--app .line-card::after {
+  opacity: 0.7;
+}
+
+.page-shell--app .page-panel {
+  padding: 16px;
+  border-radius: 30px;
+}
+
+.page-shell--app .board-grid,
+.page-shell--app .profile-board,
+.page-shell--app .admin-grid,
+.page-shell--app .admin-overview-grid,
+.page-shell--app .admin-card-list {
+  position: relative;
+  z-index: 1;
+}
+
+.page-shell--app .page-copy h2,
+.page-shell--app .login-side h1,
+.page-shell--app .login-shell h2,
+.page-shell--app .detail-card h2,
+.page-shell--app .profile-dashboard-copy h2,
+.page-shell--app .admin-head h2,
+.page-shell--app .submit-card h3,
+.page-shell--app .profile-empty-card h3,
+.page-shell--app .profile-status-head h3,
+.page-shell--app .admin-panel h3,
+.page-shell--app .admin-user-top h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+}
+
+.page-shell--app .page-description,
+.page-shell--app .login-lead,
+.page-shell--app .login-copy,
+.page-shell--app .profile-dashboard-copy p,
+.page-shell--app .profile-status-head p,
+.page-shell--app .admin-alert p,
+.page-shell--app .admin-copy,
+.page-shell--app .empty-state,
+.page-shell--app .form-note {
+  color: var(--muted);
+  line-height: 1.72;
+}
+
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .category-filter-chip,
+.page-shell--app .provider-auth-button,
+.page-shell--app .login-submit,
+.page-shell--app .admin-tab,
+.page-shell--app .route-tab {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+.page-shell--app .action-link:hover,
+.page-shell--app .action-button:hover,
+.page-shell--app .submit-button:hover,
+.page-shell--app .category-filter-chip:hover,
+.page-shell--app .provider-auth-button:hover,
+.page-shell--app .login-submit:hover,
+.page-shell--app .admin-tab:hover,
+.page-shell--app .route-tab:hover {
+  transform: translateY(-2px);
+}
+
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit,
+.page-shell--app .provider-auth-button {
+  background: linear-gradient(
+    135deg,
+    rgba(198, 93, 134, 0.16),
+    rgba(143, 37, 79, 0.08)
+  );
+  border: 1px solid rgba(120, 60, 70, 0.12);
+}
+
+.page-shell--app .action-link--primary,
+.page-shell--app .action-button--primary,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  background: linear-gradient(135deg, #c65d86, #8f254f);
+  color: #fffaf3;
+  box-shadow:
+    0 10px 30px rgba(160, 50, 90, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.page-shell--app .category-filter-chip,
+.page-shell--app .route-tab,
+.page-shell--app .admin-tab,
+.page-shell--app .provider-auth-button,
+.page-shell--app .login-submit {
+  border-radius: 999px;
+}
+
+.page-shell--app .category-filter-chip {
+  background: rgba(255, 252, 253, 0.78);
+}
+
+.page-shell--app .category-filter-chip.is-active {
+  color: #fffaf3;
+  background: linear-gradient(
+    135deg,
+    rgba(143, 37, 79, 0.98),
+    rgba(102, 28, 58, 0.98)
+  );
+}
+
+.page-shell--app .route-tab {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  min-height: 52px;
+}
+
+.page-shell--app .provider-auth-button {
+  box-shadow:
+    0 14px 32px rgba(80, 20, 40, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.page-shell--app .provider-auth-button__badge {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.page-shell--app .line-card {
+  border-radius: 24px;
+  animation: cardEnter 320ms ease both;
+}
+
+.page-shell--app .line-card .line-body {
+  font-size: clamp(1.15rem, 1.4vw, 1.55rem);
+  line-height: 1.42;
+}
+
+.page-shell--app .profile-status-stat,
+.page-shell--app .profile-mini-card,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-mini-row,
+.page-shell--app .admin-mini-line {
+  border-radius: 20px;
+}
+
+.page-shell--app .profile-dashboard-hero,
+.page-shell--app .login-side,
+.page-shell--app .login-shell,
+.page-shell--app .submit-card,
+.page-shell--app .detail-card,
+.page-shell--app .board-empty,
+.page-shell--app .profile-empty-card,
+.page-shell--app .admin-panel,
+.page-shell--app .admin-line-card,
+.page-shell--app .admin-user-card,
+.page-shell--app .profile-status-column {
+  position: relative;
+}
+
+.page-shell--app .profile-dashboard-hero::before,
+.page-shell--app .login-side::before,
+.page-shell--app .login-shell::before,
+.page-shell--app .submit-card::before,
+.page-shell--app .detail-card::before,
+.page-shell--app .board-empty::before,
+.page-shell--app .profile-empty-card::before,
+.page-shell--app .admin-panel::before,
+.page-shell--app .admin-line-card::before,
+.page-shell--app .admin-user-card::before,
+.page-shell--app .profile-status-column::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: inherit;
+  border: 1px dashed rgba(120, 60, 70, 0.14);
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+.page-shell--app .profile-dashboard-hero::after,
+.page-shell--app .login-side::after,
+.page-shell--app .login-shell::after,
+.page-shell--app .submit-card::after,
+.page-shell--app .detail-card::after,
+.page-shell--app .board-empty::after,
+.page-shell--app .profile-empty-card::after,
+.page-shell--app .admin-panel::after,
+.page-shell--app .admin-line-card::after,
+.page-shell--app .admin-user-card::after,
+.page-shell--app .profile-status-column::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 78px;
+  height: 78px;
+  border-radius: 26px;
+  background:
+    radial-gradient(
+      circle at 28% 28%,
+      rgba(255, 255, 255, 0.9),
+      transparent 32%
+    ),
+    rgba(243, 191, 209, 0.12);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.page-shell--app .page-panel > *,
+.page-shell--app .section-card > *,
+.page-shell--app .login-side > *,
+.page-shell--app .login-shell > *,
+.page-shell--app .profile-dashboard-hero > *,
+.page-shell--app .submit-card > *,
+.page-shell--app .detail-card > *,
+.page-shell--app .board-empty > *,
+.page-shell--app .profile-empty-card > *,
+.page-shell--app .admin-panel > *,
+.page-shell--app .admin-line-card > *,
+.page-shell--app .admin-user-card > *,
+.page-shell--app .profile-status-column > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page-shell--app .page-panel::after {
+  right: 14px;
+  bottom: 12px;
+  width: 148px;
+  height: 106px;
+}
+
+.page-shell--app .main-shell::before {
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.7),
+      transparent 28%
+    ),
+    radial-gradient(circle, rgba(243, 191, 209, 0.22), transparent 62%);
+}
+
+.page-shell--app .main-shell::before {
+  border-radius: 999px;
+}
+
+.page-shell--app .main-shell::after,
+.page-shell--app .app-page::after,
+.page-shell--app .login-page-shell::after,
+.page-shell--app .profile-page::after,
+.page-shell--app .admin-page::after,
+.page-shell--app .create-page::after {
+  border-color: rgba(120, 60, 70, 0.1);
+}
+
+.page-shell--app .page-head {
+  padding-inline: 4px;
+}
+
+.page-shell--app .page-head h2,
+.page-shell--app .login-side h1,
+.page-shell--app .profile-dashboard-copy h2,
+.page-shell--app .admin-head h2 {
+  text-wrap: balance;
+}
+
+.page-shell--app .hero-text,
+.page-shell--app .page-description,
+.page-shell--app .login-copy,
+.page-shell--app .login-lead,
+.page-shell--app .profile-dashboard-copy p,
+.page-shell--app .admin-alert p,
+.page-shell--app .empty-state {
+  max-width: 58ch;
+}
+
+.page-shell--app .hero-text {
+  font-size: 1.02rem;
+}
+
+.page-shell--app .page-summary strong {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 0.96;
+}
+
+.page-shell--app .detail-card--refined .line-badges,
+.page-shell--app .profile-line .line-badges,
+.page-shell--app .admin-line-card .line-badges,
+.page-shell--app .admin-user-card .line-badges {
+  gap: 10px;
+}
+
+.page-shell--app .login-layout {
+  align-items: stretch;
+}
+
+.page-shell--app .login-side {
+  background:
+    radial-gradient(
+      circle at 82% 12%,
+      rgba(245, 204, 93, 0.12),
+      transparent 18%
+    ),
+    radial-gradient(
+      circle at 18% 78%,
+      rgba(243, 191, 209, 0.22),
+      transparent 28%
+    ),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 241, 244, 0.9));
+}
+
+.page-shell--app .login-shell {
+  background:
+    radial-gradient(
+      circle at 18% 16%,
+      rgba(255, 255, 255, 0.96),
+      transparent 20%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 252, 253, 0.96),
+      rgba(255, 244, 247, 0.92)
+    );
+}
+
+.page-shell--app .provider-auth-button {
+  min-height: 66px;
+  border-radius: 24px;
+}
+
+.page-shell--app .provider-auth-button__badge {
+  border-radius: 18px;
+}
+
+.page-shell--app .submit-card {
+  background:
+    radial-gradient(
+      circle at 88% 12%,
+      rgba(245, 204, 93, 0.1),
+      transparent 22%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(255, 244, 247, 0.92)
+    );
+}
+
+.page-shell--app .submit-card .submission-form select,
+.page-shell--app .submit-card .submission-form textarea,
+.page-shell--app .admin-search-field input,
+.page-shell--app .admin-inline-field input {
+  border-radius: 20px;
+  background: rgba(255, 254, 254, 0.8);
+  border-color: rgba(120, 60, 70, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.page-shell--app .submit-card .submission-form textarea:focus,
+.page-shell--app .submit-card .submission-form select:focus,
+.page-shell--app .admin-search-field input:focus,
+.page-shell--app .admin-inline-field input:focus {
+  border-color: rgba(198, 93, 134, 0.42);
+  box-shadow: 0 0 0 4px rgba(198, 93, 134, 0.08);
+}
+
+.page-shell--app .page-actions--board {
+  gap: 14px;
+}
+
+.page-shell--app .category-filter-chip {
+  min-height: 38px;
+  padding-inline: 14px;
+  white-space: nowrap;
+}
+
+.page-shell--app .line-card::before {
+  color: rgba(143, 37, 79, 0.12);
+}
+
+.page-shell--app .line-card::after {
+  opacity: 0.68;
+}
+
+.page-shell--app .profile-status-stat,
+.page-shell--app .profile-mini-card,
+.page-shell--app .admin-stat-card,
+.page-shell--app .admin-mini-row,
+.page-shell--app .admin-mini-line {
+  background:
+    radial-gradient(
+      circle at 88% 16%,
+      rgba(245, 204, 93, 0.1),
+      transparent 20%
+    ),
+    rgba(255, 252, 253, 0.88);
+}
+
+.page-shell--app .admin-tabs {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 252, 253, 0.92),
+    rgba(255, 244, 247, 0.9)
+  );
+  border-color: rgba(120, 60, 70, 0.1);
+}
+
+.page-shell--app .admin-tab {
+  border-radius: 20px;
+}
+
+.page-shell--app .action-link,
+.page-shell--app .action-button,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  min-height: 46px;
+}
+
+.page-shell--app .action-link--primary,
+.page-shell--app .action-button--primary,
+.page-shell--app .submit-button,
+.page-shell--app .login-submit {
+  box-shadow:
+    0 12px 34px rgba(160, 50, 90, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.page-shell--app .page-panel,
+.page-shell--app .section-card {
+  box-shadow: 0 24px 70px rgba(80, 20, 40, 0.08);
+}
+
+.page-shell--app .profile-dashboard-hero {
+  background:
+    radial-gradient(
+      circle at 84% 14%,
+      rgba(245, 204, 93, 0.16),
+      transparent 18%
+    ),
+    radial-gradient(
+      circle at 14% 86%,
+      rgba(243, 191, 209, 0.24),
+      transparent 24%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(255, 243, 246, 0.92)
+    );
+}
+
+.page-shell--app .profile-dashboard-hero .profile-avatar,
+.page-shell--app .admin-stat-card strong,
+.page-shell--app .profile-status-stat strong,
+.page-shell--app .profile-mini-card strong {
+  font-family: var(--font-display);
+}
+
+.page-shell--app .profile-avatar {
+  background: linear-gradient(135deg, #ffd4df, #fff1c8);
+  box-shadow:
+    0 18px 36px rgba(143, 37, 79, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.page-shell--app .detail-card--loading,
+.page-shell--app .route-skeleton-card {
+  background:
+    radial-gradient(
+      circle at 18% 14%,
+      rgba(243, 191, 209, 0.18),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at 82% 20%,
+      rgba(245, 204, 93, 0.12),
+      transparent 18%
+    ),
+    rgba(255, 252, 253, 0.92);
+}
+
+@media (max-width: 1080px) {
+  .page-shell--app .main-shell::after,
+  .page-shell--app .profile-page::after,
+  .page-shell--app .admin-page::after,
+  .page-shell--app .create-page::after {
+    opacity: 0.22;
+  }
+}
+
+@media (max-width: 720px) {
+  .page-shell--app .section-card,
+  .page-shell--app .page-panel,
+  .page-shell--app .login-side,
+  .page-shell--app .login-shell,
+  .page-shell--app .profile-dashboard-hero,
+  .page-shell--app .profile-status-column,
+  .page-shell--app .profile-line,
+  .page-shell--app .profile-empty-card,
+  .page-shell--app .submit-card,
+  .page-shell--app .admin-panel,
+  .page-shell--app .admin-stat-card,
+  .page-shell--app .admin-line-card,
+  .page-shell--app .admin-user-card,
+  .page-shell--app .detail-card,
+  .page-shell--app .board-empty,
+  .page-shell--app .route-skeleton-card {
+    border-radius: 26px;
+  }
+
+  .page-shell--app .page-copy h2,
+  .page-shell--app .login-side h1,
+  .page-shell--app .detail-card h2,
+  .page-shell--app .profile-dashboard-copy h2,
+  .page-shell--app .admin-head h2 {
+    font-size: clamp(2rem, 8.5vw, 3.1rem);
+  }
+
+  .page-shell--app .page-description,
+  .page-shell--app .login-lead,
+  .page-shell--app .login-copy,
+  .page-shell--app .profile-dashboard-copy p,
+  .page-shell--app .admin-alert p,
+  .page-shell--app .empty-state {
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+
+  .page-shell--app .action-link,
+  .page-shell--app .action-button,
+  .page-shell--app .submit-button,
+  .page-shell--app .login-submit {
+    min-height: 42px;
+    padding-inline: 14px;
+    font-size: 0.94rem;
+  }
+
+  .page-shell--app .page-panel {
+    padding: 6px;
+  }
+
+  .page-shell--app .submit-card .submission-form select,
+  .page-shell--app .submit-card .submission-form textarea,
+  .page-shell--app .admin-search-field input,
+  .page-shell--app .admin-inline-field input {
+    border-radius: 16px;
+    font-size: 0.94rem;
+  }
+
+  .page-shell--app .category-filter-chip {
+    min-height: 34px;
+    padding-inline: 12px;
+    font-size: 0.84rem;
+  }
+
+  .page-shell--app .profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 24px;
+    font-size: 2rem;
+  }
+}

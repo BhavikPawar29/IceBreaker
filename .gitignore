@@ -13,3 +13,5 @@ coverage/
 .vite/
 .wrangler/
 output/
+.playwright-cli/
+tmp-preview*.log
