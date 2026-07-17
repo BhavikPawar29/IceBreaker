@@ -27,7 +27,7 @@ import StatePanel from "../shared/ui/StatePanel";
 import useAdminDashboard from "../features/admin/hooks/useAdminDashboard";
 import { ALLOWED_CATEGORIES } from "../features/board/categories";
 import useCommunityBoard from "../features/board/hooks/useCommunityBoard";
-import Footer from "../features/landing/components/Footer";
+import Footer from "../features/landing/redesign/components/Footer";
 import InstallAppPrompt from "../features/landing/components/InstallAppPrompt";
 import SketchBackdrop from "../features/landing/components/SketchBackdrop";
 
@@ -407,6 +407,9 @@ function App() {
 
   const isLandingRoute = routeLocation.pathname === "/";
   const isLoginRoute = routeLocation.pathname === "/login";
+  const isLegalRoute =
+    routeLocation.pathname === "/privacy" ||
+    routeLocation.pathname === "/security";
   const isLiveRoute = routeLocation.pathname === "/live";
   const routeSeo = getRouteSeo(routeLocation.pathname);
   const shouldShowFooter =
@@ -417,6 +420,8 @@ function App() {
     <div
       className={`page-shell ${isInAppSurface ? "page-shell--app" : ""} ${
         isLandingRoute ? "page-shell--landing" : ""
+      } ${isLoginRoute ? "page-shell--login" : ""} ${
+        isLegalRoute ? "page-shell--legal" : ""
       }`}
     >
       <Seo {...routeSeo} />

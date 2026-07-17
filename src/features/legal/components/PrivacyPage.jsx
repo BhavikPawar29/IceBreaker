@@ -7,6 +7,8 @@ function PrivacyPage() {
       eyebrow="Privacy Policy"
       title="IceBreaker uses limited data only to run the app."
       intro="This page explains what IceBreaker collects, why it is needed, and how public anonymous sharing works."
+      image="/editorial/legal-privacy.png"
+      imageAlt="Rain on a window beside a quiet table with coffee and a reading lamp"
     >
       <div className="legal-content">
         <section className="legal-section">

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import useIsMobile from "../../../../shared/core/useIsMobile";
 import {
   FOCAL_POINTS,
   FRAME_COUNT,
@@ -105,6 +106,7 @@ export default function CinematicHero({
   isAuthed,
 }) {
   const reducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
   const sectionRef = useRef(null);
   const canvasRef = useRef(null);
   const storyIntroRef = useRef(null);
@@ -272,12 +274,14 @@ export default function CinematicHero({
       ScrollTrigger.refresh();
     };
 
-    if (reducedMotion) {
-      const finalImage =
-        loadedImagesRef.current.get(LAST_FRAME) ||
-        loadedImagesRef.current.get(0);
-      if (finalImage) {
-        drawCoverFrame(canvasRef.current, finalImage, 0.035);
+    if (reducedMotion || isMobile) {
+      const staticImage = isMobile
+        ? loadedImagesRef.current.get(0) ||
+          loadedImagesRef.current.get(LAST_FRAME)
+        : loadedImagesRef.current.get(LAST_FRAME) ||
+          loadedImagesRef.current.get(0);
+      if (staticImage) {
+        drawCoverFrame(canvasRef.current, staticImage, 0.035);
       }
       onNavToneChange(true);
       window.addEventListener("resize", handleResize);
@@ -402,12 +406,14 @@ export default function CinematicHero({
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);
     };
-  }, [loaderState.ready, onNavToneChange, reducedMotion]);
+  }, [isMobile, loaderState.ready, onNavToneChange, reducedMotion]);
 
   return (
     <section
       ref={sectionRef}
-      className={`hero ${reducedMotion ? "is-reduced" : ""}`}
+      className={`hero ${reducedMotion ? "is-reduced" : ""} ${
+        isMobile ? "hero--mobile-static" : ""
+      }`}
       data-od-id="cinematic-hero"
     >
       <div className="hero__canvas-wrap" aria-hidden="true">

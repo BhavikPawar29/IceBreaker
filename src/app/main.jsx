@@ -17,6 +17,7 @@ import "../features/create/styles/create.css";
 import "../features/profile/styles/profile.css";
 import "../features/admin/styles/admin.css";
 import "../features/legal/styles/legal.css";
+import "../shared/styles/app-theme.css";
 
 installShareRuntime();
 registerSW({ immediate: true });
