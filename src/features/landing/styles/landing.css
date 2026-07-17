@@ -53,7 +53,7 @@
 .hero-preview {
   border: 1px solid rgba(36, 23, 15, 0.08);
   border-radius: 20px;
-  background: rgba(255, 252, 247, 0.86);
+  background: rgba(31, 27, 24, 0.86);
   box-shadow: 0 14px 30px rgba(52, 32, 22, 0.08);
   padding: 14px;
 }
@@ -144,7 +144,7 @@
   padding: 7px 11px;
   border-radius: var(--radius-pill);
   border: 1px solid rgba(36, 23, 15, 0.08);
-  background: rgba(255, 251, 252, 0.72);
+  background: rgba(31, 27, 24, 0.72);
   color: var(--muted);
   font-size: 0.75rem;
   letter-spacing: 0.04em;
@@ -159,17 +159,13 @@
   border: 1px solid rgba(36, 23, 15, 0.1);
   border-radius: 28px;
   background:
-    linear-gradient(
-      180deg,
-      rgba(255, 252, 253, 0.94),
-      rgba(255, 247, 249, 0.86)
-    ),
+    linear-gradient(180deg, rgba(31, 27, 24, 0.94), rgba(29, 25, 22, 0.86)),
     radial-gradient(
       circle at 84% 16%,
-      rgba(243, 191, 209, 0.34),
+      rgba(215, 155, 67, 0.34),
       transparent 30%
     );
-  box-shadow: 0 24px 56px rgba(85, 38, 55, 0.14);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.14);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -200,8 +196,8 @@
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(243, 191, 209, 0.2) 0%,
-    rgba(243, 191, 209, 0.08) 44%,
+    rgba(215, 155, 67, 0.2) 0%,
+    rgba(215, 155, 67, 0.08) 44%,
     transparent 76%
   );
   filter: blur(2px);
@@ -217,7 +213,7 @@
   padding: 10px 14px;
   border: 1px solid rgba(36, 23, 15, 0.08);
   border-radius: 999px;
-  background: rgba(255, 252, 247, 0.9);
+  background: rgba(31, 27, 24, 0.9);
   box-shadow: 0 12px 26px rgba(49, 31, 20, 0.09);
   color: var(--brand-deep);
   font-size: 0.8rem;
@@ -262,7 +258,7 @@
 
 .city-sketch path {
   fill: none;
-  stroke: rgba(127, 46, 26, 0.92);
+  stroke: rgba(183, 119, 42, 0.92);
   stroke-width: 4;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -282,7 +278,7 @@
 
 .bubble-line,
 .connector {
-  stroke: rgba(177, 77, 50, 0.65);
+  stroke: rgba(183, 119, 42, 0.65);
   stroke-width: 3;
 }
 
@@ -292,16 +288,16 @@
 
 .heart-doodle {
   fill: rgba(240, 201, 93, 0.18);
-  stroke: rgba(177, 77, 50, 0.9);
+  stroke: rgba(183, 119, 42, 0.9);
   stroke-width: 4.5;
 }
 
 .sketch-ground {
-  stroke: rgba(127, 46, 26, 0.82);
+  stroke: rgba(183, 119, 42, 0.82);
 }
 
 .sketch-ground--soft {
-  stroke: rgba(177, 77, 50, 0.62);
+  stroke: rgba(183, 119, 42, 0.62);
 }
 
 .accent-node {
@@ -331,7 +327,7 @@
   padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: rgba(255, 252, 247, 0.8);
+  background: rgba(31, 27, 24, 0.8);
   box-shadow: var(--shadow);
   color: var(--muted);
   font-size: 0.82rem;
@@ -369,7 +365,7 @@
     ),
     radial-gradient(
       circle at 50% 58%,
-      rgba(255, 219, 231, 0.22),
+      rgba(215, 155, 67, 0.18),
       transparent 32%
     ),
     radial-gradient(
@@ -379,7 +375,7 @@
     ),
     radial-gradient(
       circle at 82% 28%,
-      rgba(255, 214, 225, 0.18),
+      rgba(226, 173, 90, 0.16),
       transparent 18%
     );
 }
@@ -394,7 +390,7 @@
 .sketch-backdrop__art path,
 .sketch-backdrop__art circle {
   fill: none;
-  stroke: rgba(120, 60, 70, 0.3);
+  stroke: rgba(242, 237, 227, 0.3);
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -418,7 +414,7 @@
 }
 
 .sketch-backdrop__street {
-  stroke: rgba(120, 60, 70, 0.22);
+  stroke: rgba(242, 237, 227, 0.22);
   opacity: 0.7;
 }
 
@@ -473,7 +469,7 @@
 }
 
 .sketch-backdrop__glow--soft {
-  fill: rgba(255, 214, 225, 0.22);
+  fill: rgba(226, 173, 90, 0.18);
   opacity: 0.7;
 }
 
@@ -491,8 +487,8 @@
   padding: 14px 16px;
   border-radius: 18px;
   border: 1px solid rgba(36, 23, 15, 0.08);
-  background: rgba(255, 251, 252, 0.78);
-  box-shadow: 0 10px 24px rgba(85, 38, 55, 0.08);
+  background: rgba(31, 27, 24, 0.78);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
 .landing-stats-strip strong {
@@ -573,7 +569,7 @@
   width: fit-content;
   padding: 8px 12px;
   border-radius: var(--radius-pill);
-  background: rgba(177, 77, 50, 0.1);
+  background: rgba(183, 119, 42, 0.1);
   color: var(--brand);
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -610,9 +606,9 @@
   gap: 16px;
   width: min(390px, calc(100vw - 28px));
   padding: 18px;
-  border: 1px solid rgba(142, 53, 83, 0.16);
+  border: 1px solid rgba(183, 119, 42, 0.16);
   border-radius: 24px;
-  background: rgba(255, 248, 250, 0.96);
+  background: rgba(31, 27, 24, 0.96);
   box-shadow: 0 22px 52px rgba(36, 23, 15, 0.18);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -746,7 +742,7 @@
     justify-content: flex-start;
     text-align: left;
     font-size: 0.9rem;
-    box-shadow: 0 10px 24px rgba(143, 37, 79, 0.16);
+    box-shadow: 0 10px 24px rgba(215, 155, 67, 0.16);
   }
 
   .hero-text {
@@ -797,10 +793,10 @@
     border-radius: 28px;
     background: linear-gradient(
       180deg,
-      rgba(255, 252, 253, 0.6),
-      rgba(255, 247, 249, 0.38)
+      rgba(31, 27, 24, 0.6),
+      rgba(29, 25, 22, 0.38)
     );
-    box-shadow: 0 18px 34px rgba(85, 38, 55, 0.08);
+    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.08);
   }
 
   .illustration-panel .floating-note,

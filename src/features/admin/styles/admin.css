@@ -19,7 +19,7 @@
   padding: 8px;
   border: 1px solid rgba(36, 23, 15, 0.08);
   border-radius: 999px;
-  background: rgba(255, 249, 250, 0.9);
+  background: rgba(31, 27, 24, 0.9);
   box-shadow: 0 14px 30px rgba(49, 31, 20, 0.08);
   backdrop-filter: blur(12px);
   scrollbar-width: none;
@@ -35,7 +35,7 @@
   padding: 10px 16px;
   border: 1px solid rgba(36, 23, 15, 0.08);
   border-radius: 999px;
-  background: rgba(255, 252, 247, 0.84);
+  background: rgba(31, 27, 24, 0.84);
   color: var(--text);
   font-weight: 400;
   white-space: nowrap;
@@ -50,10 +50,10 @@
 
 .admin-alert {
   padding: 14px 16px;
-  border: 1px solid rgba(193, 91, 118, 0.18);
+  border: 1px solid rgba(215, 155, 67, 0.18);
   border-radius: 20px;
-  background: rgba(255, 246, 248, 0.94);
-  color: #8c2d1b;
+  background: rgba(31, 27, 24, 0.94);
+  color: var(--accent);
   box-shadow: 0 16px 30px rgba(49, 31, 20, 0.08);
 }
 
@@ -94,10 +94,10 @@
   background:
     radial-gradient(
       circle at top right,
-      rgba(243, 191, 209, 0.2),
+      rgba(215, 155, 67, 0.2),
       transparent 44%
     ),
-    rgba(255, 252, 247, 0.88);
+    rgba(31, 27, 24, 0.88);
   box-shadow: 0 14px 30px rgba(49, 31, 20, 0.08);
 }
 
@@ -140,7 +140,7 @@
   padding: 12px;
   border: 1px solid rgba(36, 23, 15, 0.07);
   border-radius: 16px;
-  background: rgba(255, 252, 247, 0.74);
+  background: rgba(31, 27, 24, 0.74);
 }
 
 .admin-mini-row span,
@@ -209,7 +209,7 @@
   padding: 11px 12px;
   border: 1px solid rgba(36, 23, 15, 0.08);
   border-radius: 16px;
-  background: rgba(255, 252, 247, 0.78);
+  background: rgba(31, 27, 24, 0.78);
   color: var(--muted);
   text-align: left;
   line-height: 1.35;
@@ -265,9 +265,9 @@
   display: grid;
   gap: 10px;
   padding: 12px;
-  border: 1px solid rgba(193, 91, 118, 0.12);
+  border: 1px solid rgba(215, 155, 67, 0.12);
   border-radius: 18px;
-  background: rgba(255, 246, 248, 0.62);
+  background: rgba(31, 27, 24, 0.62);
 }
 
 .admin-user-line {
@@ -326,8 +326,8 @@
 }
 
 .admin-search-field input:focus {
-  border-color: rgba(177, 77, 50, 0.42);
-  box-shadow: 0 0 0 3px rgba(177, 77, 50, 0.08);
+  border-color: rgba(183, 119, 42, 0.42);
+  box-shadow: 0 0 0 3px rgba(183, 119, 42, 0.08);
 }
 
 .admin-load-row {

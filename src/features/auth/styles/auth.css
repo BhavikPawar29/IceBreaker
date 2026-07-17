@@ -26,10 +26,10 @@
   background:
     radial-gradient(
       circle at top right,
-      rgba(243, 191, 209, 0.28),
+      rgba(215, 155, 67, 0.28),
       transparent 34%
     ),
-    linear-gradient(180deg, rgba(255, 248, 249, 0.96), rgba(249, 237, 241, 0.9));
+    linear-gradient(180deg, rgba(31, 27, 24, 0.96), rgba(249, 237, 241, 0.9));
 }
 
 .login-side h1,
@@ -63,7 +63,7 @@
   padding: 12px 14px;
   border-radius: 18px;
   border: 1px solid rgba(36, 23, 15, 0.08);
-  background: rgba(255, 252, 247, 0.72);
+  background: rgba(31, 27, 24, 0.72);
 }
 
 .login-points strong {
@@ -102,7 +102,7 @@
   gap: 12px;
   align-content: start;
   max-width: none;
-  background: rgba(255, 252, 247, 0.9);
+  background: rgba(31, 27, 24, 0.9);
 }
 
 .provider-button-list {
@@ -136,8 +136,8 @@
 }
 
 .login-form input:focus {
-  border-color: rgba(193, 91, 118, 0.45);
-  box-shadow: 0 0 0 4px rgba(193, 91, 118, 0.1);
+  border-color: rgba(215, 155, 67, 0.45);
+  box-shadow: 0 0 0 4px rgba(215, 155, 67, 0.1);
 }
 
 .password-field {
@@ -159,7 +159,7 @@
   padding: 0;
   border: 1px solid rgba(36, 23, 15, 0.08);
   border-radius: var(--radius-pill);
-  background: rgba(255, 245, 247, 0.9);
+  background: rgba(31, 27, 24, 0.9);
   color: var(--brand-deep);
   cursor: pointer;
   font-size: 0.82rem;
@@ -185,10 +185,10 @@
   border: 0;
   border-radius: var(--radius-pill);
   background: linear-gradient(135deg, var(--brand), var(--brand-deep));
-  color: #fffafa;
+  color: #fffaf3;
   cursor: pointer;
   font-weight: 800;
-  box-shadow: 0 18px 34px rgba(142, 53, 83, 0.2);
+  box-shadow: 0 18px 34px rgba(183, 119, 42, 0.2);
   transition:
     transform 220ms ease,
     box-shadow 220ms ease,
@@ -197,7 +197,7 @@
 
 .login-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 22px 40px rgba(142, 53, 83, 0.28);
+  box-shadow: 0 22px 40px rgba(183, 119, 42, 0.28);
 }
 
 .login-submit:disabled {
@@ -271,18 +271,14 @@
   background:
     radial-gradient(
       circle at right top,
-      rgba(243, 191, 209, 0.18),
+      rgba(215, 155, 67, 0.18),
       transparent 36%
     ),
-    linear-gradient(
-      180deg,
-      rgba(255, 252, 250, 0.98),
-      rgba(255, 245, 247, 0.96)
-    );
+    linear-gradient(180deg, rgba(255, 252, 250, 0.98), rgba(31, 27, 24, 0.96));
   color: var(--text);
   cursor: pointer;
   text-align: left;
-  box-shadow: 0 18px 34px rgba(85, 38, 55, 0.08);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.08);
   transition:
     transform 220ms ease,
     border-color 220ms ease,
@@ -291,8 +287,8 @@
 
 .provider-auth-button:hover {
   transform: translateY(-3px);
-  border-color: rgba(193, 91, 118, 0.3);
-  box-shadow: 0 24px 40px rgba(85, 38, 55, 0.14);
+  border-color: rgba(215, 155, 67, 0.3);
+  box-shadow: 0 24px 40px rgba(0, 0, 0, 0.14);
 }
 
 .provider-auth-button:disabled {
@@ -338,21 +334,21 @@
 }
 
 .provider-auth-button--google .provider-auth-button__badge {
-  color: #8e3553;
-  background: rgba(255, 234, 241, 0.95);
+  color: #1f1b18;
+  background: rgba(242, 237, 227, 0.95);
 }
 
 .login-note {
   padding: 12px 14px;
   border-radius: 16px;
-  background: rgba(193, 91, 118, 0.1);
-  color: #7f3650;
+  background: rgba(215, 155, 67, 0.1);
+  color: var(--accent);
   line-height: 1.6;
 }
 
 .login-note--soft {
   margin: 0;
-  background: rgba(255, 247, 249, 0.92);
+  background: rgba(31, 27, 24, 0.92);
 }
 
 @media (max-width: 1080px) {

@@ -460,6 +460,20 @@
     linear-gradient(145deg, rgba(45, 39, 34, 0.96), rgba(31, 27, 24, 0.94));
 }
 
+.page-shell--app .app-loader-card {
+  width: min(680px, 100%);
+  justify-items: center;
+  gap: 12px;
+  padding: clamp(36px, 6vw, 56px);
+  border-color: rgba(242, 237, 227, 0.12);
+  background: linear-gradient(145deg, #2d2722, #1f1b18);
+  box-shadow: var(--shadow);
+}
+
+.page-shell--app .app-loader-card .state-panel__pulse {
+  display: none;
+}
+
 .page-shell--app .route-shimmer-card::before {
   border-color: rgba(242, 237, 227, 0.08);
 }
@@ -626,6 +640,172 @@
 
 .page-shell--app .assistant-orb-button__inner {
   border-color: rgba(33, 23, 12, 0.22);
+}
+
+/* The product UI stays graphite; the warm palette belongs to the public site. */
+.page-shell--app {
+  --surface: rgba(22, 22, 22, 0.92);
+  --surface-strong: #202020;
+  --text: #f2f1ee;
+  --muted: #aaa8a3;
+  --line: rgba(255, 255, 255, 0.13);
+  --brand: #f2f1ee;
+  --brand-deep: #e8e6e0;
+  --accent: #d1cec8;
+  background:
+    radial-gradient(
+      circle at 82% 2%,
+      rgba(255, 255, 255, 0.05),
+      transparent 24%
+    ),
+    linear-gradient(180deg, #101010 0%, #171717 54%, #101010 100%);
+}
+
+.page-shell--app .paper-grain,
+.page-shell--app .live-page-shell::before {
+  background: radial-gradient(
+    circle at 76% 12%,
+    rgba(255, 255, 255, 0.06),
+    transparent 20%
+  );
+}
+
+.page-shell--app .app-header {
+  background: rgba(14, 14, 14, 0.78);
+}
+
+.page-shell--app
+  :is(
+    .route-tab.is-active,
+    .category-filter-chip.is-active,
+    .vote-button.is-active,
+    .admin-tab.is-active
+  ) {
+  background: #f2f1ee;
+  color: #171717;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+}
+
+.page-shell--app
+  :is(.action-link, .action-button, .submit-button, .assistant-primary-button) {
+  background: #f2f1ee;
+  color: #171717;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+}
+
+.page-shell--app
+  :is(
+    .action-link,
+    .action-button,
+    .submit-button,
+    .assistant-primary-button
+  ):hover {
+  background: #ffffff;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
+}
+
+.page-shell--app
+  :is(
+    .section-card,
+    .page-panel,
+    .line-card,
+    .profile-line,
+    .profile-status-stat,
+    .profile-mini-card,
+    .profile-status-panel,
+    .admin-tabs,
+    .admin-stat-card,
+    .route-shimmer-card,
+    .route-skeleton-card,
+    .app-loader-card,
+    .confirm-dialog,
+    .profile-dashboard-hero,
+    .profile-status-column,
+    .submit-card,
+    .instant-assistant
+  ) {
+  background: linear-gradient(145deg, #202020, #171717);
+}
+
+.page-shell--app .detail-shimmer {
+  background: linear-gradient(135deg, #282828, #1b1b1b);
+}
+
+.page-shell--app
+  :is(
+    .submission-form input,
+    .submission-form select,
+    .submission-form textarea,
+    .filter-pill select,
+    .admin-live-fields select,
+    .admin-inline-field input,
+    .admin-search-field input,
+    .admin-detail-panel
+  ) {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #111;
+}
+
+.page-shell--app
+  :is(
+    .submission-form input,
+    .submission-form select,
+    .submission-form textarea,
+    .filter-pill select,
+    .admin-inline-field input,
+    .admin-search-field input
+  ):focus {
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+}
+
+.page-shell--app
+  :is(
+    .assistant-choice-button:hover,
+    .assistant-choice-button.is-active,
+    .assistant-secondary-button:hover,
+    .vote-button
+  ) {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.page-shell--app .profile-avatar {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(145deg, #f2f1ee, #bcb9b3);
+  color: #171717;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.24);
+}
+
+.page-shell--app
+  :is(
+    .profile-status-stat--pending,
+    .profile-status-panel,
+    .status-chip--pending
+  ) {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+}
+
+.page-shell--app .assistant-orb-button {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: radial-gradient(
+    circle at 34% 28%,
+    #ffffff 0%,
+    #d4d1cb 36%,
+    #64615c 78%
+  );
+  color: #171717;
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.28),
+    0 0 0 12px rgba(255, 255, 255, 0.05),
+    inset 0 1px rgba(255, 255, 255, 0.45);
+}
+
+.page-shell--app .assistant-orb-button__inner,
+.page-shell--app .live-page-shell::after {
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 /* Login */
@@ -949,6 +1129,13 @@
   box-shadow: var(--shadow);
 }
 
+:is(.page-shell--app, .page-shell--login) .snackbar--warning {
+  border-color: rgba(232, 190, 119, 0.28);
+  background: rgba(35, 31, 27, 0.96);
+  color: #f1ede4;
+  box-shadow: var(--shadow);
+}
+
 :is(.page-shell--app, .page-shell--login) .status-banner-copy span {
   color: var(--muted);
 }
@@ -1073,7 +1260,7 @@
   .page-shell--app .app-header--mobile .topbar--mobile,
   .page-shell--app .mobile-bottom-nav {
     border-color: rgba(242, 237, 227, 0.13);
-    background: rgba(29, 26, 23, 0.88);
+    background: rgba(22, 22, 22, 0.9);
     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.34);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
