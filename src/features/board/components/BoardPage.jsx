@@ -6,12 +6,14 @@ import { formatCategory } from "../formatters";
 function BoardPage({
   activeRoute,
   categories,
+  currentPage,
   filter,
   hasMore,
   isBoardLoading,
   isFetchingMore,
   lines,
   onLoadMore,
+  onPageChange,
   onFilterChange,
   onVote,
   user,
@@ -21,6 +23,11 @@ function BoardPage({
   const topCategories = categories
     .filter((category) => category !== "all")
     .slice(0, 5);
+
+  function changeFilter(nextFilter) {
+    onFilterChange(nextFilter);
+    onPageChange(1);
+  }
 
   return (
     <section className="app-page">
@@ -42,7 +49,7 @@ function BoardPage({
             <button
               type="button"
               className={`category-filter-chip ${filter === "all" ? "is-active" : ""}`}
-              onClick={() => onFilterChange("all")}
+              onClick={() => changeFilter("all")}
             >
               All
             </button>
@@ -51,7 +58,7 @@ function BoardPage({
                 key={category}
                 type="button"
                 className={`category-filter-chip ${filter === category ? "is-active" : ""}`}
-                onClick={() => onFilterChange(category)}
+                onClick={() => changeFilter(category)}
               >
                 {formatCategory(category)}
               </button>
@@ -63,6 +70,7 @@ function BoardPage({
       <div className="page-panel">
         <BoardSection
           canVote={Boolean(user) && activeRoute === "lines"}
+          currentPage={currentPage}
           emptyActions={
             activeRoute === "promoted" ? (
               <>
@@ -89,6 +97,7 @@ function BoardPage({
           isFetchingMore={isFetchingMore}
           lines={lines}
           onLoadMore={onLoadMore}
+          onPageChange={onPageChange}
           onVote={onVote}
           votes={votes}
         />

@@ -169,13 +169,19 @@ function LineCard({ canVote, line, rank, voteState, onVote }) {
               <button
                 className={`vote-button ${optimisticVote === 1 ? "is-active" : ""}`}
                 type="button"
-                aria-label="Upvote line"
+                aria-label={
+                  optimisticVote === 1 ? "Remove upvote" : "Upvote line"
+                }
+                aria-pressed={optimisticVote === 1}
                 disabled={!canVote}
                 aria-busy={isSaving}
                 onClick={handleVote}
                 title={canVote ? "Upvote this idea" : "Sign in to vote"}
               >
-                {optimisticVote === 1 ? "Upvoted" : "Upvote"}
+                <span className="vote-button__arrow" aria-hidden="true">
+                  ↑
+                </span>
+                <span>{optimisticVote === 1 ? "Upvoted" : "Upvote"}</span>
               </button>
             </div>
           )}
