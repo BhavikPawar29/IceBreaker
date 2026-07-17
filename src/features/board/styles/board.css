@@ -29,9 +29,55 @@
 }
 
 .board-pagination {
-  display: grid;
-  justify-items: center;
-  padding: 8px 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0 2px;
+}
+
+.board-pagination__group {
+  display: contents;
+}
+
+.board-pagination__button {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  line-height: 1;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.board-pagination__button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.board-pagination__button:hover:not(:disabled),
+.board-pagination__button.is-active {
+  border-color: #fff;
+  background: #fff;
+  color: #171717;
+}
+
+.board-pagination__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.34;
+}
+
+.board-pagination__ellipsis {
+  color: var(--muted);
+  letter-spacing: 0.12em;
 }
 
 .line-card {

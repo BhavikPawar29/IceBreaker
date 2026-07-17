@@ -643,6 +643,10 @@
 }
 
 /* The product UI stays graphite; the warm palette belongs to the public site. */
+body:has(.page-shell--app) {
+  background: #101010;
+}
+
 .page-shell--app {
   --surface: rgba(22, 22, 22, 0.92);
   --surface-strong: #202020;
@@ -652,16 +656,71 @@
   --brand: #f2f1ee;
   --brand-deep: #e8e6e0;
   --accent: #d1cec8;
-  background:
-    radial-gradient(
-      circle at 82% 2%,
-      rgba(255, 255, 255, 0.05),
-      transparent 24%
-    ),
-    linear-gradient(180deg, #101010 0%, #171717 54%, #101010 100%);
+  background: linear-gradient(180deg, #101010 0%, #171717 54%, #101010 100%);
 }
 
-.page-shell--app .paper-grain,
+/* Retire the old floating warm glow from the product shell. */
+.page-shell--app .main-shell::before {
+  display: none;
+}
+
+.page-shell--app .paper-grain {
+  opacity: 1;
+  background:
+    radial-gradient(
+      ellipse 24rem 16rem at 12% 72%,
+      transparent 0 62%,
+      rgba(255, 255, 255, 0.3) 62.25% 62.65%,
+      transparent 63%
+    ),
+    radial-gradient(
+      ellipse 16rem 11rem at 16% 68%,
+      transparent 0 62%,
+      rgba(255, 255, 255, 0.18) 62.25% 62.55%,
+      transparent 63%
+    ),
+    radial-gradient(
+      ellipse 26rem 17rem at 82% 28%,
+      transparent 0 62%,
+      rgba(255, 255, 255, 0.42) 62.2% 62.7%,
+      transparent 63%
+    ),
+    radial-gradient(
+      ellipse 31rem 23rem at 82% 35%,
+      transparent 0 62%,
+      rgba(255, 255, 255, 0.22) 62.2% 62.55%,
+      transparent 62.9%
+    ),
+    radial-gradient(
+      circle at 72% 60%,
+      rgba(255, 255, 255, 0.72) 0 4px,
+      transparent 5px
+    ),
+    radial-gradient(
+      circle at 88% 27%,
+      rgba(255, 255, 255, 0.55) 0 5px,
+      transparent 6px
+    ),
+    linear-gradient(
+      128deg,
+      transparent 0 58%,
+      rgba(255, 255, 255, 0.34) 58.1% 58.28%,
+      transparent 58.4%
+    ),
+    linear-gradient(
+      28deg,
+      transparent 0 65%,
+      rgba(255, 255, 255, 0.2) 65.1% 65.24%,
+      transparent 65.36%
+    ),
+    linear-gradient(
+      146deg,
+      transparent 0 28%,
+      rgba(255, 255, 255, 0.18) 28.1% 28.24%,
+      transparent 28.36%
+    );
+}
+
 .page-shell--app .live-page-shell::before {
   background: radial-gradient(
     circle at 76% 12%,
@@ -806,6 +865,153 @@
 .page-shell--app .assistant-orb-button__inner,
 .page-shell--app .live-page-shell::after {
   border-color: rgba(255, 255, 255, 0.18);
+}
+
+.page-shell--app .vote-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.page-shell--app .vote-button__arrow {
+  font-family: "Segoe UI Symbol", sans-serif;
+  font-size: 1.15em;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.page-shell--app .vote-button.is-active {
+  border-color: #f2f1ee;
+  background: #f2f1ee;
+  color: #171717;
+}
+
+@media (min-width: 960px) {
+  .page-shell--app::before {
+    content: "";
+    position: fixed;
+    top: 280px;
+    left: -12vw;
+    z-index: 0;
+    width: min(50vw, 700px);
+    aspect-ratio: 1;
+    pointer-events: none;
+    opacity: 0.56;
+    background:
+      repeating-conic-gradient(
+        from 112deg at 36% 48%,
+        rgba(255, 255, 255, 0.24) 0 0.13deg,
+        transparent 0.2deg 16deg
+      ),
+      radial-gradient(
+        ellipse 38% 57% at 36% 48%,
+        transparent 0 61%,
+        rgba(255, 255, 255, 0.58) 61.3% 61.65%,
+        transparent 62%
+      ),
+      radial-gradient(
+        ellipse 23% 36% at 36% 48%,
+        transparent 0 61%,
+        rgba(255, 255, 255, 0.38) 61.3% 61.6%,
+        transparent 62%
+      );
+    mask-image: radial-gradient(
+      circle at 36% 48%,
+      black 0 55%,
+      transparent 76%
+    );
+    -webkit-mask-image: radial-gradient(
+      circle at 36% 48%,
+      black 0 55%,
+      transparent 76%
+    );
+  }
+
+  .page-shell--app::after {
+    content: "";
+    position: fixed;
+    top: 88px;
+    right: -10vw;
+    z-index: 0;
+    width: min(54vw, 780px);
+    aspect-ratio: 1;
+    pointer-events: none;
+    opacity: 0.8;
+    background:
+      repeating-conic-gradient(
+        from -24deg at 67% 42%,
+        rgba(255, 255, 255, 0.3) 0 0.15deg,
+        transparent 0.22deg 13deg
+      ),
+      radial-gradient(
+        ellipse 42% 64% at 67% 42%,
+        transparent 0 61%,
+        rgba(255, 255, 255, 0.72) 61.3% 61.7%,
+        transparent 62.1%
+      ),
+      radial-gradient(
+        ellipse 27% 42% at 67% 42%,
+        transparent 0 61%,
+        rgba(255, 255, 255, 0.58) 61.3% 61.7%,
+        transparent 62.1%
+      );
+    mask-image: radial-gradient(
+      circle at 67% 42%,
+      black 0 54%,
+      transparent 76%
+    );
+    -webkit-mask-image: radial-gradient(
+      circle at 67% 42%,
+      black 0 54%,
+      transparent 76%
+    );
+  }
+}
+
+@media (max-width: 959px) {
+  .page-shell--app::after {
+    content: "";
+    position: fixed;
+    top: 76px;
+    right: -64vw;
+    z-index: 0;
+    width: 130vw;
+    aspect-ratio: 1;
+    pointer-events: none;
+    opacity: 0.72;
+    background:
+      repeating-conic-gradient(
+        from -20deg at 52% 44%,
+        rgba(255, 255, 255, 0.3) 0 0.16deg,
+        transparent 0.24deg 15deg
+      ),
+      radial-gradient(
+        ellipse 40% 61% at 52% 44%,
+        transparent 0 61%,
+        rgba(255, 255, 255, 0.7) 61.3% 61.75%,
+        transparent 62.1%
+      ),
+      radial-gradient(
+        ellipse 24% 37% at 52% 44%,
+        transparent 0 61%,
+        rgba(255, 255, 255, 0.5) 61.3% 61.7%,
+        transparent 62.1%
+      );
+    mask-image: radial-gradient(
+      circle at 52% 44%,
+      black 0 56%,
+      transparent 76%
+    );
+    -webkit-mask-image: radial-gradient(
+      circle at 52% 44%,
+      black 0 56%,
+      transparent 76%
+    );
+  }
 }
 
 /* Login */
@@ -1252,9 +1458,14 @@
   }
 
   .page-shell--app .app-header {
-    padding: 10px 12px 0;
+    padding: 6px 12px 0;
     background: transparent;
     box-shadow: none;
+  }
+
+  .page-shell--app .app-header--mobile .topbar--mobile {
+    min-height: 64px;
+    padding-block: 7px;
   }
 
   .page-shell--app .app-header--mobile .topbar--mobile,
@@ -1271,7 +1482,15 @@
   }
 
   .page-shell--app .mobile-bottom-nav .route-tab.is-active {
-    color: #21170c;
+    border-color: transparent;
+    background: transparent;
+    color: var(--text);
+    box-shadow: none;
+  }
+
+  .page-shell--app .mobile-bottom-nav .route-tab.is-active .route-tab-icon {
+    background: #f2f1ee;
+    color: #171717;
   }
 
   .page-shell--legal .app-header {

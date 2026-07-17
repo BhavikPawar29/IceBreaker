@@ -1,9 +1,17 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+import BoardPagination from "./BoardPagination";
 import LineCard from "./LineCard";
 import RouteShimmer from "../../../shared/ui/RouteShimmer";
 
+const PAGE_SIZE = 10;
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function BoardSection({
   canVote,
+  currentPage,
   emptyActions = null,
   emptyMessage,
   hasMore,
@@ -11,44 +19,60 @@ function BoardSection({
   isFetchingMore,
   lines,
   onLoadMore,
+  onPageChange,
   onVote,
   votes,
 }) {
-  const sentinelRef = useRef(null);
+  const pageCount = Math.max(1, Math.ceil(lines.length / PAGE_SIZE));
+  const activePage = Math.min(currentPage, pageCount);
+  const visibleLines = lines.slice(
+    (activePage - 1) * PAGE_SIZE,
+    activePage * PAGE_SIZE,
+  );
 
   useEffect(
-    function setupInfiniteScrollObserver() {
-      if (!hasMore || isBoardLoading || isFetchingMore) {
-        return undefined;
+    function restoreSavedPage() {
+      if (
+        !isBoardLoading &&
+        !isFetchingMore &&
+        currentPage > pageCount &&
+        hasMore
+      ) {
+        onLoadMore();
       }
 
-      const currentSentinel = sentinelRef.current;
-
-      if (!currentSentinel) {
-        return undefined;
+      if (!isBoardLoading && !hasMore && currentPage > pageCount) {
+        onPageChange(pageCount);
       }
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          const [entry] = entries;
-
-          if (entry?.isIntersecting) {
-            onLoadMore();
-          }
-        },
-        {
-          rootMargin: "120px 0px",
-        },
-      );
-
-      observer.observe(currentSentinel);
-
-      return () => {
-        observer.disconnect();
-      };
     },
-    [hasMore, isBoardLoading, isFetchingMore, onLoadMore],
+    [
+      currentPage,
+      hasMore,
+      isBoardLoading,
+      isFetchingMore,
+      onLoadMore,
+      onPageChange,
+      pageCount,
+    ],
   );
+
+  async function goToPage(nextPage) {
+    if (nextPage === activePage || isFetchingMore) {
+      return;
+    }
+
+    if (nextPage <= pageCount) {
+      onPageChange(nextPage);
+      scrollToTop();
+      return;
+    }
+
+    if (hasMore && nextPage === pageCount + 1) {
+      await onLoadMore();
+      onPageChange(nextPage);
+      scrollToTop();
+    }
+  }
 
   return (
     <div className="board-grid" aria-live="polite">
@@ -70,27 +94,25 @@ function BoardSection({
         </article>
       ) : null}
 
-      {lines.map((line, index) => (
+      {visibleLines.map((line, index) => (
         <LineCard
           canVote={canVote}
           key={line.id}
           line={line}
-          rank={index + 1}
+          rank={(activePage - 1) * PAGE_SIZE + index + 1}
           voteState={votes[line.id] || 0}
           onVote={onVote}
         />
       ))}
 
-      {!isBoardLoading && lines.length ? (
-        <div className="board-pagination" ref={sentinelRef}>
-          {isFetchingMore ? (
-            <p className="empty-state">Loading more ideas...</p>
-          ) : hasMore ? (
-            <p className="empty-state">Scroll to load more</p>
-          ) : (
-            <p className="empty-state">You reached the end</p>
-          )}
-        </div>
+      {!isBoardLoading && lines.length && (pageCount > 1 || hasMore) ? (
+        <BoardPagination
+          currentPage={activePage}
+          hasMore={hasMore}
+          isLoading={isFetchingMore}
+          pageCount={pageCount}
+          onPageChange={goToPage}
+        />
       ) : null}
     </div>
   );

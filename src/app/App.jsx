@@ -241,10 +241,15 @@ function PublicProfileRoute({ getPublicProfileLines, user }) {
 
 function App() {
   const [filter, setFilter] = useState("all");
+  const [boardPages, setBoardPages] = useState({ lines: 1, promoted: 1 });
   const [analyticsConsent, setAnalyticsConsent] = useState(() =>
     getAnalyticsConsent(),
   );
   const routeLocation = useLocation();
+
+  function setBoardPage(route, page) {
+    setBoardPages((currentPages) => ({ ...currentPages, [route]: page }));
+  }
 
   useEffect(() => {
     function syncAnalyticsConsent() {
@@ -521,12 +526,14 @@ function App() {
                     <BoardPage
                       activeRoute="lines"
                       categories={combinedCategories}
+                      currentPage={boardPages.lines}
                       filter={filter}
                       hasMore={hasMoreCandidates}
                       isBoardLoading={isBoardLoading}
                       isFetchingMore={isFetchingMore}
                       lines={filteredCandidates}
                       onLoadMore={() => loadMoreLines("candidates")}
+                      onPageChange={(page) => setBoardPage("lines", page)}
                       onFilterChange={setFilter}
                       onVote={voteOnLine}
                       user={user}
@@ -548,12 +555,14 @@ function App() {
                     <BoardPage
                       activeRoute="promoted"
                       categories={combinedCategories}
+                      currentPage={boardPages.promoted}
                       filter={filter}
                       hasMore={hasMorePromoted}
                       isBoardLoading={isBoardLoading}
                       isFetchingMore={isFetchingMore}
                       lines={filteredPromoted}
                       onLoadMore={() => loadMoreLines("promoted")}
+                      onPageChange={(page) => setBoardPage("promoted", page)}
                       onFilterChange={setFilter}
                       onVote={voteOnLine}
                       user={user}
