@@ -2,7 +2,10 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="site-footer" data-od-id="site-footer">
+    <footer
+      className="site-footer site-footer--redesign"
+      data-od-id="site-footer"
+    >
       <div className="site-footer__poster">
         <div className="site-footer__inner">
           <p className="site-footer__aside">
@@ -22,7 +25,6 @@ export default function Footer() {
           </p>
           <nav className="site-footer__links" aria-label="Footer">
             <Link to="/privacy">Privacy Policy</Link>
-            <Link to="/privacy#analytics-settings">Analytics settings</Link>
             <Link to="/security">Security</Link>
             <a
               href="https://github.com/BhavikPawar29/IceBreaker"

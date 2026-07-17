@@ -6,6 +6,8 @@ function SecurityPage() {
       eyebrow="Security"
       title="IceBreaker uses practical safeguards, not exaggerated promises."
       intro="This page summarizes the protections used in the app and the limits users should keep in mind."
+      image="/editorial/legal-security.png"
+      imageAlt="A quiet night interior with a key and phone resting on a side table"
     >
       <div className="legal-content">
         <section className="legal-section">

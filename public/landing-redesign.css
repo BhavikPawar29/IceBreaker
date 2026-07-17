@@ -208,6 +208,10 @@ canvas {
   justify-content: flex-start;
 }
 
+.topbar__mobile-link {
+  color: var(--fg);
+}
+
 .hero {
   position: relative;
   min-height: 100svh;
@@ -1370,6 +1374,74 @@ canvas {
   .site-footer__links {
     display: grid;
     gap: 0.65rem;
+  }
+}
+
+/* ponytail: mobile gets one clear first action; the scroll-led story remains desktop-only. */
+@media (max-width: 720px) {
+  .hero--mobile-static .hero__canvas-wrap {
+    filter: brightness(0.78) saturate(0.82);
+  }
+
+  .hero--mobile-static .hero__shade--left {
+    background: linear-gradient(
+      180deg,
+      rgba(14, 11, 10, 0.15) 0%,
+      rgba(14, 11, 10, 0.45) 46%,
+      rgba(14, 11, 10, 0.88) 100%
+    );
+  }
+
+  .hero--mobile-static .hero__shade--bottom {
+    background: linear-gradient(
+      180deg,
+      transparent 18%,
+      rgba(14, 11, 10, 0.18) 42%,
+      rgba(14, 11, 10, 0.82) 100%
+    );
+  }
+
+  .hero--mobile-static .hero__copy,
+  .hero--mobile-static .conversation-card,
+  .hero--mobile-static .hero__scroll-cue,
+  .hero--mobile-static .hero__transition {
+    display: none;
+  }
+
+  .hero--mobile-static .hero__final {
+    right: 0;
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+    display: grid;
+    gap: 0.9rem;
+    max-width: 100%;
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+
+  .hero--mobile-static .hero__final h2 {
+    max-width: 10ch;
+    font-size: clamp(2.3rem, 10.5vw, 3.15rem);
+    line-height: 0.98;
+  }
+
+  .hero--mobile-static .hero__lede {
+    max-width: 31ch;
+    margin: 0;
+    font-size: 0.98rem;
+  }
+
+  .hero--mobile-static .hero__actions {
+    display: block;
+  }
+
+  .hero--mobile-static .hero__actions .button {
+    width: 100%;
+  }
+
+  .hero--mobile-static .hero__actions .button--ghost,
+  .hero--mobile-static .hero__principles {
+    display: none;
   }
 }
 

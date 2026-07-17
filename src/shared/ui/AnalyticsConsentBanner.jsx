@@ -18,6 +18,8 @@ function AnalyticsConsentBanner({ onDecision }) {
     <section
       className="status-banner status-banner--consent"
       aria-live="polite"
+      aria-label="Analytics cookie preference"
+      role="dialog"
     >
       <div className="status-banner-copy">
         <strong>Analytics cookies</strong>

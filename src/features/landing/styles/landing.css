@@ -6,8 +6,7 @@
   padding: 14px clamp(20px, 4vw, 56px) 8px;
 }
 
-.hero-grid,
-.footer-inner {
+.hero-grid {
   max-width: 1180px;
   margin: 0 auto;
 }
@@ -15,7 +14,6 @@
 .board-controls,
 .hero-actions,
 .hero-stats,
-.footer-links,
 .saas-metrics {
   display: flex;
   flex-wrap: wrap;
@@ -25,10 +23,6 @@
 
 .hero-actions {
   margin-top: clamp(16px, 2vw, 24px);
-}
-
-.site-footer .eyebrow {
-  color: rgba(248, 239, 229, 0.78);
 }
 
 .hero-grid {
@@ -106,8 +100,7 @@
 .hero-copy h1,
 .board-topbar h2,
 .saas-copy h2,
-.card-heading h3,
-.site-footer h3 {
+.card-heading h3 {
   margin: 0;
   font-family: var(--font-display);
   color: var(--text);
@@ -128,8 +121,7 @@
 }
 
 .hero-text,
-.saas-copy p,
-.footer-copy {
+.saas-copy p {
   margin: 4px 0 0;
   max-width: 520px;
   font-size: 0.98rem;
@@ -675,11 +667,6 @@
     grid-template-columns: 1fr;
   }
 
-  .footer-inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .illustration-panel {
     min-height: auto;
     max-height: none;
@@ -697,16 +684,6 @@
   .hero {
     padding-inline: 14px;
     padding-top: 12px;
-  }
-
-  .landing-shell,
-  .site-footer {
-    padding-inline: 14px;
-  }
-
-  .landing-shell,
-  .site-footer {
-    padding-bottom: 110px;
   }
 
   .landing-shell {
@@ -735,10 +712,6 @@
   .timeline-grid,
   .comparison-grid {
     gap: 12px;
-  }
-
-  .footer-links {
-    justify-content: flex-start;
   }
 
   .hero-copy {
@@ -899,65 +872,6 @@
     transform: scale(1.04);
     opacity: 1;
   }
-}
-
-.site-footer {
-  padding: 0 clamp(20px, 4vw, 56px) 54px;
-}
-
-.footer-inner {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 28px;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--line);
-  background: rgba(36, 23, 15, 0.94);
-  color: #f8efe5;
-}
-
-.site-footer h3 {
-  margin-top: 8px;
-  color: #fffaf3;
-  font-size: 1.7rem;
-}
-
-.footer-copy {
-  color: rgba(248, 239, 229, 0.72);
-}
-
-.footer-authors {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.author-amp {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  opacity: 0.4;
-  font-style: italic;
-}
-
-.footer-authors a h3 {
-  transition: color 220ms ease;
-}
-
-.footer-authors a:hover h3 {
-  color: var(--accent);
-}
-
-.footer-links {
-  align-items: end;
-  justify-content: flex-end;
-}
-
-.footer-links a {
-  padding: 10px 14px;
-  border-radius: var(--radius-pill);
-  border: 1px solid rgba(255, 250, 243, 0.12);
-  color: #fffaf3;
 }
 
 .page-shell--landing > main > .status-banner--consent {
