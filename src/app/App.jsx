@@ -20,7 +20,6 @@ import {
 } from "../shared/core/analyticsConsent";
 import AppHeader from "../shared/ui/AppHeader";
 import AnalyticsConsentBanner from "../shared/ui/AnalyticsConsentBanner";
-import RouteShimmer from "../shared/ui/RouteShimmer";
 import ScrollToTop from "../shared/ui/ScrollToTop";
 import Seo from "../shared/ui/Seo";
 import StatePanel from "../shared/ui/StatePanel";
@@ -193,9 +192,7 @@ function LoadingShell({
         message={note}
         title={title}
         variant="loading"
-      >
-        <RouteShimmer className="route-shimmer--hero" />
-      </StatePanel>
+      />
     </section>
   );
 }
@@ -415,7 +412,11 @@ function App() {
   const shouldShowFooter =
     routeLocation.pathname === "/privacy" ||
     routeLocation.pathname === "/security";
-  const isInAppSurface = Boolean(user) && !isLandingRoute && !isLoginRoute;
+  const isInAppSurface =
+    (Boolean(user) || isSessionLoading) &&
+    !isLandingRoute &&
+    !isLoginRoute &&
+    !isLegalRoute;
   return (
     <div
       className={`page-shell ${isInAppSurface ? "page-shell--app" : ""} ${
