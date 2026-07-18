@@ -45,6 +45,7 @@ const LivePage = lazy(() => import("../features/live/components/LivePage"));
 const ProfilePage = lazy(
   () => import("../features/profile/components/ProfilePage"),
 );
+const Grainient = lazy(() => import("../shared/ui/Grainient"));
 const PublicProfilePage = lazy(
   () => import("../features/profile/components/PublicProfilePage"),
 );
@@ -422,6 +423,7 @@ function App() {
     !isLandingRoute &&
     !isLoginRoute &&
     !isLegalRoute;
+  const shouldShowAppGrainient = isInAppSurface;
   return (
     <div
       className={`page-shell ${isInAppSurface ? "page-shell--app" : ""} ${
@@ -434,6 +436,39 @@ function App() {
       <ScrollToTop />
       {!isLandingRoute ? (
         <div className="paper-grain" aria-hidden="true"></div>
+      ) : null}
+      {shouldShowAppGrainient ? (
+        <Suspense fallback={null}>
+          <Grainient
+            className="app-grainient"
+            color1="#FF9FFC"
+            color2="#EC4899"
+            color3="#EC4899"
+            colorBalance={0}
+            contrast={1.5}
+            gamma={1}
+            grainAmount={0.1}
+            grainAnimated={false}
+            grainScale={2}
+            noiseScale={2}
+            rotationAmount={500}
+            saturation={1}
+            timeSpeed={2.35}
+            warpAmplitude={50}
+            warpFrequency={5}
+            warpSpeed={2}
+            warpStrength={1}
+            zoom={0.9}
+          />
+          <div className="app-heart-field" aria-hidden="true">
+            <span>♡</span>
+            <span>♡</span>
+            <span>♡</span>
+            <span>♡</span>
+            <span>♡</span>
+            <span>♡</span>
+          </div>
+        </Suspense>
       ) : null}
       {!isLandingRoute ? <SketchBackdrop /> : null}
       {!isLandingRoute && !(isLoginRoute || (isLiveRoute && !user)) ? (

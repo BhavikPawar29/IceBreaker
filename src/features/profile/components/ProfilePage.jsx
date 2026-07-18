@@ -21,12 +21,12 @@ const STATUS_ORDER = [
 const STATUS_META = {
   [LINE_STATUS_PENDING]: {
     eyebrow: "In review",
-    title: "Waiting room",
+    title: "Waiting for review",
     note: "Private until an admin approves it.",
   },
   [LINE_STATUS_APPROVED]: {
     eyebrow: "Live",
-    title: "On the board",
+    title: "Helping people start",
     note: "Visible publicly as anonymous ideas.",
   },
   [LINE_STATUS_REJECTED]: {
@@ -75,15 +75,15 @@ function ProfileEmptyState() {
   return (
     <article className="section-card profile-empty-card">
       <p className="eyebrow">Start small</p>
-      <h3>No ideas submitted yet</h3>
+      <h3>You have not passed a little one on yet</h3>
       <p>
-        Add one useful line. It stays private until review, then goes live
+        Share one useful line. It stays private until review, then goes live
         anonymously if approved.
       </p>
       <ol className="profile-empty-steps">
-        <li>Share a prompt from Create</li>
+        <li>Write a prompt from Create</li>
         <li>Wait for review approval</li>
-        <li>Track saves as people vote</li>
+        <li>Watch saves when it helps someone</li>
       </ol>
       <Link className="action-link action-link--primary" to="/create">
         Share one
@@ -217,10 +217,10 @@ function ProfilePage({ lines, user }) {
         </div>
         <div className="profile-dashboard-copy">
           <p className="eyebrow">Private profile</p>
-          <h2>Hey {getFirstName(user)}, this is your board room.</h2>
+          <h2>Your little lines helped people connect.</h2>
           <p>
-            Public posts stay anonymous. This page is just for your account,
-            review status, saves, and moderation notes.
+            Hey {getFirstName(user)}, this is where your shared lines live.
+            Public posts stay anonymous; saves show what helped.
           </p>
           <div className="profile-account-pill">
             <span>Signed in as</span>
@@ -230,7 +230,7 @@ function ProfilePage({ lines, user }) {
         <div className="profile-hero-metrics">
           <ProfileStatusStat
             count={lines.length}
-            label="total"
+            label="shared"
             status="total"
           />
           <ProfileStatusStat
