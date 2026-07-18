@@ -11,10 +11,10 @@ function CreatePage({
   return (
     <section className="app-page create-page">
       <div className="page-copy create-copy">
-        <p className="eyebrow">Share one</p>
-        <h2>Share a line people can actually use.</h2>
+        <p className="eyebrow">Pass a little one on</p>
+        <h2>Write the question you wish someone had given you.</h2>
         <p className="page-description">
-          One sentence is enough. Keep it natural and specific.
+          One natural sentence is enough. Someone may need a tiny nudge tonight.
         </p>
         {isBanned ? (
           <p className="page-description">

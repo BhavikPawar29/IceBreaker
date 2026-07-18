@@ -31,13 +31,21 @@ function BoardPage({
 
   return (
     <section className="app-page">
-      <div className={`page-head ${isMobile ? "page-head--mobile" : ""}`}>
+      <div
+        className={`page-head board-page-head ${
+          isMobile ? "page-head--mobile" : ""
+        }`}
+      >
         <div className="page-copy">
-          <h2>{activeRoute === "promoted" ? "Top picks" : "Explore ideas"}</h2>
+          <h2>
+            {activeRoute === "promoted"
+              ? "Lines people came back to"
+              : "Find a little line worth trying"}
+          </h2>
           <p className="page-description">
             {activeRoute === "promoted"
-              ? "These are the ideas people kept coming back to, voting up, and saving."
-              : "Browse what people are trying, vote on what feels useful, or open one to share it."}
+              ? "The prompts people saved because they felt usable in a real moment."
+              : "Browse gently. The next sentence might be the one you needed."}
           </p>
         </div>
         <div
@@ -89,8 +97,8 @@ function BoardPage({
           }
           emptyMessage={
             activeRoute === "promoted"
-              ? "No top picks yet. Votes from Explore will promote ideas here."
-              : "No ideas in this filter yet. Try another topic or add your own."
+              ? "No top picks yet. Saves from Explore will bring the strongest lines here."
+              : "No ideas in this filter yet. Try another topic or pass a little one on."
           }
           hasMore={hasMore}
           isBoardLoading={isBoardLoading}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { QUESTION_PACKS, SITUATIONS } from "../../board/conversationFilters";
 import StatePanel from "../../../shared/ui/StatePanel";
 
-const SHARE_MESSAGE = "This saved me from an awkward moment \uD83D\uDC80";
+const SHARE_MESSAGE = "This little line saved me from an awkward moment";
 const STEP_SITUATION = "situation";
 const STEP_PACK = "pack";
 const STEP_TRIGGER = "trigger";
@@ -106,6 +106,22 @@ function InstantAssistant({
     );
   }
 
+  function renderLoadingSelection() {
+    if (!hasSelection) {
+      return null;
+    }
+
+    return (
+      <div
+        className="assistant-loading-tags"
+        aria-label="Selected live filters"
+      >
+        <span>{selectedSituationLabel}</span>
+        <span>{selectedPackLabel}</span>
+      </div>
+    );
+  }
+
   return (
     <section
       className={`instant-assistant section-card ${hasPrompt ? "instant-assistant--result" : ""}`.trim()}
@@ -114,8 +130,11 @@ function InstantAssistant({
       {hasPrompt ? (
         <>
           <article className="assistant-card" aria-live="polite">
-            <p className="assistant-card-label">Say this</p>
+            <p className="assistant-card-label">Try this</p>
             <h3>{prompt.text}</h3>
+            <p className="assistant-card-note">
+              Try it softly. Change the words if you need to.
+            </p>
           </article>
 
           {error ? <p className="assistant-error">{error}</p> : null}
@@ -127,7 +146,7 @@ function InstantAssistant({
               disabled={isSearching}
               onClick={handleFindPrompt}
             >
-              {isSearching ? "Finding..." : "Refresh"}
+              {isSearching ? "Finding..." : "Another tiny nudge"}
             </button>
             <button
               className="assistant-secondary-button"
@@ -150,12 +169,9 @@ function InstantAssistant({
           {step === STEP_SITUATION ? (
             <div className="assistant-step assistant-step--choices">
               <div className="assistant-intro assistant-intro--live">
-                <p className="eyebrow">Live Mode</p>
-                <h2>What situation?</h2>
-                <p>
-                  Pick the moment first so we can pull a line that actually
-                  fits.
-                </p>
+                <p className="eyebrow">Tonight</p>
+                <h2>Who are you hoping to know a little better?</h2>
+                <p>Choose the moment. We&apos;ll keep the first words quiet.</p>
               </div>
 
               <div
@@ -181,12 +197,9 @@ function InstantAssistant({
           {step === STEP_PACK ? (
             <div className="assistant-step assistant-step--choices">
               <div className="assistant-intro assistant-intro--live">
-                <p className="eyebrow">Step 2</p>
-                <h2>Question pack?</h2>
-                <p>
-                  Choose the tone you want before we spin up the next thing to
-                  say.
-                </p>
+                <p className="eyebrow">The pause</p>
+                <h2>What kind of opening feels right?</h2>
+                <p>Light, deeper, or a little bold. Pick what you could say.</p>
               </div>
 
               <div
@@ -214,12 +227,9 @@ function InstantAssistant({
           liveState !== "error" ? (
             <div className="assistant-step assistant-step--trigger">
               <div className="assistant-intro assistant-intro--live assistant-intro--centered">
-                <p className="eyebrow">Ready</p>
-                <h2>Tap for a line</h2>
-                <p>
-                  We will use your selected situation and pack to pull one good
-                  question.
-                </p>
+                <p className="eyebrow">Almost there</p>
+                <h2>A small line for the pause.</h2>
+                <p>Take one. Then lock the phone.</p>
               </div>
 
               {liveState !== "loading" ? (
@@ -235,7 +245,7 @@ function InstantAssistant({
                   >
                     <span className="assistant-orb-button__inner">
                       <span className="assistant-orb-button__label">
-                        {isSearching ? "Shuffling..." : "Tap for a line"}
+                        {isSearching ? "Finding..." : "Find one"}
                       </span>
                     </span>
                   </button>
@@ -247,23 +257,12 @@ function InstantAssistant({
           ) : null}
 
           {step === STEP_TRIGGER && liveState === "loading" ? (
-            <article
-              className="assistant-live-search section-card"
-              aria-live="polite"
-            >
-              <div className="assistant-orb-stage">
-                <div
-                  className="assistant-orb-button is-searching"
-                  aria-hidden="true"
-                >
-                  <span className="assistant-orb-button__inner">
-                    <span className="assistant-orb-button__label">
-                      Shuffling...
-                    </span>
-                  </span>
-                </div>
+            <article className="assistant-loading-inline" aria-live="polite">
+              <div className="assistant-loading-pill" aria-hidden="true">
+                <span></span>
+                Finding a line...
               </div>
-              {renderSelectionSummary("assistant-selection-summary--quiet")}
+              {renderLoadingSelection()}
             </article>
           ) : null}
 
@@ -280,9 +279,9 @@ function InstantAssistant({
                   </button>
                 }
                 className="assistant-feedback assistant-feedback--compact section-card"
-                eyebrow="Ooh, you caught us"
-                message="Nothing is live for this combo yet. Try another situation or switch the pack while the board warms up."
-                title="This combo is still waiting for its moment."
+                eyebrow="Quiet corner"
+                message="Nothing is live for this combo yet. Try another situation or switch the pack."
+                title="This corner is still empty."
                 variant="empty"
               />
             </div>
@@ -312,8 +311,8 @@ function InstantAssistant({
                   </>
                 }
                 className="assistant-feedback assistant-feedback--compact section-card"
-                eyebrow="Connection hiccup"
-                message="Try again in a moment, or change the combination and spin a new search."
+                eyebrow="Connection slipped"
+                message="Try again in a moment, or change the combination and search again."
                 title={error || "Could not load a live line."}
                 variant="error"
               />

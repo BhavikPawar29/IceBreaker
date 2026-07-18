@@ -63,8 +63,8 @@ function LoginAuthCard({
       <h2>{title}</h2>
       <p className="login-copy">
         {isSignup
-          ? "Use email or continue with Google."
-          : "Use the same method as before."}
+          ? "Create a quiet corner for your saved lines."
+          : "Use the same door as before."}
       </p>
 
       <form className="login-form" onSubmit={onEmailSubmit}>
@@ -169,7 +169,7 @@ function LoginAuthCard({
             Continue with Google
           </span>
           <span className="provider-auth-button__note">
-            Fast sign-in with your Google account
+            Fast sign-in, same private account
           </span>
         </span>
       </button>

@@ -14,26 +14,26 @@ function LoginDesktopView({ authCard }) {
           </figure>
 
           <div className="login-side-copy">
-            <p className="eyebrow">For shy people, not smooth talkers</p>
-            <h1>Join anonymously.</h1>
+            <p className="eyebrow">A quieter place</p>
+            <h1>Come in. It&apos;s quieter here.</h1>
             <p className="login-lead">
-              Your account keeps your ideas attached to you privately. The board
-              shows them anonymously.
+              Save the lines that helped, share the ones that might help someone
+              else, and stay anonymous on the public board.
             </p>
 
             <div className="login-points">
               <article>
-                <strong>Anonymous by default</strong>
+                <strong>Private by default</strong>
                 <span>Your public ideas do not show your real name.</span>
               </article>
               <article>
-                <strong>Quick entry</strong>
-                <span>Use Google, or create a small email account here.</span>
+                <strong>Fast entry</strong>
+                <span>Use Google, or create a simple email account here.</span>
               </article>
               <article>
-                <strong>Review first</strong>
+                <strong>Gentle review</strong>
                 <span>
-                  New ideas still wait for approval before going live.
+                  New ideas wait for approval before they reach the board.
                 </span>
               </article>
             </div>
