@@ -4378,6 +4378,36 @@ body:has(.page-shell--app) {
     inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
 }
 
+.page-shell--app .profile-hero-metrics {
+  gap: 12px;
+}
+
+.page-shell--app .profile-status-stat {
+  padding: 14px 16px;
+  border: 1px solid var(--app-border) !important;
+  border-radius: 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(38, 44, 52, 0.94),
+    rgba(24, 29, 35, 0.94)
+  ) !important;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+.page-shell--app .profile-status-stat + .profile-status-stat {
+  border-left-color: var(--app-border) !important;
+}
+
+.page-shell--app .profile-status-stat strong {
+  color: var(--text) !important;
+}
+
+.page-shell--app .profile-status-stat span {
+  color: var(--muted) !important;
+}
+
 .page-shell--app .line-card {
   border-color: var(--app-border) !important;
   background: transparent !important;
