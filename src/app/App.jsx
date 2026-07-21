@@ -441,33 +441,25 @@ function App() {
         <Suspense fallback={null}>
           <Grainient
             className="app-grainient"
-            color1="#FF9FFC"
-            color2="#EC4899"
-            color3="#EC4899"
+            color1="#33404c"
+            color2="#1d2630"
+            color3="#0f1419"
             colorBalance={0}
-            contrast={1.5}
+            contrast={1.14}
             gamma={1}
-            grainAmount={0.1}
+            grainAmount={0.06}
             grainAnimated={false}
             grainScale={2}
             noiseScale={2}
-            rotationAmount={500}
-            saturation={1}
-            timeSpeed={2.35}
-            warpAmplitude={50}
-            warpFrequency={5}
-            warpSpeed={2}
-            warpStrength={1}
-            zoom={0.9}
+            rotationAmount={180}
+            saturation={0.48}
+            timeSpeed={0.3}
+            warpAmplitude={92}
+            warpFrequency={2.1}
+            warpSpeed={0.34}
+            warpStrength={0.28}
+            zoom={1.02}
           />
-          <div className="app-heart-field" aria-hidden="true">
-            <span>♡</span>
-            <span>♡</span>
-            <span>♡</span>
-            <span>♡</span>
-            <span>♡</span>
-            <span>♡</span>
-          </div>
         </Suspense>
       ) : null}
       {!isLandingRoute ? <SketchBackdrop /> : null}
