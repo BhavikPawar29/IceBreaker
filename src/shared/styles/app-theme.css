@@ -4673,48 +4673,56 @@ body:has(.page-shell--app) {
   color: var(--muted) !important;
 }
 
-/* ponytail: one final theme layer beats the previous dark/blush passes. */
+/* ponytail: simple white pass; one layer beats old dark/blush CSS. */
 body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
-  background: #fffaf3;
+  background: #fbfaf7;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal) {
   --surface: #ffffff;
-  --surface-strong: #fff6e7;
-  --text: #111111;
-  --muted: #565656;
-  --line: #111111;
-  --brand: #ff4fa3;
-  --brand-deep: #111111;
-  --accent: #ff4fa3;
-  --app-ink: #111111;
+  --surface-strong: #fff7fb;
+  --text: #171717;
+  --muted: #6b6b6b;
+  --line: rgba(17, 17, 17, 0.1);
+  --brand: #e84793;
+  --brand-deep: #171717;
+  --accent: #e84793;
+  --app-ink: #171717;
   --app-surface: #ffffff;
-  --app-surface-soft: #fff6e7;
-  --app-surface-hover: #ffe3f1;
-  --app-border: #111111;
-  --app-border-strong: #111111;
+  --app-surface-soft: #fff7fb;
+  --app-surface-hover: #fff1f7;
+  --app-border: rgba(17, 17, 17, 0.1);
+  --app-border-strong: rgba(17, 17, 17, 0.18);
   min-height: 100dvh;
   color: var(--text);
-  background:
-    linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px), #fffaf3 !important;
-  background-size: 34px 34px;
+  background: #fbfaf7 !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)::before,
-:is(.page-shell--app, .page-shell--login, .page-shell--legal)::after {
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)::after,
+.page-shell--app .live-page-shell::before,
+.page-shell--app .live-page-shell::after,
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(.section-card, .page-panel, .line-card, .profile-line)::before,
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(.section-card, .page-panel, .line-card, .profile-line)::after {
   display: none !important;
+}
+
+.page-shell--app .live-page-shell {
+  background: transparent !important;
+  animation: none !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
   :is(.app-header, .topbar, .mobile-bottom-nav),
 .page-shell--app .app-header--mobile .topbar--mobile {
-  border: 2px solid #111111 !important;
-  border-radius: 0 !important;
-  background: #ffffff !important;
-  box-shadow: 6px 6px 0 #111111 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  border: 1px solid var(--app-border) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  box-shadow: 0 16px 36px rgba(23, 23, 23, 0.08) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
@@ -4730,7 +4738,7 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
     .public-profile-hero h2,
     .detail-card--refined h2
   ) {
-  color: #111111 !important;
+  color: var(--text) !important;
   text-shadow: none !important;
 }
 
@@ -4755,7 +4763,7 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
     .login-lead,
     .login-copy
   ) {
-  color: #565656 !important;
+  color: var(--muted) !important;
   text-shadow: none !important;
 }
 
@@ -4809,28 +4817,11 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
     .snackbar--info,
     .snackbar--warning
   ) {
-  border: 2px solid #111111 !important;
-  border-radius: 0 !important;
+  border: 1px solid var(--app-border) !important;
+  border-radius: 18px !important;
   background: #ffffff !important;
-  color: #111111 !important;
-  box-shadow: 8px 8px 0 #111111 !important;
-}
-
-:is(.page-shell--app, .page-shell--login, .page-shell--legal)
-  :is(.section-card, .page-panel, .line-card, .profile-line)::before,
-:is(.page-shell--app, .page-shell--login, .page-shell--legal)
-  :is(.section-card, .page-panel, .line-card, .profile-line)::after {
-  display: none !important;
-}
-
-.page-shell--app .live-page-shell {
-  background: transparent !important;
-  animation: none !important;
-}
-
-.page-shell--app .live-page-shell::before,
-.page-shell--app .live-page-shell::after {
-  display: none !important;
+  color: var(--text) !important;
+  box-shadow: 0 18px 42px rgba(23, 23, 23, 0.08) !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
@@ -4852,11 +4843,11 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
     .assistant-loading-pill,
     .assistant-loading-tags span
   ) {
-  border: 2px solid #111111 !important;
-  border-radius: 0 !important;
+  border: 1px solid var(--app-border) !important;
+  border-radius: 999px !important;
   background: #ffffff !important;
-  color: #111111 !important;
-  box-shadow: 3px 3px 0 #111111 !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
@@ -4873,10 +4864,11 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
     .assistant-secondary-button:hover,
     .ghost-link.auth-button:hover
   ) {
-  background: #ffe3f1 !important;
-  color: #111111 !important;
-  transform: translate(-1px, -1px);
-  box-shadow: 5px 5px 0 #111111 !important;
+  background: var(--app-surface-hover) !important;
+  border-color: rgba(232, 71, 147, 0.32) !important;
+  color: var(--text) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(232, 71, 147, 0.12) !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
@@ -4890,11 +4882,11 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
     .confirm-button--primary,
     .status-banner--consent button:last-child
   ) {
-  border: 2px solid #111111 !important;
-  border-radius: 0 !important;
-  background: #ff4fa3 !important;
-  color: #111111 !important;
-  box-shadow: 5px 5px 0 #111111 !important;
+  border: 1px solid rgba(232, 71, 147, 0.28) !important;
+  border-radius: 999px !important;
+  background: #e84793 !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 28px rgba(232, 71, 147, 0.22) !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
@@ -4908,10 +4900,10 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
     .confirm-button--primary,
     .status-banner--consent button:last-child
   ):hover {
-  background: #ff7fbd !important;
-  color: #111111 !important;
-  transform: translate(-2px, -2px);
-  box-shadow: 7px 7px 0 #111111 !important;
+  background: #d73784 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(232, 71, 147, 0.26) !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
@@ -4927,31 +4919,32 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
     .admin-inline-field input,
     .moderation-form textarea
   ) {
-  border: 2px solid #111111 !important;
-  border-radius: 0 !important;
-  background: #fffdf8 !important;
-  color: #111111 !important;
-  box-shadow: 4px 4px 0 #111111 !important;
+  border: 1px solid var(--app-border) !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
   :is(input, select, textarea):focus {
-  outline: 3px solid #ff4fa3 !important;
-  outline-offset: 2px;
-  box-shadow: 5px 5px 0 #111111 !important;
+  border-color: rgba(232, 71, 147, 0.45) !important;
+  outline: 3px solid rgba(232, 71, 147, 0.14) !important;
+  outline-offset: 1px;
+  box-shadow: none !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
   :is(input, textarea)::placeholder {
-  color: #767676 !important;
+  color: #8a8a8a !important;
 }
 
 .page-shell--app .profile-avatar {
-  border: 2px solid #111111 !important;
-  border-radius: 0 !important;
-  background: #ff4fa3 !important;
-  color: #111111 !important;
-  box-shadow: 5px 5px 0 #111111 !important;
+  border: 1px solid rgba(232, 71, 147, 0.28) !important;
+  border-radius: 18px !important;
+  background: #fff1f7 !important;
+  color: #b92f72 !important;
+  box-shadow: none !important;
 }
 
 .page-shell--app .line-card {
@@ -4960,61 +4953,39 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
 
 .page-shell--app .line-card:hover,
 .page-shell--app .line-card:focus-within {
-  background: #fff6e7 !important;
-  transform: translate(-2px, -2px);
-  box-shadow: 10px 10px 0 #111111 !important;
+  background: #fffdfb !important;
+  box-shadow: 0 20px 44px rgba(23, 23, 23, 0.1) !important;
 }
 
 .page-shell--app .confirm-overlay {
-  background: rgba(17, 17, 17, 0.28) !important;
+  background: rgba(23, 23, 23, 0.22) !important;
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal) ::selection {
-  background: #ff4fa3;
-  color: #111111;
-}
-
-@media (max-width: 720px) {
-  :is(.page-shell--app, .page-shell--login, .page-shell--legal)
-    :is(.section-card, .page-panel, .line-card, .profile-dashboard-hero) {
-    box-shadow: 5px 5px 0 #111111 !important;
-  }
+  background: #ffe1f0;
+  color: var(--text);
 }
 
 body:has(.page-shell--landing) {
-  background: #fffaf3;
+  background: #fbfaf7;
 }
 
 .page-shell--landing {
-  color: #111111;
-  background:
-    linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px), #fffaf3 !important;
-  background-size: 34px 34px;
+  color: #171717;
+  background: #fbfaf7 !important;
 }
 
 .page-shell--landing
   :is(.app-loader-card, .status-banner--consent, .hero__loader) {
-  border: 2px solid #111111 !important;
-  border-radius: 0 !important;
+  border: 1px solid rgba(17, 17, 17, 0.1) !important;
+  border-radius: 18px !important;
   background: #ffffff !important;
-  color: #111111 !important;
-  box-shadow: 8px 8px 0 #111111 !important;
+  color: #171717 !important;
+  box-shadow: 0 18px 42px rgba(23, 23, 23, 0.08) !important;
 }
 
 .page-shell--landing :is(.app-loader-card *, .status-banner--consent *) {
-  color: #111111 !important;
-}
-
-:is(
-    .page-shell--app,
-    .page-shell--login,
-    .page-shell--legal,
-    .page-shell--landing
-  )
-  .status-banner--consent
-  :is(strong, span, a, button) {
-  color: #111111 !important;
+  color: #171717 !important;
 }
 
 :is(
@@ -5025,8 +4996,8 @@ body:has(.page-shell--landing) {
   )
   .status-banner--consent
   .ink-link {
-  border: 2px solid #111111 !important;
-  border-radius: 0 !important;
-  background: #ff4fa3 !important;
-  box-shadow: 5px 5px 0 #111111 !important;
+  border-radius: 999px !important;
+  background: #e84793 !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 28px rgba(232, 71, 147, 0.22) !important;
 }
