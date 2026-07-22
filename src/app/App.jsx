@@ -28,7 +28,6 @@ import { ALLOWED_CATEGORIES } from "../features/board/categories";
 import useCommunityBoard from "../features/board/hooks/useCommunityBoard";
 import Footer from "../features/landing/redesign/components/Footer";
 import InstallAppPrompt from "../features/landing/components/InstallAppPrompt";
-import SketchBackdrop from "../features/landing/components/SketchBackdrop";
 
 const BoardPage = lazy(() => import("../features/board/components/BoardPage"));
 const CreatePage = lazy(
@@ -45,7 +44,6 @@ const LivePage = lazy(() => import("../features/live/components/LivePage"));
 const ProfilePage = lazy(
   () => import("../features/profile/components/ProfilePage"),
 );
-const Grainient = lazy(() => import("../shared/ui/Grainient"));
 const PublicProfilePage = lazy(
   () => import("../features/profile/components/PublicProfilePage"),
 );
@@ -423,7 +421,6 @@ function App() {
     !isLandingRoute &&
     !isLoginRoute &&
     !isLegalRoute;
-  const shouldShowAppGrainient = isInAppSurface;
   return (
     <div
       className={`page-shell ${isInAppSurface ? "page-shell--app" : ""} ${
@@ -434,35 +431,6 @@ function App() {
     >
       <Seo {...routeSeo} />
       <ScrollToTop />
-      {!isLandingRoute ? (
-        <div className="paper-grain" aria-hidden="true"></div>
-      ) : null}
-      {shouldShowAppGrainient ? (
-        <Suspense fallback={null}>
-          <Grainient
-            className="app-grainient"
-            color1="#33404c"
-            color2="#1d2630"
-            color3="#0f1419"
-            colorBalance={0}
-            contrast={1.14}
-            gamma={1}
-            grainAmount={0.06}
-            grainAnimated={false}
-            grainScale={2}
-            noiseScale={2}
-            rotationAmount={180}
-            saturation={0.48}
-            timeSpeed={0.3}
-            warpAmplitude={92}
-            warpFrequency={2.1}
-            warpSpeed={0.34}
-            warpStrength={0.28}
-            zoom={1.02}
-          />
-        </Suspense>
-      ) : null}
-      {!isLandingRoute ? <SketchBackdrop /> : null}
       {!isLandingRoute && !(isLoginRoute || (isLiveRoute && !user)) ? (
         <AppHeader
           authEnabled={authEnabled}

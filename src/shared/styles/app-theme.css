@@ -4239,11 +4239,6 @@ body:has(.page-shell--app) {
   background: rgba(17, 20, 24, 0.96);
 }
 
-.page-shell--app .sketch-backdrop,
-.page-shell--app .app-heart-field {
-  display: none;
-}
-
 .page-shell--app .paper-grain {
   opacity: 0.18;
   mix-blend-mode: screen;
@@ -4676,4 +4671,362 @@ body:has(.page-shell--app) {
 
 .page-shell--app .confirm-dialog .eyebrow {
   color: var(--muted) !important;
+}
+
+/* ponytail: one final theme layer beats the previous dark/blush passes. */
+body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
+  background: #fffaf3;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal) {
+  --surface: #ffffff;
+  --surface-strong: #fff6e7;
+  --text: #111111;
+  --muted: #565656;
+  --line: #111111;
+  --brand: #ff4fa3;
+  --brand-deep: #111111;
+  --accent: #ff4fa3;
+  --app-ink: #111111;
+  --app-surface: #ffffff;
+  --app-surface-soft: #fff6e7;
+  --app-surface-hover: #ffe3f1;
+  --app-border: #111111;
+  --app-border-strong: #111111;
+  min-height: 100dvh;
+  color: var(--text);
+  background:
+    linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px), #fffaf3 !important;
+  background-size: 34px 34px;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)::before,
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)::after {
+  display: none !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(.app-header, .topbar, .mobile-bottom-nav),
+.page-shell--app .app-header--mobile .topbar--mobile {
+  border: 2px solid #111111 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  box-shadow: 6px 6px 0 #111111 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(
+    .brand-mark,
+    .page-copy h2,
+    h1,
+    h2,
+    h3,
+    h4,
+    .line-body,
+    .profile-line-body,
+    .public-profile-hero h2,
+    .detail-card--refined h2
+  ) {
+  color: #111111 !important;
+  text-shadow: none !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(
+    .brand-sub,
+    .page-description,
+    .eyebrow,
+    .line-author,
+    .profile-line-date,
+    .profile-status-copy,
+    .form-note,
+    .empty-state,
+    .assistant-card-label,
+    .assistant-card-note,
+    .admin-user-top p,
+    .admin-mini-row small,
+    .admin-mini-line small,
+    .admin-search-field span,
+    .admin-inline-field span,
+    .admin-live-fields span,
+    .login-lead,
+    .login-copy
+  ) {
+  color: #565656 !important;
+  text-shadow: none !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(
+    .section-card,
+    .page-panel,
+    .submit-card,
+    .profile-dashboard-hero,
+    .profile-status-column,
+    .profile-line,
+    .profile-empty-card,
+    .profile-status-stat,
+    .profile-mini-card,
+    .profile-status-panel,
+    .public-profile-hero,
+    .detail-card,
+    .detail-card--refined,
+    .board-empty,
+    .login-panel,
+    .legal-hero,
+    .legal-card,
+    .admin-panel,
+    .admin-stat-card,
+    .admin-line-card,
+    .admin-user-card,
+    .admin-alert,
+    .admin-mini-row,
+    .admin-mini-line,
+    .admin-meta-grid span,
+    .admin-copy,
+    .admin-detail-panel,
+    .admin-user-line,
+    .admin-search-field,
+    .admin-inline-field input,
+    .admin-live-fields select,
+    .moderation-form textarea,
+    .assistant-card,
+    .assistant-choice-button,
+    .assistant-selection-pill,
+    .instant-assistant,
+    .assistant-live-search.section-card,
+    .route-skeleton-card,
+    .app-loader-card,
+    .route-shimmer-card,
+    .detail-shimmer,
+    .app-loader-skeleton,
+    .app-loader-skeleton-row,
+    .confirm-dialog,
+    .status-banner,
+    .snackbar--info,
+    .snackbar--warning
+  ) {
+  border: 2px solid #111111 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  box-shadow: 8px 8px 0 #111111 !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(.section-card, .page-panel, .line-card, .profile-line)::before,
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(.section-card, .page-panel, .line-card, .profile-line)::after {
+  display: none !important;
+}
+
+.page-shell--app .live-page-shell {
+  background: transparent !important;
+  animation: none !important;
+}
+
+.page-shell--app .live-page-shell::before,
+.page-shell--app .live-page-shell::after {
+  display: none !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(
+    .route-tab,
+    .admin-tab,
+    .filter-pill,
+    .category-filter-chip,
+    .category-chip,
+    .score-chip,
+    .mini-stat,
+    .status-chip,
+    .profile-account-pill,
+    .vote-button,
+    .auth-chip,
+    .mobile-account-avatar,
+    .ghost-link.auth-button,
+    .assistant-secondary-button,
+    .assistant-loading-pill,
+    .assistant-loading-tags span
+  ) {
+  border: 2px solid #111111 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  box-shadow: 3px 3px 0 #111111 !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(
+    .route-tab:hover,
+    .route-tab.is-active,
+    .admin-tab:hover,
+    .admin-tab.is-active,
+    .filter-pill:focus-within,
+    .category-filter-chip.is-active,
+    .vote-button.is-active,
+    .assistant-choice-button:hover,
+    .assistant-choice-button.is-active,
+    .assistant-secondary-button:hover,
+    .ghost-link.auth-button:hover
+  ) {
+  background: #ffe3f1 !important;
+  color: #111111 !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 #111111 !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(
+    .submit-button,
+    .action-button--primary,
+    .action-link--primary,
+    .assistant-primary-button,
+    .assistant-orb-button,
+    .login-submit,
+    .confirm-button--primary,
+    .status-banner--consent button:last-child
+  ) {
+  border: 2px solid #111111 !important;
+  border-radius: 0 !important;
+  background: #ff4fa3 !important;
+  color: #111111 !important;
+  box-shadow: 5px 5px 0 #111111 !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(
+    .submit-button,
+    .action-button--primary,
+    .action-link--primary,
+    .assistant-primary-button,
+    .assistant-orb-button,
+    .login-submit,
+    .confirm-button--primary,
+    .status-banner--consent button:last-child
+  ):hover {
+  background: #ff7fbd !important;
+  color: #111111 !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 #111111 !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(
+    input,
+    select,
+    textarea,
+    .submission-form input,
+    .submission-form select,
+    .submission-form textarea,
+    .login-form input,
+    .admin-search-field input,
+    .admin-inline-field input,
+    .moderation-form textarea
+  ) {
+  border: 2px solid #111111 !important;
+  border-radius: 0 !important;
+  background: #fffdf8 !important;
+  color: #111111 !important;
+  box-shadow: 4px 4px 0 #111111 !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(input, select, textarea):focus {
+  outline: 3px solid #ff4fa3 !important;
+  outline-offset: 2px;
+  box-shadow: 5px 5px 0 #111111 !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)
+  :is(input, textarea)::placeholder {
+  color: #767676 !important;
+}
+
+.page-shell--app .profile-avatar {
+  border: 2px solid #111111 !important;
+  border-radius: 0 !important;
+  background: #ff4fa3 !important;
+  color: #111111 !important;
+  box-shadow: 5px 5px 0 #111111 !important;
+}
+
+.page-shell--app .line-card {
+  background: #ffffff !important;
+}
+
+.page-shell--app .line-card:hover,
+.page-shell--app .line-card:focus-within {
+  background: #fff6e7 !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 10px 10px 0 #111111 !important;
+}
+
+.page-shell--app .confirm-overlay {
+  background: rgba(17, 17, 17, 0.28) !important;
+}
+
+:is(.page-shell--app, .page-shell--login, .page-shell--legal) ::selection {
+  background: #ff4fa3;
+  color: #111111;
+}
+
+@media (max-width: 720px) {
+  :is(.page-shell--app, .page-shell--login, .page-shell--legal)
+    :is(.section-card, .page-panel, .line-card, .profile-dashboard-hero) {
+    box-shadow: 5px 5px 0 #111111 !important;
+  }
+}
+
+body:has(.page-shell--landing) {
+  background: #fffaf3;
+}
+
+.page-shell--landing {
+  color: #111111;
+  background:
+    linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px), #fffaf3 !important;
+  background-size: 34px 34px;
+}
+
+.page-shell--landing
+  :is(.app-loader-card, .status-banner--consent, .hero__loader) {
+  border: 2px solid #111111 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  box-shadow: 8px 8px 0 #111111 !important;
+}
+
+.page-shell--landing :is(.app-loader-card *, .status-banner--consent *) {
+  color: #111111 !important;
+}
+
+:is(
+    .page-shell--app,
+    .page-shell--login,
+    .page-shell--legal,
+    .page-shell--landing
+  )
+  .status-banner--consent
+  :is(strong, span, a, button) {
+  color: #111111 !important;
+}
+
+:is(
+    .page-shell--app,
+    .page-shell--login,
+    .page-shell--legal,
+    .page-shell--landing
+  )
+  .status-banner--consent
+  .ink-link {
+  border: 2px solid #111111 !important;
+  border-radius: 0 !important;
+  background: #ff4fa3 !important;
+  box-shadow: 5px 5px 0 #111111 !important;
 }
