@@ -4239,11 +4239,6 @@ body:has(.page-shell--app) {
   background: rgba(17, 20, 24, 0.96);
 }
 
-.page-shell--app .sketch-backdrop,
-.page-shell--app .app-heart-field {
-  display: none;
-}
-
 .page-shell--app .paper-grain {
   opacity: 0.18;
   mix-blend-mode: screen;
@@ -4707,9 +4702,7 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
 }
 
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)::before,
-:is(.page-shell--app, .page-shell--login, .page-shell--legal)::after,
-:is(.page-shell--app, .page-shell--login, .page-shell--legal)
-  :is(.sketch-backdrop, .paper-grain, .app-grainient, .app-heart-field) {
+:is(.page-shell--app, .page-shell--login, .page-shell--legal)::after {
   display: none !important;
 }
 
