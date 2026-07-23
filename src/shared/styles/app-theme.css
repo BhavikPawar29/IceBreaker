@@ -4957,13 +4957,14 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
   box-shadow: 0 20px 44px rgba(23, 23, 23, 0.1) !important;
 }
 
-.page-shell--app .live-page-shell {
-  color: var(--text) !important;
-}
-
 .page-shell--app
   .live-page-shell
   :is(
+    p,
+    span,
+    small,
+    label,
+    button,
     .assistant-intro h2,
     .assistant-card h3,
     .assistant-feedback h3,
@@ -4978,13 +4979,10 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
 .page-shell--app
   .live-page-shell
   :is(
-    .assistant-intro p:not(.eyebrow),
-    .assistant-card-note,
     .assistant-card-label,
     .assistant-control-group > span,
-    .assistant-selection-summary,
-    .assistant-feedback p:not(.assistant-feedback__eyebrow),
-    .state-panel p:not(.state-panel__eyebrow)
+    .assistant-feedback__eyebrow,
+    .state-panel__eyebrow
   ) {
   color: var(--muted) !important;
 }
@@ -5008,17 +5006,7 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
   color: var(--text);
 }
 
-body:has(.page-shell--landing) {
-  background: #fbfaf7;
-}
-
-.page-shell--landing {
-  color: #171717;
-  background: #fbfaf7 !important;
-}
-
-.page-shell--landing
-  :is(.app-loader-card, .status-banner--consent, .hero__loader) {
+.page-shell--landing :is(.app-loader-card, .status-banner--consent) {
   border: 1px solid rgba(17, 17, 17, 0.1) !important;
   border-radius: 18px !important;
   background: #ffffff !important;
