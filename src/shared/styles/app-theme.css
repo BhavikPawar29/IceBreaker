@@ -4979,12 +4979,26 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
 .page-shell--app
   .live-page-shell
   :is(
+    .assistant-intro p:not(.eyebrow),
+    .assistant-card-note,
+    .assistant-selection-summary,
+    .assistant-selection-summary--quiet,
+    .assistant-feedback p:not(.assistant-feedback__eyebrow),
+    .state-panel p:not(.state-panel__eyebrow)
+  ),
+.page-shell--app .instant-assistant--result .assistant-card-note {
+  color: #242424 !important;
+}
+
+.page-shell--app
+  .live-page-shell
+  :is(
     .assistant-card-label,
     .assistant-control-group > span,
     .assistant-feedback__eyebrow,
     .state-panel__eyebrow
   ) {
-  color: var(--muted) !important;
+  color: #3f3f46 !important;
 }
 
 .page-shell--app
