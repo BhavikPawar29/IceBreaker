@@ -4767,6 +4767,59 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
   text-shadow: none !important;
 }
 
+.page-shell--app .app-header {
+  padding-inline: clamp(16px, 3vw, 36px) !important;
+}
+
+.page-shell--app .topbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  width: min(100%, 1480px) !important;
+  min-height: 68px !important;
+  padding: 8px 0 !important;
+}
+
+.page-shell--app .brand {
+  flex: 0 0 auto !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  min-width: 260px !important;
+}
+
+.page-shell--app .brand-mark {
+  line-height: 1 !important;
+}
+
+.page-shell--app .brand-sub {
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+}
+
+.page-shell--app .topbar-actions {
+  flex: 1 1 auto !important;
+  justify-content: flex-end !important;
+  gap: 20px !important;
+  min-width: 0 !important;
+}
+
+.page-shell--app .route-tabs--header,
+.page-shell--app .auth-chip-group--app {
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.page-shell--app
+  :is(.route-tabs--header .route-tab, .auth-chip, .ghost-link.auth-button) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 46px !important;
+  padding-block: 0 !important;
+  line-height: 1 !important;
+}
+
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
   :is(
     .section-card,
