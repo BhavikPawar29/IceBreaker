@@ -5270,3 +5270,50 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
   color: #ffffff !important;
   box-shadow: 0 14px 28px rgba(232, 71, 147, 0.22) !important;
 }
+
+@media (max-width: 720px) {
+  .page-shell--app .app-header {
+    padding: 8px 10px 0 !important;
+  }
+
+  .page-shell--app .topbar--mobile {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-height: 58px !important;
+    padding: 8px 10px 8px 16px !important;
+  }
+
+  .page-shell--app .topbar--mobile .brand {
+    min-width: 0 !important;
+    justify-self: start !important;
+  }
+
+  .page-shell--app .topbar--mobile .brand-mark {
+    max-width: 145px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .page-shell--app .topbar-actions--mobile,
+  .page-shell--app .auth-chip-group--mobile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
+
+  .page-shell--app .mobile-account-avatar,
+  .page-shell--app .auth-chip-group--mobile .auth-button {
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+  }
+}
