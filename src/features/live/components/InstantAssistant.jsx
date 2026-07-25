@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { QUESTION_PACKS, SITUATIONS } from "../../board/conversationFilters";
 import StatePanel from "../../../shared/ui/StatePanel";
 
 const SHARE_MESSAGE = "This little line saved me from an awkward moment";
 const STEP_SITUATION = "situation";
 const STEP_PACK = "pack";
-const STEP_TRIGGER = "trigger";
 
 function getShareRuntime() {
   return globalThis.__ICEBREAKER_SHARE__;
@@ -27,23 +27,35 @@ function InstantAssistant({
     () => prompt?.situation || "",
   );
   const [selectedPack, setSelectedPack] = useState(() => prompt?.pack || "");
-  const [step, setStep] = useState(() =>
-    prompt ? STEP_TRIGGER : STEP_SITUATION,
-  );
+  const [pickerStep, setPickerStep] = useState(STEP_SITUATION);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const hasPrompt = Boolean(prompt);
   const selectedSituationLabel = findLabel(SITUATIONS, selectedSituation);
   const selectedPackLabel = findLabel(QUESTION_PACKS, selectedPack);
   const hasSelection = Boolean(selectedSituationLabel && selectedPackLabel);
 
-  function handleFindPrompt() {
-    if (!selectedSituation || !selectedPack) {
+  function requestPrompt(
+    situationId = selectedSituation,
+    packId = selectedPack,
+  ) {
+    if (!situationId || !packId) {
       return;
     }
 
     onFindPrompt({
-      pack: selectedPack,
-      situation: selectedSituation,
+      pack: packId,
+      situation: situationId,
     });
+  }
+
+  function handleFindPrompt() {
+    if (!hasSelection) {
+      setPickerStep(STEP_SITUATION);
+      setIsPickerOpen(true);
+      return;
+    }
+
+    requestPrompt();
   }
 
   async function handleShare() {
@@ -69,12 +81,13 @@ function InstantAssistant({
 
   function handleSituationSelect(situationId) {
     setSelectedSituation(situationId);
-    setStep(STEP_PACK);
+    setPickerStep(STEP_PACK);
   }
 
   function handlePackSelect(packId) {
     setSelectedPack(packId);
-    setStep(STEP_TRIGGER);
+    setIsPickerOpen(false);
+    requestPrompt(selectedSituation, packId);
   }
 
   function handleRetry() {
@@ -85,7 +98,8 @@ function InstantAssistant({
     onReset();
     setSelectedSituation("");
     setSelectedPack("");
-    setStep(STEP_SITUATION);
+    setPickerStep(STEP_SITUATION);
+    setIsPickerOpen(true);
   }
 
   function renderSelectionSummary(extraClassName = "") {
@@ -119,6 +133,89 @@ function InstantAssistant({
         <span>{selectedSituationLabel}</span>
         <span>{selectedPackLabel}</span>
       </div>
+    );
+  }
+
+  function renderPickerDrawer() {
+    if (!isPickerOpen || typeof document === "undefined") {
+      return null;
+    }
+
+    const isSituationStep = pickerStep === STEP_SITUATION;
+
+    return createPortal(
+      <div
+        className="assistant-drawer-backdrop"
+        role="presentation"
+        onClick={() => setIsPickerOpen(false)}
+      >
+        <aside
+          aria-labelledby="assistant-drawer-title"
+          aria-modal="true"
+          className="assistant-drawer"
+          role="dialog"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <span className="assistant-drawer-handle" aria-hidden="true"></span>
+          <div className="assistant-drawer-head">
+            <p className="eyebrow">
+              {isSituationStep ? "Step 1 of 2" : "Step 2 of 2"}
+            </p>
+            <h3 id="assistant-drawer-title">
+              {isSituationStep
+                ? "Where are you using it?"
+                : "What should it feel like?"}
+            </h3>
+            <p>
+              {isSituationStep
+                ? "Pick the moment first."
+                : "Now choose the type of line."}
+            </p>
+          </div>
+
+          <div className="assistant-drawer-options">
+            {(isSituationStep ? SITUATIONS : QUESTION_PACKS).map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`assistant-choice-button ${
+                  (isSituationStep ? selectedSituation : selectedPack) ===
+                  item.id
+                    ? "is-active"
+                    : ""
+                }`}
+                onClick={() =>
+                  isSituationStep
+                    ? handleSituationSelect(item.id)
+                    : handlePackSelect(item.id)
+                }
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="assistant-drawer-actions">
+            {!isSituationStep ? (
+              <button
+                className="assistant-secondary-button"
+                type="button"
+                onClick={() => setPickerStep(STEP_SITUATION)}
+              >
+                Back
+              </button>
+            ) : null}
+            <button
+              className="assistant-secondary-button assistant-secondary-button--plain"
+              type="button"
+              onClick={() => setIsPickerOpen(false)}
+            >
+              Not now
+            </button>
+          </div>
+        </aside>
+      </div>,
+      document.body,
     );
   }
 
@@ -166,68 +263,12 @@ function InstantAssistant({
         </>
       ) : (
         <>
-          {step === STEP_SITUATION ? (
-            <div className="assistant-step assistant-step--choices">
-              <div className="assistant-intro assistant-intro--live">
-                <p className="eyebrow">Tonight</p>
-                <h2>Who are you hoping to know a little better?</h2>
-                <p>Choose the moment. We&apos;ll keep the first words quiet.</p>
-              </div>
-
-              <div
-                className="assistant-choice-grid"
-                aria-label="Situation options"
-              >
-                {SITUATIONS.map((situation) => (
-                  <button
-                    key={situation.id}
-                    type="button"
-                    className={`assistant-choice-button ${
-                      selectedSituation === situation.id ? "is-active" : ""
-                    }`}
-                    onClick={() => handleSituationSelect(situation.id)}
-                  >
-                    {situation.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {step === STEP_PACK ? (
-            <div className="assistant-step assistant-step--choices">
-              <div className="assistant-intro assistant-intro--live">
-                <p className="eyebrow">The pause</p>
-                <h2>What kind of opening feels right?</h2>
-                <p>Light, deeper, or a little bold. Pick what you could say.</p>
-              </div>
-
-              <div
-                className="assistant-choice-grid"
-                aria-label="Question pack options"
-              >
-                {QUESTION_PACKS.map((pack) => (
-                  <button
-                    key={pack.id}
-                    type="button"
-                    className={`assistant-choice-button ${
-                      selectedPack === pack.id ? "is-active" : ""
-                    }`}
-                    onClick={() => handlePackSelect(pack.id)}
-                  >
-                    {pack.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {step === STEP_TRIGGER &&
-          liveState !== "empty" &&
-          liveState !== "error" ? (
+          {liveState !== "empty" && liveState !== "error" ? (
             <div className="assistant-step assistant-step--trigger">
               <div className="assistant-intro assistant-intro--live assistant-intro--centered">
-                <p className="eyebrow">Almost there</p>
+                <p className="eyebrow">
+                  {hasSelection ? "Almost there" : "Live mode"}
+                </p>
                 <h2>A small line for the pause.</h2>
                 <p>Take one. Then lock the phone.</p>
               </div>
@@ -256,7 +297,7 @@ function InstantAssistant({
             </div>
           ) : null}
 
-          {step === STEP_TRIGGER && liveState === "loading" ? (
+          {liveState === "loading" ? (
             <article className="assistant-loading-inline" aria-live="polite">
               <div className="assistant-loading-pill" aria-hidden="true">
                 <span></span>
@@ -266,7 +307,7 @@ function InstantAssistant({
             </article>
           ) : null}
 
-          {step === STEP_TRIGGER && liveState === "empty" ? (
+          {liveState === "empty" ? (
             <div className="assistant-state-stack">
               <StatePanel
                 actions={
@@ -287,7 +328,7 @@ function InstantAssistant({
             </div>
           ) : null}
 
-          {step === STEP_TRIGGER && liveState === "error" ? (
+          {liveState === "error" ? (
             <div className="assistant-state-stack assistant-state-stack--error">
               {renderSelectionSummary("assistant-selection-summary--quiet")}
               <StatePanel
@@ -318,6 +359,8 @@ function InstantAssistant({
               />
             </div>
           ) : null}
+
+          {renderPickerDrawer()}
         </>
       )}
     </section>
