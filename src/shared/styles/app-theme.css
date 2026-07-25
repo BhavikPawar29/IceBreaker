@@ -5065,6 +5065,59 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
   color: #ffffff !important;
 }
 
+.page-shell--app .live-page-shell .instant-assistant--result .assistant-card {
+  border-color: rgba(17, 17, 17, 0.12) !important;
+  background: #ffffff !important;
+  box-shadow: 0 24px 56px rgba(23, 23, 23, 0.08) !important;
+}
+
+.page-shell--app
+  .live-page-shell
+  .instant-assistant--result
+  .assistant-card-label {
+  color: #3f3f46 !important;
+  opacity: 1 !important;
+}
+
+.page-shell--app
+  .live-page-shell
+  .instant-assistant--result
+  .assistant-card
+  h3 {
+  color: #171717 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.page-shell--app
+  .live-page-shell
+  .instant-assistant--result
+  .assistant-card-note {
+  color: #242424 !important;
+  opacity: 1 !important;
+}
+
+.page-shell--app
+  .live-page-shell
+  .instant-assistant--result
+  .assistant-secondary-button {
+  border-color: rgba(17, 17, 17, 0.14) !important;
+  background: #ffffff !important;
+  color: #242424 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.page-shell--app
+  .live-page-shell
+  .instant-assistant--result
+  .assistant-secondary-button:hover {
+  border-color: rgba(232, 71, 147, 0.3) !important;
+  background: #fff7fb !important;
+  color: #171717 !important;
+  box-shadow: 0 14px 28px rgba(23, 23, 23, 0.08) !important;
+}
+
 .page-shell--app .confirm-overlay {
   background: rgba(23, 23, 23, 0.22) !important;
 }
