@@ -606,10 +606,11 @@
   gap: 16px;
   width: min(390px, calc(100vw - 28px));
   padding: 18px;
-  border: 1px solid rgba(183, 119, 42, 0.16);
+  border: 1px solid rgba(17, 17, 17, 0.12);
   border-radius: 24px;
-  background: rgba(31, 27, 24, 0.96);
-  box-shadow: 0 22px 52px rgba(36, 23, 15, 0.18);
+  background: #ffffff;
+  color: #171717;
+  box-shadow: 0 22px 52px rgba(23, 23, 23, 0.12);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -629,13 +630,14 @@
 }
 
 .install-prompt h2 {
+  color: #171717;
   font-size: 1.28rem;
   line-height: 1.2;
 }
 
 .install-prompt p:not(.install-prompt__eyebrow) {
   margin-top: 8px;
-  color: var(--muted);
+  color: #4b5563;
   line-height: 1.55;
 }
 
