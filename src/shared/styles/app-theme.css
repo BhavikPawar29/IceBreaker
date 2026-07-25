@@ -5071,6 +5071,27 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
   opacity: 1 !important;
 }
 
+.page-shell--app .admin-tabs {
+  border-color: rgba(17, 17, 17, 0.12) !important;
+  background: #ffffff !important;
+  box-shadow: 0 18px 42px rgba(23, 23, 23, 0.08) !important;
+}
+
+.page-shell--app .admin-tab {
+  border-color: rgba(17, 17, 17, 0.12) !important;
+  background: #ffffff !important;
+  color: #242424 !important;
+  opacity: 1 !important;
+}
+
+.page-shell--app .admin-tab:hover,
+.page-shell--app .admin-tab.is-active {
+  border-color: rgba(232, 71, 147, 0.3) !important;
+  background: #fff7fb !important;
+  color: #171717 !important;
+  opacity: 1 !important;
+}
+
 .page-shell--app
   .live-page-shell
   .assistant-step--choices
