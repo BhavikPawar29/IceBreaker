@@ -4767,6 +4767,73 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
   text-shadow: none !important;
 }
 
+.page-shell--app .app-header {
+  padding-inline: clamp(16px, 3vw, 36px) !important;
+}
+
+.page-shell--app .topbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+  gap: clamp(12px, 1.6vw, 22px) !important;
+  width: 100% !important;
+  min-height: 68px !important;
+  padding: 8px 0 !important;
+}
+
+.page-shell--app .brand {
+  flex: 0 1 210px !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  min-width: 168px !important;
+}
+
+.page-shell--app .brand-mark {
+  line-height: 1 !important;
+}
+
+.page-shell--app .brand-sub {
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+}
+
+.page-shell--app .topbar-actions {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-end !important;
+  gap: clamp(10px, 1.2vw, 16px) !important;
+  min-width: 0 !important;
+}
+
+.page-shell--app .route-tabs--header,
+.page-shell--app .auth-chip-group--app {
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+}
+
+.page-shell--app .route-tabs--header {
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+}
+
+.page-shell--app .route-tabs--header::-webkit-scrollbar {
+  display: none !important;
+}
+
+.page-shell--app
+  :is(.route-tabs--header .route-tab, .auth-chip, .ghost-link.auth-button) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 46px !important;
+  padding-block: 0 !important;
+  line-height: 1 !important;
+}
+
 :is(.page-shell--app, .page-shell--login, .page-shell--legal)
   :is(
     .section-card,
@@ -5216,4 +5283,126 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
   background: #e84793 !important;
   color: #ffffff !important;
   box-shadow: 0 14px 28px rgba(232, 71, 147, 0.22) !important;
+}
+
+@media (max-width: 720px) {
+  .page-shell--app .app-header {
+    padding: 8px 10px 0 !important;
+  }
+
+  .page-shell--app .topbar--mobile {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-height: 58px !important;
+    padding: 8px 10px 8px 16px !important;
+  }
+
+  .page-shell--app .topbar--mobile .brand {
+    min-width: 0 !important;
+    justify-self: start !important;
+  }
+
+  .page-shell--app .topbar--mobile .brand-mark {
+    max-width: 145px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .page-shell--app .topbar-actions--mobile,
+  .page-shell--app .auth-chip-group--mobile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
+
+  .page-shell--app .auth-chip-group--mobile .auth-chip--user,
+  .page-shell--app .auth-chip-group--mobile .auth-chip--warning {
+    display: none !important;
+  }
+
+  .page-shell--app .mobile-account-avatar,
+  .page-shell--app .auth-chip-group--mobile .auth-button {
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+  }
+
+  .page-shell--app .live-page-shell {
+    align-items: start !important;
+    min-height: calc(100dvh - 64px) !important;
+    padding: 14px 16px calc(88px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .page-shell--app .live-page-shell .instant-assistant {
+    min-height: auto !important;
+    width: 100% !important;
+    padding: 28px 20px !important;
+    border-radius: 24px !important;
+    box-shadow: 0 18px 42px rgba(23, 23, 23, 0.08) !important;
+  }
+
+  .page-shell--app .live-page-shell .assistant-step--trigger {
+    align-content: start !important;
+    justify-items: start !important;
+    gap: 22px !important;
+  }
+
+  .page-shell--app .live-page-shell .assistant-intro--centered {
+    justify-items: start !important;
+    text-align: left !important;
+  }
+
+  .page-shell--app .live-page-shell .assistant-intro h2 {
+    max-width: 11ch !important;
+    font-size: clamp(2rem, 9vw, 2.55rem) !important;
+    line-height: 0.98 !important;
+  }
+
+  .page-shell--app .live-page-shell .assistant-intro p:not(.eyebrow) {
+    max-width: 18ch !important;
+    font-size: 1.02rem !important;
+  }
+
+  .page-shell--app .live-page-shell .assistant-orb-stage {
+    justify-content: stretch !important;
+  }
+
+  .page-shell--app .live-page-shell .assistant-orb-button {
+    width: 100% !important;
+    min-height: 58px !important;
+  }
+
+  .page-shell--app .mobile-bottom-nav {
+    bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+    width: min(396px, calc(100vw - 28px)) !important;
+    height: 64px !important;
+    padding: 6px !important;
+    border-radius: 22px !important;
+    box-shadow: 0 16px 34px rgba(23, 23, 23, 0.1) !important;
+  }
+
+  .page-shell--app .route-tabs--mobile-bottom {
+    gap: 4px !important;
+  }
+
+  .page-shell--app .route-tabs--mobile-bottom .route-tab {
+    height: 52px !important;
+    min-height: 52px !important;
+    padding: 4px !important;
+    border-radius: 18px !important;
+  }
+
+  .page-shell--app .route-tabs--mobile-bottom .route-tab-icon {
+    width: 42px !important;
+    height: 42px !important;
+  }
 }
