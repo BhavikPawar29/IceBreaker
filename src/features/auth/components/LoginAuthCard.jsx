@@ -89,7 +89,8 @@ function LoginAuthCard({
         <input
           id="auth-email"
           type="email"
-          autoComplete={isSignup ? "email" : "username"}
+          autoComplete={isSignup ? "off" : "username"}
+          inputMode="email"
           placeholder="you@example.com"
           value={email}
           onChange={(event) => onEmailChange(event.target.value)}

@@ -5285,6 +5285,75 @@ body:has(:is(.page-shell--app, .page-shell--login, .page-shell--legal)) {
   box-shadow: 0 14px 28px rgba(232, 71, 147, 0.22) !important;
 }
 
+.page-shell--login .login-side {
+  background: #171717 !important;
+}
+
+.page-shell--login .login-side-copy {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.18) 0%,
+    rgba(0, 0, 0, 0.34) 36%,
+    rgba(0, 0, 0, 0.84) 100%
+  ) !important;
+}
+
+.page-shell--login
+  .login-side
+  :is(
+    .eyebrow,
+    h1,
+    .login-lead,
+    .login-points strong,
+    .login-points span,
+    .login-side-links,
+    .login-side-links *
+  ) {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.72) !important;
+}
+
+.page-shell--login .login-points article {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(0, 0, 0, 0.18) !important;
+}
+
+.page-shell--login .login-shell {
+  background: #ffffff !important;
+  color: #171717 !important;
+}
+
+.page-shell--login
+  .login-shell
+  :is(h2, .login-copy, label, .login-helper, .login-switch, .login-divider) {
+  color: #171717 !important;
+}
+
+.page-shell--login .provider-auth-button {
+  border-color: rgba(17, 17, 17, 0.12) !important;
+  background: #ffffff !important;
+  color: #171717 !important;
+  box-shadow: 0 14px 28px rgba(23, 23, 23, 0.08) !important;
+}
+
+.page-shell--login
+  .provider-auth-button
+  :is(.provider-auth-button__copy, .provider-auth-button__note) {
+  color: #171717 !important;
+  opacity: 1 !important;
+}
+
+.page-shell--login .provider-auth-button:hover {
+  border-color: rgba(232, 71, 147, 0.26) !important;
+  background: #fff7fb !important;
+}
+
+.page-shell--login .password-toggle {
+  background: #242424 !important;
+  color: #ffffff !important;
+}
+
 @media (max-width: 720px) {
   .page-shell--app .app-header {
     padding: 8px 10px 0 !important;
